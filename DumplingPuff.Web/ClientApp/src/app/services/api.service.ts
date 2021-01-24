@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { SocialUser } from 'angularx-social-login';
+//import { SocialUser } from 'angularx-social-login';
 import { environment } from './../../environments/environment';
 
 export class ApiService {
