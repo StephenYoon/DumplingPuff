@@ -9,23 +9,34 @@ import {
   VKLoginProvider,
   MicrosoftLoginProvider
 } from 'angularx-social-login';
+import { AppSettings } from '../models/app-settings.model';
+
+import { AppSettingsService } from '../services/app-settings.service';
 
 @Component({
   selector: 'app-demo',
   templateUrl: './demo.component.html',
-  styleUrls: ['./demo.component.css']
+  styleUrls: ['./demo.component.scss']
 })
 export class DemoComponent implements OnInit {
 
+  appSettings: AppSettings | undefined;
   user: SocialUser | undefined;
   GoogleLoginProvider = GoogleLoginProvider;
 
-  constructor(private authService: SocialAuthService) { }
+  constructor(
+    private authService: SocialAuthService,
+    private appSettingsService: AppSettingsService
+  ) { }
 
   ngOnInit() {
     this.authService.authState.subscribe(user => {
       this.user = user;
     });
+
+    this.appSettingsService.appSettings.subscribe(appSettings => {
+      this.appSettings = appSettings;
+    })
   }
 
   signInWithGoogle(): void {

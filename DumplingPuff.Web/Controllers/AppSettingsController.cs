@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DumplingPuff.Web.Controllers
 {
     [ApiController]
-    [Route("api")]
+    [Route("api/[controller]")]
     public class AppSettingsController : Controller
     {
         IAppSettings _appSettings;
@@ -20,7 +20,7 @@ namespace DumplingPuff.Web.Controllers
         }
 
         // GET: AppSettings
-        [HttpGet("v1/[controller]/settings")]
+        [HttpGet]
         public IActionResult Index()
         {
             var settings = new JsonResult(_appSettings)
