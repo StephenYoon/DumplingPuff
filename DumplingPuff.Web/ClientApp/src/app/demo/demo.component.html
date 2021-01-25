@@ -1,5 +1,5 @@
 <div class="bg-transparent text-center">
-  <div *ngIf="!user" class="card text-center">
+  <div *ngIf="!(user$ | async)" class="card text-center">
     <h6 class="card-header">
       Puff Player Card
     </h6>
@@ -18,7 +18,7 @@
       -->
     </div>
   </div>
-  <div *ngIf="user" class="card text-center">
+  <div *ngIf="(user$ | async); let user" class="card text-center">
     <h6 class="card-header">
       Puff Player Card
     </h6>
