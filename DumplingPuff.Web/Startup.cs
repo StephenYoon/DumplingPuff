@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using DumplingPuff.Web.Models.Configuration;
 
 namespace DumplingPuff.Web
 {
@@ -20,6 +21,11 @@ namespace DumplingPuff.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var settings = Configuration.Get<AppSettings>();
+            var googleAuthClientId = Configuration.GetValue<string>("Authentication:Google:ClientId");
+            settings.AuthenticationGoogleClientId = googleAuthClientId;
+            services.AddSingleton<IAppSettings>(t => settings);
+
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
