@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { SocialAuthService } from 'angularx-social-login';
 import { SocialUser } from 'angularx-social-login';
@@ -12,6 +13,7 @@ import {
 import { AppSettings } from '../models/app-settings.model';
 
 import { AppSettingsService } from '../services/app-settings.service';
+import { CustomAuthService } from '../services/custom-auth.service';
 
 @Component({
   selector: 'app-demo',
@@ -22,17 +24,16 @@ export class DemoComponent implements OnInit {
 
   appSettings: AppSettings | undefined;
   user: SocialUser | undefined;
+  user$: Observable<SocialUser>;
   GoogleLoginProvider = GoogleLoginProvider;
 
   constructor(
-    private authService: SocialAuthService,
+    private authService: CustomAuthService,
     private appSettingsService: AppSettingsService
   ) { }
 
   ngOnInit() {
-    this.authService.authState.subscribe(user => {
-      this.user = user;
-    });
+    this.user$ = this.authService.getCurrentUser();
 
     this.appSettingsService.appSettings.subscribe(appSettings => {
       this.appSettings = appSettings;
@@ -40,23 +41,7 @@ export class DemoComponent implements OnInit {
   }
 
   signInWithGoogle(): void {
-    this.authService.signIn(GoogleLoginProvider.PROVIDER_ID);
-  }
-
-  signInWithFB(): void {
-    this.authService.signIn(FacebookLoginProvider.PROVIDER_ID);
-  }
-
-  signInWithAmazon(): void {
-    this.authService.signIn(AmazonLoginProvider.PROVIDER_ID);
-  }
-
-  signInWithVK(): void {
-    this.authService.signIn(VKLoginProvider.PROVIDER_ID);
-  }
-
-  signInWithMicrosoft(): void {
-    this.authService.signIn(MicrosoftLoginProvider.PROVIDER_ID);
+    this.authService.signInWithGoogle();
   }
 
   signOut(): void {
@@ -64,7 +49,6 @@ export class DemoComponent implements OnInit {
   }
 
   refreshGoogleToken(): void {
-    this.authService.refreshAuthToken(GoogleLoginProvider.PROVIDER_ID);
+    this.authService.refreshGoogleToken();
   }
-
 }
