@@ -26,6 +26,13 @@ namespace DumplingPuff.Web
             settings.AuthenticationGoogleClientId = googleAuthClientId;
             services.AddSingleton<IAppSettings>(t => settings);
 
+            /*
+             * By not passing a parameter to AddAzureSignalR(), this code uses the default configuration key 
+             * for the SignalR Service resource connection string. 
+             * The default configuration key is Azure:SignalR:ConnectionString.
+             */
+            services.AddSignalR().AddAzureSignalR();
+
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -56,6 +63,11 @@ namespace DumplingPuff.Web
             }
 
             app.UseRouting();
+            app.UseFileServer();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<ChatHub>("/chat");
+            });
 
             app.UseEndpoints(endpoints =>
             {
