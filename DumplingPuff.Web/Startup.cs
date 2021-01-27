@@ -24,8 +24,8 @@ namespace DumplingPuff.Web
         {
             // App settings
             var settings = Configuration.Get<AppSettings>();
-            var googleAuthClientId = Configuration.GetValue<string>("Authentication:Google:ClientId");
-            settings.AuthenticationGoogleClientId = googleAuthClientId;
+            settings.AuthenticationGoogleClientId = Configuration.GetValue<string>("Authentication:Google:ClientId");
+            settings.BaseApiUrl = Configuration.GetValue<string>("BaseApiUrl");
             services.AddSingleton<IAppSettings>(t => settings);
 
             /*
@@ -44,12 +44,20 @@ namespace DumplingPuff.Web
             //    .AllowAnyHeader()
             //    .AllowCredentials());
             //});
-            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
-            {
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            }));
+
+            //services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            //{
+            //    builder.AllowAnyOrigin()
+            //           .AllowAnyMethod()
+            //           .AllowAnyHeader();
+            //}));
+
+            //services.AddCors(options => options.AddPolicy("CorsPolicy",
+            //    builder =>
+            //    {
+            //        builder.WithOrigins("https://localhost:5001", "https://*dumplingpuff.azurewebsites.net*", "https://*dumplingpuff-dev.azurewebsites.net*")
+            //            .SetIsOriginAllowedToAllowWildcardSubdomains();
+            //}));
 
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory
@@ -83,7 +91,7 @@ namespace DumplingPuff.Web
             app.UseRouting();
             app.UseFileServer();
 
-            app.UseCors("CorsPolicy");
+            //app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {

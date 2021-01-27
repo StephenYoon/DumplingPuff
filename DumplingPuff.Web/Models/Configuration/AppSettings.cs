@@ -11,5 +11,6 @@ namespace DumplingPuff.Web.Models.Configuration
         public string Environment => EnvironmentCode;
         public string AuthenticationGoogleClientId { get; set; }
         public string AuthenticationGoogleClientSecret { get; set; }
+        public string BaseApiUrl { get; set; }
     }
 }

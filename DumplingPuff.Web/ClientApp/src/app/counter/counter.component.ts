@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { SocialUser } from 'angularx-social-login';
 import { SignalRService } from '../services/signal-r.service';
 import { CustomAuthService } from '../services/custom-auth.service';
+import { AppSettingsService } from '../services/app-settings.service';
+import { AppSettings } from '../models/app-settings.model';
 import { ChatMessage } from '../models/chat-message.model';
 
 @Component({
@@ -12,6 +14,7 @@ import { ChatMessage } from '../models/chat-message.model';
   styleUrls: ['./counter.component.scss']
 })
 export class CounterComponent implements OnInit {
+  appSettings: AppSettings | undefined;
   currentCount = 0;
   chatMessage: string;
   user: SocialUser;
@@ -19,9 +22,14 @@ export class CounterComponent implements OnInit {
   constructor(
     public signalRService: SignalRService, 
     private authService: CustomAuthService,
+    private appSettingsService: AppSettingsService,
     private http: HttpClient) { }
 
   ngOnInit() {
+    this.appSettingsService.appSettings.subscribe(appSettings => {
+      this.appSettings = appSettings;
+    })
+
     this.authService.getCurrentUser().subscribe((data) => {
       this.user = data;      
 
@@ -57,7 +65,7 @@ export class CounterComponent implements OnInit {
     var apiChatMessage = new ChatMessage();
     apiChatMessage.user = this.user;
     apiChatMessage.message = this.chatMessage;
-    this.http.post<string>('https://localhost:5001/api/chat', apiChatMessage,  {headers: headers})
+    this.http.post<string>(this.appSettings.baseApiUrl + '/api/chat', apiChatMessage,  {headers: headers})
       .subscribe(res => {
         console.log(res);
       })
