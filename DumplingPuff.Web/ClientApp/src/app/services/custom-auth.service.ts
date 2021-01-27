@@ -39,7 +39,7 @@ export class CustomAuthService implements OnDestroy {
       } else {
         localStorage.setItem('user', null);
         this.userData$.next(null);
-        JSON.parse(localStorage.getItem('user'));
+        //JSON.parse(localStorage.getItem('user'));
       }
     });
   }

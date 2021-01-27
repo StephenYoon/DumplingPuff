@@ -8,6 +8,8 @@ namespace DumplingPuff.Web.Hubs
 {
     public class ChatHub : Hub
     {
+        //public async Task BroadcastChartData(string data) => await Clients.All.SendAsync("broadcastMessage", data);
+
         public Task BroadcastMessage(string name, string message) =>
             Clients.All.SendAsync("broadcastMessage", name, message);
 
