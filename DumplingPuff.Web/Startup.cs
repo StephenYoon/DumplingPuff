@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DumplingPuff.Web.Models.Configuration;
+using DumplingPuff.Web.Hubs;
 
 namespace DumplingPuff.Web
 {
@@ -21,6 +22,7 @@ namespace DumplingPuff.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // App settings
             var settings = Configuration.Get<AppSettings>();
             var googleAuthClientId = Configuration.GetValue<string>("Authentication:Google:ClientId");
             settings.AuthenticationGoogleClientId = googleAuthClientId;
@@ -32,6 +34,18 @@ namespace DumplingPuff.Web
              * The default configuration key is Azure:SignalR:ConnectionString.
              */
             services.AddSignalR().AddAzureSignalR();
+
+            // CORS
+            /*
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder => builder
+                .WithOrigins("https://localhost:5001")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+            });
+            */
 
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory
@@ -64,13 +78,12 @@ namespace DumplingPuff.Web
 
             app.UseRouting();
             app.UseFileServer();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapHub<ChatHub>("/chat");
-            });
+
+            //app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<ChatHub>("/chat");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
