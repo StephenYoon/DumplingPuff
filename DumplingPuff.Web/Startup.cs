@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DumplingPuff.Web.Models.Configuration;
+using DumplingPuff.Web.Hubs;
 
 namespace DumplingPuff.Web
 {
@@ -21,10 +22,34 @@ namespace DumplingPuff.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // App settings
             var settings = Configuration.Get<AppSettings>();
             var googleAuthClientId = Configuration.GetValue<string>("Authentication:Google:ClientId");
             settings.AuthenticationGoogleClientId = googleAuthClientId;
             services.AddSingleton<IAppSettings>(t => settings);
+
+            /*
+             * By not passing a parameter to AddAzureSignalR(), this code uses the default configuration key 
+             * for the SignalR Service resource connection string. 
+             * The default configuration key is Azure:SignalR:ConnectionString.
+             */
+            services.AddSignalR().AddAzureSignalR();
+
+            // CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder => builder
+                .WithOrigins("https://localhost:5001", "https://dumplingpuff.azurewebsites.net", "https://dumplingpuff-dev.azurewebsites.net")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+            });
+            //services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            //{
+            //    builder.AllowAnyOrigin()
+            //           .AllowAnyMethod()
+            //           .AllowAnyHeader();
+            //}));
 
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory
@@ -56,9 +81,13 @@ namespace DumplingPuff.Web
             }
 
             app.UseRouting();
+            app.UseFileServer();
+
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<ChatHub>("/chat");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
