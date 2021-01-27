@@ -28,6 +28,10 @@ export class CounterComponent implements OnInit {
   ngOnInit() {
     this.appSettingsService.appSettings.subscribe(appSettings => {
       this.appSettings = appSettings;
+      
+      this.signalRService.startConnection(this.appSettings.baseApiUrl);
+      this.signalRService.messageListener();
+      this.startHttpRequest();
     })
 
     this.authService.getCurrentUser().subscribe((data) => {
@@ -42,14 +46,12 @@ export class CounterComponent implements OnInit {
         this.user.photoUrl = "https://static.wikia.nocookie.net/food-fantasy/images/9/98/FA-Green_Dumpling.png/revision/latest/top-crop/width/360/height/450?cb=20181130145704";
       }
     });
+    
     this.chatMessage = '';
-    this.signalRService.startConnection();
-    this.signalRService.messageListener();
-    this.startHttpRequest();
   }
 
   private startHttpRequest = () => {
-    this.http.get('https://localhost:5001/api/chat')
+    this.http.get(this.appSettings.baseApiUrl + '/api/chat')
       .subscribe(res => {
         console.log(res);
       })

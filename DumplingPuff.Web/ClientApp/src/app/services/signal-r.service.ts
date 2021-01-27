@@ -12,9 +12,9 @@ export class SignalRService {
 
   constructor() { }  
   
-  public startConnection = () => {
+  public startConnection = (baseApiUrl: string) => {
     this.hubConnection = new signalR.HubConnectionBuilder()
-                            .withUrl('https://localhost:5001/chat')
+                            .withUrl(baseApiUrl + '/chat')
                             .build();
 
     this.hubConnection
