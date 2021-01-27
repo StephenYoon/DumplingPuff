@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using DumplingPuff.Web.Hubs;
+using DumplingPuff.Web.Models;
 
 namespace DumplingPuff.Web.Controllers
 {
@@ -20,9 +19,17 @@ namespace DumplingPuff.Web.Controllers
             _hub = hub;
         }
 
+        [HttpGet]
         public IActionResult Get()
         {
-            _hub.Clients.All.SendAsync("broadcastMessage", "Test data from api controller.");
+            //_hub.Clients.All.SendAsync("broadcastMessage", new ChatMessage { User = new SocialUser(), Message = "Hi :)" });
+            return Ok(new { Message = "Request Completed" });
+        }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] ChatMessage chatMessage)
+        {
+            _hub.Clients.All.SendAsync("broadcastMessage", chatMessage);
             return Ok(new { Message = "Request Completed" });
         }
     }

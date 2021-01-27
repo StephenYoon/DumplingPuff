@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import * as signalR from "@microsoft/signalr";  // or from "@aspnet/signalr" if you are using an older library
+import { ChatMessage } from '../models/chat-message.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SignalRService {
-  public data: string;
+  public data: ChatMessage;
+  public chatHistory: ChatMessage[] = [];
   private hubConnection: signalR.HubConnection
 
   constructor() { }  
@@ -24,12 +26,15 @@ export class SignalRService {
   public messageListener = () => {
     this.hubConnection.on('broadcastMessage', (data) => {
       this.data = data;
+      this.chatHistory.push(data);
       console.log(data);
     });
   }
 
-  public messageBroadcast = () => {
-    this.hubConnection.invoke('broadcastMessage', this.data)
-    .catch(err => console.error(err));
+  public messageBroadcast = (message: string) => {
+    this.hubConnection.invoke('broadcastMessage', message)
+    .catch(err => {
+      console.error(err)
+    });
   }
 }

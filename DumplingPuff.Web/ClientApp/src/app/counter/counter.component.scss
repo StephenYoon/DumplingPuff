@@ -1,0 +1,12 @@
+.counter-container {
+  .list-group-item {
+    padding: 3px;
+  }
+
+  .product-image {  
+    object-fit: cover;
+    width: 2rem;
+    max-height: 2rem;
+    padding-right: 5px;
+  }
+}
