@@ -6,15 +6,16 @@
   
   <p aria-live="polite">Current count: <strong>{{ currentCount }}</strong></p>
   
-  <button class="btn btn-primary" (click)="incrementCounter()">Increment</button>  
-  
+  <button class="btn btn-primary" (click)="incrementCounter()">Increment</button>
   -->
+
   <div class="form-group">
     <label for="exampleInputEmail1">Enter chat</label>
     <input type="text" class="form-control" id="chatInput" placeholder="Enter chat..." [(ngModel)]="chatMessage">
     <small id="chatHelp" class="form-text text-muted">It's okay to be chatty.</small>
   </div>
-  <button type="submit" class="btn btn-primary" (click)="chatClick()">Submit</button>
+
+  <button type="submit" class="btn btn-primary pb-1" (click)="chatClick()">Submit</button>
   
   <ul class="list-group" *ngIf='signalRService.chatHistory'>
     <li 
@@ -25,4 +26,5 @@
       {{chatItem?.user?.name}}: {{chatItem.message}}
     </li>
   </ul>
+
 </div>
