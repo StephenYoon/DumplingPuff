@@ -1,4 +1,5 @@
 <div class="counter-container">
+
   <h1>Experimental Chat</h1>
 
   <!--
@@ -9,22 +10,40 @@
   <button class="btn btn-primary" (click)="incrementCounter()">Increment</button>
   -->
 
-  <div class="form-group">
-    <label for="exampleInputEmail1">Enter chat</label>
-    <input type="text" class="form-control" id="chatInput" placeholder="Enter chat..." [(ngModel)]="chatMessage">
-    <small id="chatHelp" class="form-text text-muted">It's okay to be chatty.</small>
-  </div>
+  <div class="chat-container mt-2 mb-2">
 
-  <button type="submit" class="btn btn-primary mb-2" (click)="chatClick()">Submit</button>
-  
-  <ul class="list-group" *ngIf='signalRService.chatHistory'>
-    <li 
-      class="list-group-item" 
-      *ngFor="let chatItem of signalRService.chatHistory"
-    >
-      <img class="card-img-top product-image rounded-circle" [src]="chatItem.user.photoUrl" alt="Card image cap">
-      {{chatItem?.user?.name}}: {{chatItem.message}}
-    </li>
-  </ul>
+    <div class="row">
+      <div class="col-sm">
+        <div class="input-group mt-3 mb-3">
+          <input #chatInputBox type="text" class="form-control" placeholder="Enter chat..." [(ngModel)]="chatMessage" (keyup.enter)="chatClick()">
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="button" (click)="chatClick()">Submit</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-sm">        
+      </div>
+    </div>
+
+    <div class="row mt-2">
+      <div class="col-sm">
+        <div class="chat-history" #scroll>
+          <ul class="list-group" *ngIf='signalRService.chatHistory'>
+            <li 
+              class="list-group-item" 
+              *ngFor="let chatItem of signalRService.chatHistory"
+            >
+              <img class="card-img-top product-image rounded-circle" [src]="chatItem.user.photoUrl" alt="Card image cap">
+              {{chatItem?.user?.firstName}}: {{chatItem.message}}
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-sm">
+      </div>
+    </div>
+
+  </div><!--chat-container-->
 
 </div>

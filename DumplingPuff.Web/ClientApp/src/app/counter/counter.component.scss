@@ -6,7 +6,14 @@
   .product-image {  
     object-fit: cover;
     width: 2rem;
-    max-height: 2rem;
+    height: 2rem;
     padding-right: 5px;
+  }
+
+  .chat-history{
+    height: 300px;
+    overflow: hidden;
+    overflow-y: scroll;
+    padding-bottom: 50px;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SocialUser } from 'angularx-social-login';
@@ -19,6 +19,9 @@ export class CounterComponent implements OnInit {
   chatMessage: string;
   user: SocialUser;
 
+  @ViewChild('scroll', { read: ElementRef }) public scroll: ElementRef<any>;
+  @ViewChild('chatInputBox', { read: ElementRef }) public chatInputBox: ElementRef<any>;
+  
   constructor(
     public signalRService: SignalRService, 
     private authService: CustomAuthService,
@@ -58,7 +61,11 @@ export class CounterComponent implements OnInit {
   }
 
   public chatClick() {
-    //this.signalRService.messageBroadcast(this.chatMessage);
+    
+    if (this.chatMessage == ''){
+      return;
+    }
+
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     }); 
@@ -71,10 +78,19 @@ export class CounterComponent implements OnInit {
       .subscribe(res => {
         console.log(res);
       })
+
+    this.chatMessage = '';
+    this.scrollBottom();
+    this.chatInputBox.nativeElement.focus();
   }
 
   public incrementCounter() {
     this.currentCount++;
     this.startHttpRequest();
+  }
+
+  public scrollBottom() {
+    console.log(this.scroll.nativeElement.scrollTop);
+    this.scroll.nativeElement.scrollTop = this.scroll.nativeElement.scrollHeight;
   }
 }
