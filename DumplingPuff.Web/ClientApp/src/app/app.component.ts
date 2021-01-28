@@ -1,10 +1,42 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { AppSettingsService } from './services/app-settings.service';
+import { SignalRService } from './services/signal-r.service';
+import { SocialUser } from 'angularx-social-login';
+import { AppSettings } from './models/app-settings.model';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'Gabe is here!';
+export class AppComponent implements OnInit {
+  
+  appSettings: AppSettings | undefined;
+  currentCount = 0;
+  chatMessage: string;
+  user: SocialUser;
+  
+  constructor(
+    public signalRService: SignalRService, 
+    private appSettingsService: AppSettingsService,
+    private http: HttpClient) { }
+
+  ngOnInit() {
+    this.appSettingsService.appSettings.subscribe(appSettings => {
+      this.appSettings = appSettings;
+      
+      this.signalRService.startConnection(this.appSettings.baseApiUrl);
+      this.signalRService.messageListener();
+      this.startHttpRequest();
+    })
+  }
+    
+  private startHttpRequest = () => {
+    this.http.get(this.appSettings.baseApiUrl + '/api/chat')
+      .subscribe(res => {
+        console.log(res);
+      })
+  }
+
 }

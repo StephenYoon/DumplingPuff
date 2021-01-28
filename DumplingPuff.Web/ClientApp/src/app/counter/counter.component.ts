@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SocialUser } from 'angularx-social-login';
@@ -15,7 +16,6 @@ import { ChatMessage } from '../models/chat-message.model';
 })
 export class CounterComponent implements OnInit {
   appSettings: AppSettings | undefined;
-  currentCount = 0;
   chatMessage: string;
   user: SocialUser;
 
@@ -24,6 +24,7 @@ export class CounterComponent implements OnInit {
   
   constructor(
     public signalRService: SignalRService, 
+    private router: Router,
     private authService: CustomAuthService,
     private appSettingsService: AppSettingsService,
     private http: HttpClient) { }
@@ -31,33 +32,30 @@ export class CounterComponent implements OnInit {
   ngOnInit() {
     this.appSettingsService.appSettings.subscribe(appSettings => {
       this.appSettings = appSettings;
-      
-      this.signalRService.startConnection(this.appSettings.baseApiUrl);
-      this.signalRService.messageListener();
-      this.startHttpRequest();
     })
 
     this.authService.getCurrentUser().subscribe((data) => {
       this.user = data;      
 
       if (!this.user) {
+        /*
         this.user = new SocialUser;
         this.user.email = "guest@gmail.com";
         this.user.name = "Guest";
         this.user.firstName = "Guest";
         this.user.lastName = "";
         this.user.photoUrl = "https://static.wikia.nocookie.net/food-fantasy/images/9/98/FA-Green_Dumpling.png/revision/latest/top-crop/width/360/height/450?cb=20181130145704";
+        */
       }
     });
     
-    this.chatMessage = '';
-  }
+    if (!this.user) {
+      alert("Please log in first.");
+      this.router.navigate(['home']);
+    }
 
-  private startHttpRequest = () => {
-    this.http.get(this.appSettings.baseApiUrl + '/api/chat')
-      .subscribe(res => {
-        console.log(res);
-      })
+    this.chatMessage = '';
+    this.chatInputBox.nativeElement.focus();
   }
 
   public chatClick() {
@@ -82,11 +80,6 @@ export class CounterComponent implements OnInit {
     this.chatMessage = '';
     this.scrollBottom();
     this.chatInputBox.nativeElement.focus();
-  }
-
-  public incrementCounter() {
-    this.currentCount++;
-    this.startHttpRequest();
   }
 
   public scrollBottom() {
