@@ -1,14 +1,6 @@
-<div class="counter-container">
+<div class="chat-container">
 
   <h1>Experimental Chat</h1>
-
-  <!--
-  <p>This is a simple example of an Angular component.</p>
-  
-  <p aria-live="polite">Current count: <strong>{{ currentCount }}</strong></p>
-  
-  <button class="btn btn-primary" (click)="incrementCounter()">Increment</button>
-  -->
 
   <div class="chat-container mt-2 mb-2">
 
@@ -28,7 +20,7 @@
 
     <div class="row mt-2">
       <div class="col-sm">
-        <div class="chat-history" #scroll>
+        <div class="chat-history border-1" #scroll>
           <ul class="list-group" *ngIf='signalRService.chatHistory'>
             <li 
               class="list-group-item" 

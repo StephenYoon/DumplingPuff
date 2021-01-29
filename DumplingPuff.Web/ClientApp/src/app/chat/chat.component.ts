@@ -10,11 +10,11 @@ import { AppSettings } from '../models/app-settings.model';
 import { ChatMessage } from '../models/chat-message.model';
 
 @Component({
-  selector: 'app-counter-component',
-  templateUrl: './counter.component.html',
-  styleUrls: ['./counter.component.scss']
+  selector: 'app-chat-component',
+  templateUrl: './chat.component.html',
+  styleUrls: ['./chat.component.scss']
 })
-export class CounterComponent implements OnInit {
+export class ChatComponent implements OnInit {
   appSettings: AppSettings | undefined;
   chatHistory: ChatMessage[] = [];
   chatMessage: string;
@@ -33,6 +33,7 @@ export class CounterComponent implements OnInit {
   ngOnInit() {
     this.appSettingsService.appSettings.subscribe(appSettings => {
       this.appSettings = appSettings;
+      this.chatInputBox.nativeElement.focus();
     })
 
     this.authService.getCurrentUser().subscribe((data) => {
@@ -45,7 +46,6 @@ export class CounterComponent implements OnInit {
     }
 
     this.chatMessage = '';
-    this.chatInputBox.nativeElement.focus();
   }
 
   public chatClick() {    

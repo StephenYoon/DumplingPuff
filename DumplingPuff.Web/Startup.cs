@@ -52,12 +52,19 @@ namespace DumplingPuff.Web
             //           .AllowAnyHeader();
             //}));
 
-            //services.AddCors(options => options.AddPolicy("CorsPolicy",
-            //    builder =>
-            //    {
-            //        builder.WithOrigins("https://localhost:5001", "https://*dumplingpuff.azurewebsites.net*", "https://*dumplingpuff-dev.azurewebsites.net*")
-            //            .SetIsOriginAllowedToAllowWildcardSubdomains();
-            //}));
+            services.AddCors(options => options.AddPolicy("CorsPolicy",
+                builder =>
+                {
+                    builder.WithOrigins(
+                        "https://localhost:5001"
+                        , "https://*dumplingpuff.azurewebsites.net*"
+                        , "https://dumplingpuff.azurewebsites.net"
+                        , "https://*dumplingpuff-dev.azurewebsites.net*"
+                        , "https://dumplingpuff-dev.azurewebsites.net")
+                        .SetIsOriginAllowedToAllowWildcardSubdomains()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                }));
 
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory
@@ -91,7 +98,7 @@ namespace DumplingPuff.Web
             app.UseRouting();
             app.UseFileServer();
 
-            //app.UseCors("CorsPolicy");
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {

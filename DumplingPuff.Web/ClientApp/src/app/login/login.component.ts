@@ -16,11 +16,11 @@ import { AppSettingsService } from '../services/app-settings.service';
 import { CustomAuthService } from '../services/custom-auth.service';
 
 @Component({
-  selector: 'app-demo',
-  templateUrl: './demo.component.html',
-  styleUrls: ['./demo.component.scss']
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
-export class DemoComponent implements OnInit {
+export class LoginComponent implements OnInit {
 
   appSettings: AppSettings | undefined;
   user: SocialUser | undefined;
