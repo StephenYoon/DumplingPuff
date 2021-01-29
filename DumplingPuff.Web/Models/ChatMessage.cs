@@ -8,5 +8,6 @@ namespace DumplingPuff.Web.Models
     {
         public SocialUser User { get; set; }
         public string Message { get; set; }
+        public DateTime DateSent { get; set; }
     }
 }

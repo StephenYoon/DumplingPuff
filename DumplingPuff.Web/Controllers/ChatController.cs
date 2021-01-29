@@ -13,10 +13,12 @@ namespace DumplingPuff.Web.Controllers
     public class ChatController : ControllerBase
     {
         private IHubContext<ChatHub> _hub;
+        private List<ChatMessage> _chatMessages;
 
         public ChatController(IHubContext<ChatHub> hub)
         {
             _hub = hub;
+            _chatMessages = new List<ChatMessage>();
         }
 
         [HttpGet]
@@ -26,10 +28,17 @@ namespace DumplingPuff.Web.Controllers
             return Ok(new { Message = "Request Completed" });
         }
 
+        [HttpGet("history")]
+        public IActionResult GetHistory()
+        {
+            return Ok(_chatMessages.OrderBy(m => m.DateSent));
+        }
+
         [HttpPost]
         public IActionResult Post([FromBody] ChatMessage chatMessage)
         {
             _hub.Clients.All.SendAsync("broadcastMessage", chatMessage);
+            _chatMessages.Add(chatMessage);
             return Ok(new { Message = "Request Completed" });
         }
     }

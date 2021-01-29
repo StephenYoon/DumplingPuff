@@ -1,11 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SocialUser } from 'angularx-social-login';
 import { SignalRService } from '../services/signal-r.service';
-import { CustomAuthService } from '../services/custom-auth.service';
 import { AppSettingsService } from '../services/app-settings.service';
+import { ChatService } from '../services/chat.service';
+import { CustomAuthService } from '../services/custom-auth.service';
 import { AppSettings } from '../models/app-settings.model';
 import { ChatMessage } from '../models/chat-message.model';
 
@@ -16,6 +16,7 @@ import { ChatMessage } from '../models/chat-message.model';
 })
 export class CounterComponent implements OnInit {
   appSettings: AppSettings | undefined;
+  chatHistory: ChatMessage[] = [];
   chatMessage: string;
   user: SocialUser;
 
@@ -23,11 +24,11 @@ export class CounterComponent implements OnInit {
   @ViewChild('chatInputBox', { read: ElementRef }) public chatInputBox: ElementRef<any>;
   
   constructor(
-    public signalRService: SignalRService, 
     private router: Router,
-    private authService: CustomAuthService,
     private appSettingsService: AppSettingsService,
-    private http: HttpClient) { }
+    public signalRService: SignalRService, 
+    private authService: CustomAuthService,
+    private chatService: ChatService) { }
 
   ngOnInit() {
     this.appSettingsService.appSettings.subscribe(appSettings => {
@@ -35,22 +36,11 @@ export class CounterComponent implements OnInit {
     })
 
     this.authService.getCurrentUser().subscribe((data) => {
-      this.user = data;      
-
-      if (!this.user) {
-        /*
-        this.user = new SocialUser;
-        this.user.email = "guest@gmail.com";
-        this.user.name = "Guest";
-        this.user.firstName = "Guest";
-        this.user.lastName = "";
-        this.user.photoUrl = "https://static.wikia.nocookie.net/food-fantasy/images/9/98/FA-Green_Dumpling.png/revision/latest/top-crop/width/360/height/450?cb=20181130145704";
-        */
-      }
+      this.user = data;
     });
     
     if (!this.user) {
-      alert("Please log in first.");
+      alert("Please log in first, thanks!.");
       this.router.navigate(['home']);
     }
 
@@ -58,24 +48,16 @@ export class CounterComponent implements OnInit {
     this.chatInputBox.nativeElement.focus();
   }
 
-  public chatClick() {
-    
+  public chatClick() {    
     if (this.chatMessage == ''){
       return;
     }
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    }); 
-    var options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
-
     var apiChatMessage = new ChatMessage();
     apiChatMessage.user = this.user;
     apiChatMessage.message = this.chatMessage;
-    this.http.post<string>(this.appSettings.baseApiUrl + '/api/chat', apiChatMessage,  {headers: headers})
-      .subscribe(res => {
-        console.log(res);
-      })
+    
+    this.chatService.postChatMessage(apiChatMessage);
 
     this.chatMessage = '';
     this.scrollBottom();
