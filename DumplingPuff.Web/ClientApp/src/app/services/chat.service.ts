@@ -10,9 +10,11 @@ const apiPath = 'api/chat';
   providedIn: 'root'
 })
 export class ChatService {
-  private _chatHistory$: BehaviorSubject<ChatMessage[]>; // TODO: coming soon...
+  chatHistory$: BehaviorSubject<ChatMessage[]>;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    this.chatHistory$ = new BehaviorSubject<ChatMessage[]>([]);
+  }
 
   get(): Observable<string> {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
@@ -23,12 +25,11 @@ export class ChatService {
       }));
   }
 
-  // TODO: coming soon...
   getChatHistory(): Observable<ChatMessage[]> {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
     return this.http.get<ChatMessage[]>(apiPath + '/history',  options)
       .pipe(map(chatHistory => {
-          this._chatHistory$.next(chatHistory);
+          this.chatHistory$.next(chatHistory);
           return chatHistory;
       }));
   }
@@ -38,6 +39,14 @@ export class ChatService {
     this.http.post<string>(apiPath, chatMessage,  options)
       .subscribe(res => {
         //console.log(res);
+      })
+  }
+  
+  deleteChatHistory(): void {
+    var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
+    this.http.delete<string>(apiPath,  options)
+      .subscribe(res => {
+        console.log(res);
       })
   }
 }

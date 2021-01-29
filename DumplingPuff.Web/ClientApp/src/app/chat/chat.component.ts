@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SocialUser } from 'angularx-social-login';
 import { SignalRService } from '../services/signal-r.service';
@@ -16,6 +16,7 @@ import { ChatMessage } from '../models/chat-message.model';
 })
 export class ChatComponent implements OnInit {
   appSettings: AppSettings | undefined;
+  clearChatHistory: string;
   chatHistory: ChatMessage[] = [];
   chatMessage: string;
   user: SocialUser;
@@ -24,13 +25,18 @@ export class ChatComponent implements OnInit {
   @ViewChild('chatInputBox', { read: ElementRef }) public chatInputBox: ElementRef<any>;
   
   constructor(
+    private route: ActivatedRoute,
     private router: Router,
     private appSettingsService: AppSettingsService,
-    public signalRService: SignalRService, 
     private authService: CustomAuthService,
-    private chatService: ChatService) { }
+    public chatService: ChatService) { }
 
   ngOnInit() {
+    this.clearChatHistory = this.route.snapshot.paramMap.get('clearChatHistory');
+    if (!!this.clearChatHistory && this.clearChatHistory.toLocaleLowerCase() == 'true'){
+      this.chatService.deleteChatHistory();
+    }
+
     this.appSettingsService.appSettings.subscribe(appSettings => {
       this.appSettings = appSettings;
       this.chatInputBox.nativeElement.focus();
@@ -56,6 +62,7 @@ export class ChatComponent implements OnInit {
     var apiChatMessage = new ChatMessage();
     apiChatMessage.user = this.user;
     apiChatMessage.message = this.chatMessage;
+    apiChatMessage.dateSent = new Date();
     
     this.chatService.postChatMessage(apiChatMessage);
 

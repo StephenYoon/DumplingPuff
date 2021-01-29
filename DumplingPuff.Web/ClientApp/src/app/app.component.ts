@@ -10,10 +10,8 @@ import { AppSettings } from './models/app-settings.model';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
-  
+export class AppComponent implements OnInit {  
   appSettings: AppSettings | undefined;
-  currentCount = 0;
   chatMessage: string;
   user: SocialUser;
   
@@ -27,7 +25,8 @@ export class AppComponent implements OnInit {
       this.appSettings = appSettings;
       
       this.signalRService.startConnection(this.appSettings.baseApiUrl);
-      this.signalRService.messageListener();
+      this.signalRService.chatMessageListener();
+      this.signalRService.chatHistoryListener();
       this.startHttpRequest();
     })
   }
@@ -35,8 +34,7 @@ export class AppComponent implements OnInit {
   private startHttpRequest = () => {
     this.http.get(this.appSettings.baseApiUrl + '/api/chat')
       .subscribe(res => {
-        console.log(res);
+        console.log('Started listening: ' + res);
       })
   }
-
 }

@@ -21,10 +21,10 @@
     <div class="row mt-2">
       <div class="col-sm">
         <div class="chat-history border-1" #scroll>
-          <ul class="list-group" *ngIf='signalRService.chatHistory'>
+          <ul class="list-group" *ngIf='chatService.chatHistory$ | async'>
             <li 
               class="list-group-item" 
-              *ngFor="let chatItem of signalRService.chatHistory"
+              *ngFor="let chatItem of chatService.chatHistory$ | async"
             >
               <img class="card-img-top product-image rounded-circle" [src]="chatItem.user.photoUrl" alt="Card image cap">
               {{chatItem?.user?.firstName}}: {{chatItem.message}}

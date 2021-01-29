@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DumplingPuff.Web.Models.Configuration;
 using DumplingPuff.Web.Hubs;
+using DumplingPuff.Web.Services;
 
 namespace DumplingPuff.Web
 {
@@ -27,6 +28,7 @@ namespace DumplingPuff.Web
             settings.AuthenticationGoogleClientId = Configuration.GetValue<string>("Authentication:Google:ClientId");
             settings.BaseApiUrl = Configuration.GetValue<string>("BaseApiUrl");
             services.AddSingleton<IAppSettings>(t => settings);
+            services.AddSingleton<IChatHistoryService, ChatHistoryService>();
 
             /*
              * By not passing a parameter to AddAzureSignalR(), this code uses the default configuration key 
