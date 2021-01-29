@@ -25,7 +25,7 @@ namespace DumplingPuff.Web.Controllers
         public IActionResult Get()
         {
             //_hub.Clients.All.SendAsync("broadcastMessage", new ChatMessage { User = new SocialUser(), Message = "Hi :)" });
-            return Ok(new { Message = "Request Completed" });
+            return Ok(new { Message = $"GET Request Completed at {DateTime.Now.ToLongDateString()}" });
         }
 
         [HttpGet("history")]
@@ -39,7 +39,7 @@ namespace DumplingPuff.Web.Controllers
         {
             _hub.Clients.All.SendAsync("broadcastMessage", chatMessage);
             _chatMessages.Add(chatMessage);
-            return Ok(new { Message = "Request Completed" });
+            return Ok(new { Message = "POST Request Completed at {DateTime.Now.ToLongDateString()}" });
         }
     }
 }
