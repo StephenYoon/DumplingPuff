@@ -28,7 +28,7 @@ export class ChatService {
       'Content-Type': 'application/json'
     }); 
 
-    return this.http.get<string>(this.appSettings.baseApiUrl + '/api/chat',  {headers: headers})
+    return this.http.get<string>('api/chat',  {headers: headers})
       .pipe(map(res => {
           console.log(res);
           return res;
