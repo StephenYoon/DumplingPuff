@@ -1,6 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable , BehaviorSubject } from 'rxjs';
-//import { LocalStorage } from '@ngx-pwa/local-storage';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { catchError, groupBy } from 'rxjs/operators';

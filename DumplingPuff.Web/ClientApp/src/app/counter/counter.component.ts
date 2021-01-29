@@ -62,10 +62,6 @@ export class CounterComponent implements OnInit {
     this.chatMessage = '';
     this.scrollBottom();
     this.chatInputBox.nativeElement.focus();
-
-    this.chatService.get().subscribe(res => {
-      console.log(res);
-    });
   }
 
   public scrollBottom() {

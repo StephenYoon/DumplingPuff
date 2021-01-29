@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ChatMessage } from '../models/chat-message.model';
-import { AppSettingsService } from './app-settings.service';
 import { map } from 'rxjs/operators';
 
 const apiPath = 'api/chat';
@@ -19,7 +18,7 @@ export class ChatService {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
     return this.http.get<string>(apiPath, options)
       .pipe(map(res => {
-          console.log(res);
+          //console.log(res);
           return res;
       }));
   }
@@ -38,7 +37,7 @@ export class ChatService {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
     this.http.post<string>(apiPath, chatMessage,  options)
       .subscribe(res => {
-        console.log(res);
+        //console.log(res);
       })
   }
 }
