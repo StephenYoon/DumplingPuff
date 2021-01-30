@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { SocialAuthService } from 'angularx-social-login';
 import { SocialUser } from 'angularx-social-login';
 import {
   GoogleLoginProvider,
@@ -10,10 +9,10 @@ import {
   VKLoginProvider,
   MicrosoftLoginProvider
 } from 'angularx-social-login';
-import { AppSettings } from '../models/app-settings.model';
+import { AppSettings } from '../../models/app-settings.model';
 
-import { AppSettingsService } from '../services/app-settings.service';
-import { CustomAuthService } from '../services/custom-auth.service';
+import { AppSettingsService } from '../../services/app-settings.service';
+import { CustomAuthService } from '../../services/custom-auth.service';
 
 @Component({
   selector: 'app-login',
