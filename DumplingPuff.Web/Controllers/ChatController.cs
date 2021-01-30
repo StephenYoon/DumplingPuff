@@ -14,13 +14,11 @@ namespace DumplingPuff.Web.Controllers
     public class ChatController : ControllerBase
     {
         private IHubContext<ChatHub> _hub;
-        private List<ChatMessage> _chatMessages;
         private IChatHistoryService _chatHistoryService;
 
         public ChatController(IHubContext<ChatHub> hub, IChatHistoryService chatHistoryService)
         {
             _hub = hub;
-            _chatMessages = new List<ChatMessage>();
             _chatHistoryService = chatHistoryService;
         }
 
@@ -28,7 +26,7 @@ namespace DumplingPuff.Web.Controllers
         public IActionResult Get()
         {
             //_hub.Clients.All.SendAsync("broadcastMessage", new ChatMessage { User = new SocialUser(), Message = "Hi :)" });
-            return Ok(new { Message = $"GET Request Completed at {DateTime.Now.ToLongDateString()}" });
+            return Ok(new { Message = $"GET {this.GetType().Name} Request Completed at {DateTime.Now.ToLongDateString()}" });
         }
 
         [HttpGet("history")]
@@ -46,7 +44,7 @@ namespace DumplingPuff.Web.Controllers
             var broadcastContent = _chatHistoryService.Get();
             _hub.Clients.All.SendAsync("broadcastChatHistory", broadcastContent);
 
-            return Ok(new { Message = "POST Request Completed at {DateTime.Now.ToLongDateString()}" });
+            return Ok(new { Message = $"POST {this.GetType().Name} Request Completed at {DateTime.Now.ToLongDateString()}" });
         }
 
         [HttpDelete]
@@ -56,7 +54,7 @@ namespace DumplingPuff.Web.Controllers
             var broadcastContent = _chatHistoryService.Get();
             _hub.Clients.All.SendAsync("broadcastChatHistory", broadcastContent);
 
-            return Ok(new { Message = "DELETE Request Completed at {DateTime.Now.ToLongDateString()}" });
+            return Ok(new { Message = $"DELETE {this.GetType().Name} Completed at {DateTime.Now.ToLongDateString()}" });
         }
     }
 }

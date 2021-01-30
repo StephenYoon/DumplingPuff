@@ -3,21 +3,19 @@ import { Observable , BehaviorSubject } from 'rxjs';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { catchError, groupBy } from 'rxjs/operators';
-
-import { UserService } from './user.service';
-import { User } from '../models/user.model';
+import { SocialUser } from 'angularx-social-login';
+import { CustomAuthService } from './custom-auth.service';
 
 @Injectable()
 export class AuthUserService implements OnDestroy {
 
-  private user: User;
-  private errorMessage: string;
+  private user: SocialUser;
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: CustomAuthService) { }
 
   // store the session and call http get
   login(id: number) {
-    return this.userService.getUser(id).pipe(
+    return this.userService.getCurrentUser().pipe(
       map((user) => {
         this.user = user;
         localStorage.setItem('user', JSON.stringify(this.user));
@@ -25,7 +23,6 @@ export class AuthUserService implements OnDestroy {
         return true;
       }),
       catchError((error) => {
-        this.errorMessage = <any>error;
         return of(false);
       })
     );

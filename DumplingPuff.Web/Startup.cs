@@ -28,7 +28,10 @@ namespace DumplingPuff.Web
             settings.AuthenticationGoogleClientId = Configuration.GetValue<string>("Authentication:Google:ClientId");
             settings.BaseApiUrl = Configuration.GetValue<string>("BaseApiUrl");
             services.AddSingleton<IAppSettings>(t => settings);
+
+            // Services
             services.AddSingleton<IChatHistoryService, ChatHistoryService>();
+            services.AddSingleton<ISignedInUserService, SignedInUserService>();
 
             /*
              * By not passing a parameter to AddAzureSignalR(), this code uses the default configuration key 
