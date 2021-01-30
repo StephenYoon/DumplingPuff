@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpRequest } from '@angular/common/http'; 
 import { BehaviorSubject, Observable } from 'rxjs';
-import { AppSettings } from '../models/app-settings.model';
 import { map } from 'rxjs/operators';
+
+import { AppSettings } from '../models/app-settings.model';
 
 const apiPath = 'api/AppSettings';
 

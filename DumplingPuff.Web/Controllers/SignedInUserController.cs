@@ -29,7 +29,7 @@ namespace DumplingPuff.Web.Controllers
             return Ok(users);
         }
 
-        [HttpGet]
+        [HttpGet("{email}")]
         public IActionResult GetByEmail(string email)
         {
             var user = _signedInUserService.GetByEmail(email);

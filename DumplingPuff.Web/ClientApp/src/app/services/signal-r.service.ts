@@ -7,7 +7,6 @@ import { ChatService } from './chat.service';
   providedIn: 'root'
 })
 export class SignalRService {
-  public data: ChatMessage;
   private hubConnection: signalR.HubConnection
 
   constructor(private chatService: ChatService) { }  
@@ -23,25 +22,26 @@ export class SignalRService {
       .catch(err => console.log('Error while starting connection: ' + err))
   }
   
-  public chatMessageListener = () => {
-    this.hubConnection.on('broadcastChatMessage', (data) => {
-      this.data = data;
-      console.log(data);
-    });
-  }
 
   public chatHistoryListener = () => {
     this.hubConnection.on('broadcastChatHistory', (chatHistory) => {
-      //console.log(chatHistory);
       this.chatService.chatHistory$.next(chatHistory);
     });
   }
 
   // NOTE: not sure about this one
+  /*
   public chatMessageBroadcast = (message: string) => {
     this.hubConnection.invoke('broadcastChatMessage', message)
       .catch(err => {
         console.error(err)
+    });
+  }
+  */
+ 
+  public signedInUserListener = () => {
+    this.hubConnection.on('broadcastSignedInUsers', (data) => {
+      console.log(data);
     });
   }
 }

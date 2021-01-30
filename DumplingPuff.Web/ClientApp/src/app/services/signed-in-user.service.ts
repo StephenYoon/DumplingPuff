@@ -2,22 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { SocialUser } from 'angularx-social-login';
 
-import { ChatMessage } from '../models/chat-message.model';
-
-const apiPath = 'api/chat';
+const apiPath = 'api/signedInUser';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ChatService {
-  chatHistory$: BehaviorSubject<ChatMessage[]>;
+export class SignedInUserService {
+  signedInUsers$: BehaviorSubject<SocialUser[]>;
 
   constructor(private http: HttpClient) {
-    this.chatHistory$ = new BehaviorSubject<ChatMessage[]>([]);
+    this.signedInUsers$ = new BehaviorSubject<SocialUser[]>([]);
   }
-
-  get(): Observable<string> {
+  
+  getUsers(): Observable<string> {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
     return this.http.get<string>(apiPath, options)
       .pipe(map(res => {
@@ -26,24 +25,24 @@ export class ChatService {
       }));
   }
 
-  getChatHistory(): Observable<ChatMessage[]> {
+  getUserByEmail(email: string): Observable<SocialUser[]> {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    return this.http.get<ChatMessage[]>(`${apiPath}/history`,  options)
-      .pipe(map(chatHistory => {
-          this.chatHistory$.next(chatHistory);
-          return chatHistory;
+    return this.http.get<SocialUser[]>(`${apiPath}/${email}`,  options)
+      .pipe(map(users => {
+          this.signedInUsers$.next(users);
+          return users;
       }));
   }
 
-  postChatMessage(chatMessage: ChatMessage): void {
+  addtUser(user: SocialUser): void {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    this.http.post<string>(apiPath, chatMessage,  options)
+    this.http.post<string>(apiPath, user,  options)
       .subscribe(res => {
-        //console.log(res);
+        console.log(res);
       })
   }
   
-  deleteChatHistory(): void {
+  clearSignedInUsers(): void {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
     this.http.delete<string>(apiPath,  options)
       .subscribe(res => {

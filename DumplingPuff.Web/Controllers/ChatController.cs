@@ -38,8 +38,6 @@ namespace DumplingPuff.Web.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] ChatMessage chatMessage)
         {
-            _hub.Clients.All.SendAsync("broadcastChatMessage", chatMessage);
-
             _chatHistoryService.Add(chatMessage);
             var broadcastContent = _chatHistoryService.Get();
             _hub.Clients.All.SendAsync("broadcastChatHistory", broadcastContent);

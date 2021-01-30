@@ -25,8 +25,8 @@ export class AppComponent implements OnInit {
       this.appSettings = appSettings;
       
       this.signalRService.startConnection(this.appSettings.baseApiUrl);
-      this.signalRService.chatMessageListener();
       this.signalRService.chatHistoryListener();
+      this.signalRService.signedInUserListener();
       this.startHttpRequest();
     })
   }
