@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as signalR from "@microsoft/signalr";  // or from "@aspnet/signalr" if you are using an older library
-import { ChatMessage } from '../models/chat-message.model';
+
 import { ChatService } from './chat.service';
+import { SignedInUserService } from './signed-in-user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,10 @@ import { ChatService } from './chat.service';
 export class SignalRService {
   private hubConnection: signalR.HubConnection
 
-  constructor(private chatService: ChatService) { }  
+  constructor(
+    private chatService: ChatService,
+    private signedInUserService: SignedInUserService
+  ) { }  
   
   public startConnection = (baseApiUrl: string) => {
     this.hubConnection = new signalR.HubConnectionBuilder()
@@ -24,8 +28,8 @@ export class SignalRService {
   
 
   public chatHistoryListener = () => {
-    this.hubConnection.on('broadcastChatHistory', (chatHistory) => {
-      this.chatService.chatHistory$.next(chatHistory);
+    this.hubConnection.on('broadcastChatHistory', (data) => {
+      this.chatService.chatHistory$.next(data);
     });
   }
 
@@ -38,10 +42,11 @@ export class SignalRService {
     });
   }
   */
- 
+
   public signedInUserListener = () => {
     this.hubConnection.on('broadcastSignedInUsers', (data) => {
-      console.log(data);
+      console.log(`broadcastSignedInUsers: ${data}`);
+      this.signedInUserService.users$ = data;
     });
   }
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { SocialUser } from 'angularx-social-login';
 import {
@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
 
   appSettings: AppSettings | undefined;
   user: SocialUser | undefined;
-  user$: Observable<SocialUser>;
+  user$: BehaviorSubject<SocialUser>;
   GoogleLoginProvider = GoogleLoginProvider;
 
   constructor(

@@ -2,7 +2,6 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SocialUser } from 'angularx-social-login';
-import { SignalRService } from '../../services/signal-r.service';
 import { AppSettingsService } from '../../services/app-settings.service';
 import { ChatService } from '../../services/chat.service';
 import { CustomAuthService } from '../../services/custom-auth.service';

@@ -15,6 +15,8 @@ import {
   MicrosoftLoginProvider
 } from 'angularx-social-login';
 
+import { SignedInUserService } from './signed-in-user.service';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -24,6 +26,7 @@ export class CustomAuthService implements OnDestroy {
 
   constructor(
     public authService: SocialAuthService,
+    public signedInUserService: SignedInUserService,
     public router: Router,
     public ngZone: NgZone // NgZone service to remove outside scope warning
   ) {
@@ -33,13 +36,12 @@ export class CustomAuthService implements OnDestroy {
     this.authService.authState.subscribe(user => {
       if (user) {
         this.userData = user;
-        localStorage.setItem('user', JSON.stringify(this.userData));
         this.userData$.next(user);
-        //JSON.parse(localStorage.getItem('user'));
+        localStorage.setItem('user', JSON.stringify(this.userData));
+        this.signedInUserService.addUser(user);
       } else {
         localStorage.setItem('user', null);
         this.userData$.next(null);
-        //JSON.parse(localStorage.getItem('user'));
       }
     });
   }

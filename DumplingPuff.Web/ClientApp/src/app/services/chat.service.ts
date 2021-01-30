@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ChatMessage } from '../models/chat-message.model';
+import { SocialUser } from 'angularx-social-login';
 
 const apiPath = 'api/chat';
 
@@ -12,9 +13,11 @@ const apiPath = 'api/chat';
 })
 export class ChatService {
   chatHistory$: BehaviorSubject<ChatMessage[]>;
+  userHistory$: BehaviorSubject<SocialUser[]>;
 
   constructor(private http: HttpClient) {
     this.chatHistory$ = new BehaviorSubject<ChatMessage[]>([]);
+    this.userHistory$ = new BehaviorSubject<SocialUser[]>([]);
   }
 
   get(): Observable<string> {

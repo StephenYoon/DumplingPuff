@@ -10,15 +10,15 @@ const apiPath = 'api/signedInUser';
   providedIn: 'root'
 })
 export class SignedInUserService {
-  signedInUsers$: BehaviorSubject<SocialUser[]>;
+  users$: BehaviorSubject<SocialUser[]>;
 
   constructor(private http: HttpClient) {
-    this.signedInUsers$ = new BehaviorSubject<SocialUser[]>([]);
+    this.users$ = new BehaviorSubject<SocialUser[]>([]);
   }
   
-  getUsers(): Observable<string> {
+  getUsers(): Observable<SocialUser[]> {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    return this.http.get<string>(apiPath, options)
+    return this.http.get<SocialUser[]>(apiPath, options)
       .pipe(map(res => {
           //console.log(res);
           return res;
@@ -29,12 +29,12 @@ export class SignedInUserService {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
     return this.http.get<SocialUser[]>(`${apiPath}/${email}`,  options)
       .pipe(map(users => {
-          this.signedInUsers$.next(users);
+          this.users$.next(users);
           return users;
       }));
   }
 
-  addtUser(user: SocialUser): void {
+  addUser(user: SocialUser): void {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
     this.http.post<string>(apiPath, user,  options)
       .subscribe(res => {

@@ -39,8 +39,12 @@ namespace DumplingPuff.Web.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] SocialUser user)
         {
-            _signedInUserService.Add(user);
             var users = _signedInUserService.Get();
+            if (!users.Select(u => u.Email).Any(email => email.ToLowerInvariant() == user.Email.ToLowerInvariant()))
+            {
+                _signedInUserService.Add(user);
+            }
+
             _hub.Clients.All.SendAsync("broadcastSignedInUsers", users);
 
             return Ok(new { Message = $"POST {this.GetType().Name} Request Completed at {DateTime.Now.ToLongDateString()}" });

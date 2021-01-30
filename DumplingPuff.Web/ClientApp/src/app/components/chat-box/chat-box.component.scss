@@ -67,6 +67,10 @@ body{margin-top:20px;}
     display: flex;
     -ms-flex-direction: column;
     flex-direction: column;
+    
+    height: 300px;
+    overflow: hidden;
+    overflow-y: scroll;
 }
 
 
@@ -196,7 +200,12 @@ body{margin-top:20px;}
 
 .chat-container {
     position: relative;
-    padding: 1rem;
+    padding: 1rem;    
+    
+    height: 400px;
+    overflow: hidden;
+    overflow-y: scroll;
+    padding-bottom: 50px;
 }
 
 .chat-container li.chat-left,
