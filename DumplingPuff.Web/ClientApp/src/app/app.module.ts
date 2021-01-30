@@ -5,10 +5,11 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
-import { HomeComponent } from './components/home/home.component';
 import { ChatComponent } from './components/chat/chat.component';
+import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { FetchDataComponent } from './components/fetch-data/fetch-data.component';
 
 import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
@@ -23,10 +24,11 @@ import {
 @NgModule({
   declarations: [
     AppComponent,
+    HomeComponent,
     LoginComponent,
     NavMenuComponent,
-    HomeComponent,
     ChatComponent,
+    ChatBoxComponent,
     FetchDataComponent
   ],
   imports: [

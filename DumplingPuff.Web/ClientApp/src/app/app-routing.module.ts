@@ -3,12 +3,14 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { HomeComponent } from './components/home/home.component';
 import { ChatComponent } from './components/chat/chat.component';
+import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { FetchDataComponent } from './components/fetch-data/fetch-data.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent, pathMatch: 'full' },
   { path: '', pathMatch: 'full', redirectTo: 'home' },
   { path: 'chat', component: ChatComponent },
+  { path: 'chatbox', component: ChatBoxComponent },
   { path: 'fetch-data', component: FetchDataComponent },
 ];
 
