@@ -70,7 +70,7 @@
                   *ngFor="let chatItem of chatService.chatHistory$ | async"
                   >
                   <div class="chat-avatar">
-                    <img [src]="chatItem.user.photoUrl" alt="Retail Admin">
+                    <img [src]="chatItem.user.photoUrl">
                     <div class="chat-name">{{chatItem?.user?.firstName}}</div>
                   </div>
                   <div class="chat-text">

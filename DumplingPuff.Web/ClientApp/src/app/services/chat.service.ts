@@ -32,7 +32,6 @@ export class ChatService {
   getChatHistory(): Observable<ChatMessage[]> {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
 
-    // NOTE: this below doesn't really work, Web API doesn't get hit.
     return this.http.get<ChatMessage[]>(`${apiPath}/history`,  options)
       .pipe(map(chatHistory => {
           this.chatHistory$.next(chatHistory);

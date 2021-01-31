@@ -121,7 +121,6 @@ body{margin-top:20px;}
 .users .person .user .status {
     width: 10px;
     height: 10px;
-    padding-left: 3px;
     -webkit-border-radius: 100px;
     -moz-border-radius: 100px;
     border-radius: 100px;
@@ -214,12 +213,12 @@ body{margin-top:20px;}
     display: flex;
     flex: 1;
     flex-direction: row;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
 }
 
 .chat-container li img {
-    width: 48px;
-    height: 48px;
+    width: 30px;
+    height: 30px;
     -webkit-border-radius: 30px;
     -moz-border-radius: 30px;
     border-radius: 30px;
@@ -284,12 +283,13 @@ body{margin-top:20px;}
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    margin: 0 0 0 15px;
+    margin: 0 0 0 10px;
 }
 
 .chat-container li .chat-hour > span {
     font-size: 16px;
     color: #9ec94a;
+    padding-left: 3px;
 }
 
 .chat-container li.chat-right > .chat-hour {
