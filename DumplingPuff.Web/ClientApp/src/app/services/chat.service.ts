@@ -22,36 +22,26 @@ export class ChatService {
 
   get(): Observable<string> {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    return this.http.get<string>(apiPath, options)
-      .pipe(map(res => {
-          //console.log(res);
-          return res;
-      }));
+    return this.http.get<string>(apiPath, options);
   }
 
   getChatHistory(): Observable<ChatMessage[]> {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
 
     return this.http.get<ChatMessage[]>(`${apiPath}/history`,  options)
-      .pipe(map(chatHistory => {
-          this.chatHistory$.next(chatHistory);
-          return chatHistory;
+      .pipe(map(data => {
+          this.chatHistory$.next(data);
+          return data;
       }));
   }
 
   postChatMessage(chatMessage: ChatMessage): Observable<string> {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    return this.http.post<string>(apiPath, chatMessage,  options)      
-      .pipe(map(res => {
-        return res;
-    }));
+    return this.http.post<string>(apiPath, chatMessage,  options);
   }
   
-  deleteChatHistory(): void {
+  deleteChatHistory(): Observable<string> {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    this.http.delete<string>(apiPath,  options)
-      .subscribe(res => {
-        console.log(res);
-      })
+    return this.http.delete<string>(apiPath,  options);
   }
 }

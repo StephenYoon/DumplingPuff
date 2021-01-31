@@ -20,8 +20,6 @@ import * as moment from 'moment';
 })
 export class ChatBoxComponent implements OnInit {
   appSettings: AppSettings;
-  clearChatHistory: string;  
-  chatHistory: ChatMessage[] = [];
   chatMessage: string = '';
   userSearch: string = '';
   user: SocialUser;
@@ -39,12 +37,7 @@ export class ChatBoxComponent implements OnInit {
     public chatService: ChatService,
     public signedInUserService: SignedInUserService) { }
 
-    ngOnInit() {
-      this.clearChatHistory = this.route.snapshot.paramMap.get('clearChatHistory');
-      if (!!this.clearChatHistory && this.clearChatHistory.toLocaleLowerCase() == 'true'){
-        this.chatService.deleteChatHistory();
-      }
-  
+    ngOnInit() {  
       this.appSettingsService.appSettings.subscribe(appSettings => {
         this.appSettings = appSettings;
       })
@@ -58,7 +51,6 @@ export class ChatBoxComponent implements OnInit {
       });
 
       this.chatService.getChatHistory().subscribe((data) => {
-        this.chatHistory = data;
         this.scrollBottom();
       });
       
