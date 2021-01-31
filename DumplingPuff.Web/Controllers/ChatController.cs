@@ -32,6 +32,8 @@ namespace DumplingPuff.Web.Controllers
         [HttpGet("history")]
         public IActionResult GetHistory()
         {
+            var broadcastContent = _chatHistoryService.Get();
+            _hub.Clients.All.SendAsync("broadcastChatHistory", broadcastContent);
             return Ok(_chatHistoryService.Get(1));
         }
 
