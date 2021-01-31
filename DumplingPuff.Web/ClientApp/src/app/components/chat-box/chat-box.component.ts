@@ -10,7 +10,7 @@ import { SignedInUserService } from 'src/app/services/signed-in-user.service';
 
 import { AppSettings } from '../../models/app-settings.model';
 import { ChatMessage } from '../../models/chat-message.model';
-import { switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import * as moment from 'moment';
 
 @Component({
@@ -23,8 +23,9 @@ export class ChatBoxComponent implements OnInit {
   chatMessage: string = '';
   userSearch: string = '';
   user: SocialUser;
-  users: SocialUser[] = [];
+  signedInUsers: SocialUser[] = [];
   selectedUsers: SocialUser[] = [];
+  chatUsers: SocialUser[] = [];
 
   @ViewChild('chatContainerScroll', { read: ElementRef }) public scroll: ElementRef<any>;
   @ViewChild('chatInputBox', { read: ElementRef }) public chatInputBox: ElementRef<any>;
@@ -47,11 +48,24 @@ export class ChatBoxComponent implements OnInit {
       });
       
       this.signedInUserService.getUsers().subscribe((data) =>{
-        this.users = data;
+        this.signedInUsers = data;
       });
 
       this.chatService.getChatHistory().subscribe((data) => {
         this.scrollBottom();
+      });
+
+      this.chatService.chatHistory$.subscribe(chatHistory => {
+        var users = chatHistory.map(c => c.user);
+        users.forEach(user => {
+          var exists = this.chatUsers.filter(u => {
+            return u.email.toLowerCase() == user.email.toLowerCase();
+          });
+
+          if (!exists || exists.length == 0){
+            this.chatUsers.push(user);
+          }
+        });
       });
       
       if (!this.user) {
@@ -77,11 +91,11 @@ export class ChatBoxComponent implements OnInit {
     public filteredUsers(): SocialUser[] {
 
       if (!this.userSearch || this.userSearch.trim() == '') {
-        return this.users;
+        return this.chatUsers;
       }
 
       var lowerCaseSearchTerm = this.userSearch.toLowerCase();
-      var filteredList = this.users.filter(user => {
+      var filteredList = this.chatUsers.filter(user => {
          return user.name.toLowerCase().includes(lowerCaseSearchTerm);
       });
 

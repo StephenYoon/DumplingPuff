@@ -28,12 +28,14 @@
       <h4 class="card-title">{{ user.name }}</h4>
       <p class="card-text">{{ user.email }}</p>
       <p class="card-text">Logged in with {{ user.provider }}</p>
-    </div>
-    <div class="card-block">
       <button class="btn btn-danger" (click)="signOut()">Sign out</button>
-    </div>
-    <div class="card-block" *ngIf="user.provider === GoogleLoginProvider.PROVIDER_ID">
-      <button class="btn" (click)="refreshGoogleToken()">Refresh google token</button>
+      <button 
+        class="btn mt-3 mb-2"
+        (click)="refreshGoogleToken()"
+        *ngIf="user.provider === GoogleLoginProvider.PROVIDER_ID"
+      >
+        Refresh google token
+      </button>
     </div>
   </div>
 </div>
