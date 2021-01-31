@@ -58,17 +58,24 @@ export class ChatBoxComponent implements OnInit {
       });
 
       this.chatService.getChatHistory().subscribe((data) => {
-        this.chatInputBox.nativeElement.focus();
+        this.chatHistory = data;
+        this.scrollBottom();
       });
       
       if (!this.user) {
-        alert("Please log in first, thanks!.");
+        alert("Please log in first, thanks!");
         this.router.navigate(['home']);
       }
     }
 
     public getFormattedDateTime(dateValue: Date): string {
-      return moment(dateValue).format('llll');
+      var timeNow = moment(new Date());
+      var timeDiffInHours = timeNow.diff(dateValue, 'days');
+      if (timeDiffInHours <= 24) {
+        return moment(dateValue).format('LTS');
+      }
+      
+      return moment(dateValue).format('lll');
     }
   
     public getFormattedUserTime(): string {
@@ -112,13 +119,13 @@ export class ChatBoxComponent implements OnInit {
       
       this.chatService.postChatMessage(apiChatMessage).subscribe((data) => {
         this.scrollBottom();
-        this.chatInputBox.nativeElement.focus();
       });
   
       this.chatMessage = '';
     }
   
     public scrollBottom() {
+      this.chatInputBox.nativeElement.focus();
       this.scroll.nativeElement.scrollTop = this.scroll.nativeElement.scrollHeight;
       //this.scroll.nativeElement.scrollTop = this.scroll.nativeElement.scrollHeight - this.scroll.nativeElement.clientHeight;
     }
