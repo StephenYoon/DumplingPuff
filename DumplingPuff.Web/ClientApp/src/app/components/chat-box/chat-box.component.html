@@ -65,9 +65,9 @@
               <div class="chat-container" #chatContainerScroll>
                 <ul class="chat-box" *ngIf='chatService.chatHistory$ | async'>
                   <li 
-                  class="chat-left"
-                  [ngClass]="(chatItem.user.email==user.email)?'chat-left':'chat-right'"
-                  *ngFor="let chatItem of chatService.chatHistory$ | async"
+                    class="chat-left"
+                    [ngClass]="isChatLeft(chatItem.user)?'chat-left':'chat-right'"
+                    *ngFor="let chatItem of chatService.chatHistory$ | async"
                   >
                   <div class="chat-avatar">
                     <img [src]="chatItem.user.photoUrl">

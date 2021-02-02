@@ -102,6 +102,13 @@ export class ChatBoxComponent implements OnInit {
       return filteredList;
     }
 
+    public isChatLeft(chatUser: SocialUser): boolean {
+      var currentUserEmail = this.user.email.trim().toLowerCase();
+      var chatUserEmail = chatUser.email.trim().toLowerCase();
+
+      return currentUserEmail == chatUserEmail;
+    }
+
     // Add or remove toggled user
     public selectedUserClick(toggledUser: SocialUser): void {
       var filteredList = this.selectedUsers.filter(user => toggledUser.email.toLowerCase() == user.email.toLowerCase());
