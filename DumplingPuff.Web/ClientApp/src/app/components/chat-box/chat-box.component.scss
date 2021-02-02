@@ -276,7 +276,7 @@ body{margin-top:20px;}
 }
 
 .chat-container li .chat-hour {
-    padding: 0 0 15px 0;
+    padding: 0 0 0 0;
     margin-bottom: 10px;
     font-size: .75rem;
     display: flex;
@@ -293,7 +293,7 @@ body{margin-top:20px;}
 }
 
 .chat-container li.chat-right > .chat-hour {
-    margin: 0 15px 0 0;
+    margin: 0 0 0 15px;
 }
 
 @media (max-width: 767px) {
