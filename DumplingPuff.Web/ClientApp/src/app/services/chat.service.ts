@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { ApiService } from './api.service';
 import { ChatMessage } from '../models/chat-message.model';
 import { SocialUser } from 'angularx-social-login';
 
@@ -15,20 +16,23 @@ export class ChatService {
   chatHistory$: BehaviorSubject<ChatMessage[]>;
   userHistory$: BehaviorSubject<SocialUser[]>;
 
-  constructor(private http: HttpClient) {
+  user: SocialUser;
+  defaultHeaders: HttpHeaders;
+
+  constructor(
+    private apiService: ApiService,
+    private http: HttpClient
+  ) {
     this.chatHistory$ = new BehaviorSubject<ChatMessage[]>([]);
     this.userHistory$ = new BehaviorSubject<SocialUser[]>([]);
   }
 
   get(): Observable<string> {
-    var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    return this.http.get<string>(apiPath, options);
+    return this.apiService.get<string>(apiPath);
   }
 
   getChatHistory(): Observable<ChatMessage[]> {
-    var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-
-    return this.http.get<ChatMessage[]>(`${apiPath}/history`,  options)
+    return this.apiService.get<ChatMessage[]>(`${apiPath}/history`)
       .pipe(map(data => {
           this.chatHistory$.next(data);
           return data;
@@ -36,12 +40,10 @@ export class ChatService {
   }
 
   postChatMessage(chatMessage: ChatMessage): Observable<string> {
-    var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    return this.http.post<string>(apiPath, chatMessage,  options);
+    return this.apiService.post<string, ChatMessage>(apiPath, chatMessage);
   }
   
   deleteChatHistory(): Observable<string> {
-    var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    return this.http.delete<string>(apiPath,  options);
+    return this.apiService.delete<string, string>(apiPath, 'chatRoom');
   }
 }
