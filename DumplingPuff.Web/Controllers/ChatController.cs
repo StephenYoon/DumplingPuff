@@ -48,7 +48,7 @@ namespace DumplingPuff.Web.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete()
+        public IActionResult Delete(string chatRoom)
         {
             _chatHistoryService.Clear();
             var broadcastContent = _chatHistoryService.Get();
