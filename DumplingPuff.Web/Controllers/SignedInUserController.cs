@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.SignalR;
 using DumplingPuff.Web.Hubs;
 using DumplingPuff.Web.Models;
 using DumplingPuff.Web.Services;
+using DumplingPuff.Web.Attributes;
 
 namespace DumplingPuff.Web.Controllers
 {
+    [GoogleAuthorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SignedInUserController : ControllerBase

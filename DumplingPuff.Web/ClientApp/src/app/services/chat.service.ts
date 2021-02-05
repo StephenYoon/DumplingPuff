@@ -19,10 +19,7 @@ export class ChatService {
   user: SocialUser;
   defaultHeaders: HttpHeaders;
 
-  constructor(
-    private apiService: ApiService,
-    private http: HttpClient
-  ) {
+  constructor(private apiService: ApiService) {
     this.chatHistory$ = new BehaviorSubject<ChatMessage[]>([]);
     this.userHistory$ = new BehaviorSubject<SocialUser[]>([]);
   }
