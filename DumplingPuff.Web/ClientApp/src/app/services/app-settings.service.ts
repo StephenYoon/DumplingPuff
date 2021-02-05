@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { AppSettings } from '../models/app-settings.model';
+import { ApiService } from './api.service';
 
 const apiPath = 'api/AppSettings';
 
@@ -13,7 +14,7 @@ const apiPath = 'api/AppSettings';
 export class AppSettingsService {
     private _appSettings$: BehaviorSubject<AppSettings>;
 
-    constructor(private http: HttpClient) {      
+    constructor(private apiService: ApiService) {      
       this._appSettings$ = new BehaviorSubject<AppSettings>(JSON.parse(localStorage.getItem('appSettings')));
     }
 
@@ -22,7 +23,7 @@ export class AppSettingsService {
         mockAppSettings.authenticationGoogleClientId = "clientid";
         mockAppSettings.authenticationGoogleClientSecret = "clientsecret";
 
-        return this.http.get<AppSettings>(apiPath)
+        return this.apiService.get<AppSettings>(apiPath)
           .pipe(map(appSettings => {
               // store user details and jwt token in local storage to keep user logged in between page refreshes
               localStorage.setItem('appSettings', JSON.stringify(appSettings));

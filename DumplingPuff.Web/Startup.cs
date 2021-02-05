@@ -103,6 +103,7 @@ namespace DumplingPuff.Web
             app.UseRouting();
             app.UseFileServer();
 
+            app.UseAuthorization();
             app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>

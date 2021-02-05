@@ -90,16 +90,40 @@ export class ChatBoxComponent implements OnInit {
 
     public filteredUsers(): SocialUser[] {
 
+      // Get list of users from chat history
+      var fullUserList: SocialUser[] = [];
+      this.chatUsers.forEach(u => {
+        fullUserList.push(u);
+      });
+      
+      // Add signed-in users
+      this.signedInUsers.forEach(su => {
+        var exists = this.userExists(su, fullUserList);
+        if (!exists) {
+          fullUserList.push(su);
+        }
+      });
+
+      // Filter list if applicable
       if (!this.userSearch || this.userSearch.trim() == '') {
-        return this.chatUsers;
+        return fullUserList;
       }
 
       var lowerCaseSearchTerm = this.userSearch.toLowerCase();
-      var filteredList = this.chatUsers.filter(user => {
+      var filteredList = fullUserList.filter(user => {
          return user.name.toLowerCase().includes(lowerCaseSearchTerm);
       });
 
       return filteredList;
+    }
+
+    public userExists(user: SocialUser, userList: SocialUser[]): boolean {
+      var exists = false;
+      var filteredList = userList.filter(u => {
+        return user.email.toLowerCase() == u.email.toLowerCase();
+      });
+
+      return filteredList && filteredList.length > 0;
     }
 
     public isChatLeft(chatUser: SocialUser): boolean {

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DumplingPuff.Web.Models.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using DumplingPuff.Web.Attributes;
+using DumplingPuff.Web.Models.Configuration;
 
 namespace DumplingPuff.Web.Controllers
 {
+    [GoogleAuthorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AppSettingsController : Controller

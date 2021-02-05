@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SocialUser } from 'angularx-social-login';
+import { ApiService } from './api.service';
 
 const apiPath = 'api/signedInUser';
 
@@ -12,13 +13,13 @@ const apiPath = 'api/signedInUser';
 export class SignedInUserService {
   users$: BehaviorSubject<SocialUser[]>;
 
-  constructor(private http: HttpClient) {
+  constructor(private apiService: ApiService) {
     this.users$ = new BehaviorSubject<SocialUser[]>([]);
   }
   
   getUsers(): Observable<SocialUser[]> {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    return this.http.get<SocialUser[]>(apiPath, options)
+    return this.apiService.get<SocialUser[]>(apiPath)
       .pipe(map(res => {
           //console.log(res);
           return res;
@@ -27,7 +28,7 @@ export class SignedInUserService {
 
   getUserByEmail(email: string): Observable<SocialUser[]> {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    return this.http.get<SocialUser[]>(`${apiPath}/${email}`,  options)
+    return this.apiService.get<SocialUser[]>(`${apiPath}/${email}`)
       .pipe(map(users => {
           this.users$.next(users);
           return users;
@@ -36,7 +37,7 @@ export class SignedInUserService {
 
   addUser(user: SocialUser): void {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    this.http.post<string>(apiPath, user,  options)
+    this.apiService.post<string, SocialUser>(apiPath, user)
       .subscribe(res => {
         console.log(res);
       })
@@ -44,7 +45,7 @@ export class SignedInUserService {
   
   clearSignedInUsers(): void {
     var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    this.http.delete<string>(apiPath,  options)
+    this.apiService.delete<string, string>(apiPath, 'na')
       .subscribe(res => {
         console.log(res);
       })
