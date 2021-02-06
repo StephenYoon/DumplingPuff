@@ -30,7 +30,7 @@ namespace DumplingPuff.Web
             services.AddSingleton<IAppSettings>(t => settings);
 
             // Services
-            services.AddSingleton<IChatHistoryService, ChatHistoryService>();
+            services.AddSingleton<IChatService, ChatService>();
             services.AddSingleton<ISignedInUserService, SignedInUserService>();
 
             /*

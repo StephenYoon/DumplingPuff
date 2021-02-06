@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using DumplingPuff.Web.Hubs;
-using DumplingPuff.Web.Models;
+using DumplingPuff.Web.Models.Chat;
 using DumplingPuff.Web.Services;
 using DumplingPuff.Web.Attributes;
 
@@ -16,45 +16,38 @@ namespace DumplingPuff.Web.Controllers
     public class ChatController : ControllerBase
     {
         private IHubContext<ChatHub> _hub;
-        private IChatHistoryService _chatHistoryService;
+        private IChatService _chatService;
 
-        public ChatController(IHubContext<ChatHub> hub, IChatHistoryService chatHistoryService)
+        public ChatController(IHubContext<ChatHub> hub, IChatService chatService)
         {
             _hub = hub;
-            _chatHistoryService = chatHistoryService;
+            _chatService = chatService;
         }
 
-        [HttpGet]
-        public IActionResult Get()
+        [HttpGet("chatgroup/{groupId}")]
+        public IActionResult GetChatGroup(string groupId)
         {
-            //_hub.Clients.All.SendAsync("broadcastMessage", new ChatMessage { User = new SocialUser(), Message = "Hi :)" });
-            return Ok(new { Message = $"GET {this.GetType().Name} Request Completed at {DateTime.Now.ToLongDateString()}" });
+            var broadcastContent = _chatService.GetChatGroup(groupId);
+            _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+            return Ok(_chatService.GetChatGroup(groupId));
         }
 
-        [HttpGet("history")]
-        public IActionResult GetHistory()
+        [HttpPost("chatgroup/{groupId}")]
+        public IActionResult Post(string groupId, [FromBody] ChatMessage chatMessage)
         {
-            var broadcastContent = _chatHistoryService.Get();
-            _hub.Clients.All.SendAsync("broadcastChatHistory", broadcastContent);
-            return Ok(_chatHistoryService.Get(1));
-        }
-
-        [HttpPost]
-        public IActionResult Post([FromBody] ChatMessage chatMessage)
-        {
-            _chatHistoryService.Add(chatMessage);
-            var broadcastContent = _chatHistoryService.Get();
-            _hub.Clients.All.SendAsync("broadcastChatHistory", broadcastContent);
+            _chatService.AddChatMessageToGroup(groupId, chatMessage);
+            var broadcastContent = _chatService.GetChatGroup(groupId);
+            _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
 
             return Ok(new { Message = $"POST {this.GetType().Name} Request Completed at {DateTime.Now.ToLongDateString()}" });
         }
 
-        [HttpDelete]
-        public IActionResult Delete(string chatRoom)
+        [HttpDelete("chatgroup/{groupId}")]
+        public IActionResult Delete(string groupId)
         {
-            _chatHistoryService.Clear();
-            var broadcastContent = _chatHistoryService.Get();
-            _hub.Clients.All.SendAsync("broadcastChatHistory", broadcastContent);
+            _chatService.ClearChatGroupMessages(groupId);
+            var broadcastContent = _chatService.GetChatGroup(groupId);
+            _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
 
             return Ok(new { Message = $"DELETE {this.GetType().Name} Completed at {DateTime.Now.ToLongDateString()}" });
         }

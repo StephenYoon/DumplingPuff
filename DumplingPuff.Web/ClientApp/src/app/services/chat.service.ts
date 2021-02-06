@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
+import { ChatGroup } from '../models/chat-group.model';
 import { ChatMessage } from '../models/chat-message.model';
 import { SocialUser } from 'angularx-social-login';
 
@@ -13,34 +14,30 @@ const apiPath = 'api/chat';
   providedIn: 'root'
 })
 export class ChatService {
-  chatHistory$: BehaviorSubject<ChatMessage[]>;
+  chatGroup$: BehaviorSubject<ChatGroup>;
   userHistory$: BehaviorSubject<SocialUser[]>;
 
   user: SocialUser;
   defaultHeaders: HttpHeaders;
 
   constructor(private apiService: ApiService) {
-    this.chatHistory$ = new BehaviorSubject<ChatMessage[]>([]);
+    this.chatGroup$ = new BehaviorSubject<ChatGroup>(null);
     this.userHistory$ = new BehaviorSubject<SocialUser[]>([]);
   }
 
-  get(): Observable<string> {
-    return this.apiService.get<string>(apiPath);
-  }
-
-  getChatHistory(): Observable<ChatMessage[]> {
-    return this.apiService.get<ChatMessage[]>(`${apiPath}/history`)
+  getChatGroup(groupId: string): Observable<ChatGroup> {
+    return this.apiService.get<ChatGroup>(`${apiPath}/chatgroup/${groupId}`)
       .pipe(map(data => {
-          this.chatHistory$.next(data);
+          this.chatGroup$.next(data);
           return data;
       }));
   }
 
-  postChatMessage(chatMessage: ChatMessage): Observable<string> {
-    return this.apiService.post<string, ChatMessage>(apiPath, chatMessage);
+  postMessageToChatGroup(groupId: string, chatMessage: ChatMessage): Observable<string> {
+    return this.apiService.post<string, ChatMessage>(`${apiPath}/chatgroup/${groupId}`, chatMessage);
   }
   
-  deleteChatHistory(): Observable<string> {
-    return this.apiService.delete<string, string>(apiPath, 'chatRoom');
+  deleteChatGroupMessages(groupId: string): Observable<string> {
+    return this.apiService.delete<string, string>(`${apiPath}/chatgroup/${groupId}`,'n/a');
   }
 }

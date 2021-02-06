@@ -63,11 +63,11 @@
               <span>To: <span class="name">Everyone</span></span>
               </div>
               <div class="chat-container" #chatContainerScroll>
-                <ul class="chat-box" *ngIf='chatService.chatHistory$ | async'>
+                <ul class="chat-box" *ngIf='chatGroup && chatGroup.messages'>
                   <li 
                     class="chat-left"
                     [ngClass]="isChatLeft(chatItem.user)?'chat-left':'chat-right'"
-                    *ngFor="let chatItem of chatService.chatHistory$ | async"
+                    *ngFor="let chatItem of chatGroup.messages"
                   >
                   <div class="chat-avatar">
                     <img [src]="chatItem.user.photoUrl">

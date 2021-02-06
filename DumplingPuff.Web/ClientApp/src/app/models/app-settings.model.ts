@@ -3,4 +3,5 @@ export class AppSettings {
   authenticationGoogleClientId: string;
   authenticationGoogleClientSecret: string;
   baseApiUrl: string;
+  defaultChatGroupId: string;
 }
