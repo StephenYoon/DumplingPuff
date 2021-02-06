@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DumplingPuff.Web.Models
+namespace DumplingPuff.Web.Models.Chat
 {
     public class ChatMessage
     {

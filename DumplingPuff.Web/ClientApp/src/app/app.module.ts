@@ -8,7 +8,6 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
-import { ChatComponent } from './components/chat/chat.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { FetchDataComponent } from './components/fetch-data/fetch-data.component';
 
@@ -27,7 +26,6 @@ import {
     HomeComponent,
     LoginComponent,
     NavMenuComponent,
-    ChatComponent,
     ChatBoxComponent,
     FetchDataComponent
   ],

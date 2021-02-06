@@ -24,19 +24,18 @@ export class SignalRService {
       .start()
       .then(() => console.log('Connection started'))
       .catch(err => console.log('Error while starting connection: ' + err))
-  }
-  
+  }  
 
-  public chatHistoryListener = () => {
-    this.hubConnection.on('broadcastChatHistory', (data) => {
-      this.chatService.chatHistory$.next(data);
+  public chatGroupListener = () => {
+    this.hubConnection.on('broadcastChatGroup', (data) => {
+      this.chatService.chatGroup$.next(data);
     });
   }
 
   // NOTE: not sure about this one
   /*
   public chatMessageBroadcast = (message: string) => {
-    this.hubConnection.invoke('broadcastChatMessage', message)
+    this.hubConnection.invoke('broadcastChatGroup', message)
       .catch(err => {
         console.error(err)
     });

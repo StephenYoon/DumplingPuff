@@ -12,6 +12,7 @@ import { AppSettings } from '../../models/app-settings.model';
 import { ChatMessage } from '../../models/chat-message.model';
 import { map, switchMap } from 'rxjs/operators';
 import * as moment from 'moment';
+import { ChatGroup } from 'src/app/models/chat-group.model';
 
 @Component({
   selector: 'app-chat-box',
@@ -27,6 +28,9 @@ export class ChatBoxComponent implements OnInit {
   selectedUsers: SocialUser[] = [];
   chatUsers: SocialUser[] = [];
 
+  chatGroupId: string = '';
+  chatGroup: ChatGroup;
+
   @ViewChild('chatContainerScroll', { read: ElementRef }) public scroll: ElementRef<any>;
   @ViewChild('chatInputBox', { read: ElementRef }) public chatInputBox: ElementRef<any>;
 
@@ -39,39 +43,41 @@ export class ChatBoxComponent implements OnInit {
     public signedInUserService: SignedInUserService) { }
 
     ngOnInit() {  
-      this.appSettingsService.appSettings.subscribe(appSettings => {
-        this.appSettings = appSettings;
-      })
 
-      this.authService.getCurrentUser().subscribe((data) => {
-        this.user = data;
-      });
-      
-      this.signedInUserService.getUsers().subscribe((data) =>{
-        this.signedInUsers = data;
-      });
+      // TODO: consider MergeMap, ForkJoin and/or combineLatest
+      // MergeMap, ForkJoin > https://coryrylan.com/blog/angular-multiple-http-requests-with-rxjs
+      // combineLatest > https://stackoverflow.com/questions/44004144/how-to-wait-for-two-observables-in-rxjs
+      this.route.params.subscribe(params => {
+        this.appSettingsService.appSettings.subscribe(appSettings => {
+          this.appSettings = appSettings;          
+          this.chatGroupId = params.id;
 
-      this.chatService.getChatHistory().subscribe((data) => {
-        this.scrollBottom();
-      });
+          if (!this.chatGroupId || this.chatGroupId == '') {
+            this.chatGroupId = this.appSettings.defaultChatGroupId;
+          }        
 
-      this.chatService.chatHistory$.subscribe(chatHistory => {
-        var users = chatHistory.map(c => c.user);
-        users.forEach(user => {
-          var exists = this.chatUsers.filter(u => {
-            return u.email.toLowerCase() == user.email.toLowerCase();
+          this.authService.getCurrentUser().subscribe((data) => {
+            this.user = data;
+          });
+          
+          this.signedInUserService.getUsers().subscribe((data) => {
+            this.signedInUsers = data;
           });
 
-          if (!exists || exists.length == 0){
-            this.chatUsers.push(user);
-          }
-        });
+          this.chatService.chatGroup$.subscribe((chatGroup) => {
+            if (chatGroup) {
+              this.chatUsers = chatGroup.users;
+              this.chatGroup = chatGroup;
+              this.scrollBottom();
+            }
+          });
+          
+          if (!this.user) {
+            alert("Please log in first, thanks!");
+            this.router.navigate(['home']);
+          }          
+        })
       });
-      
-      if (!this.user) {
-        alert("Please log in first, thanks!");
-        this.router.navigate(['home']);
-      }
     }
 
     public getFormattedDateTime(dateValue: Date): string {
@@ -92,9 +98,13 @@ export class ChatBoxComponent implements OnInit {
 
       // Get list of users from chat history
       var fullUserList: SocialUser[] = [];
-      this.chatUsers.forEach(u => {
-        fullUserList.push(u);
-      });
+
+      // Add users in the group chat
+      if (!this.chatUsers) {
+        this.chatUsers.forEach(u => {
+          fullUserList.push(u);
+        });
+      }
       
       // Add signed-in users
       this.signedInUsers.forEach(su => {
@@ -154,7 +164,7 @@ export class ChatBoxComponent implements OnInit {
       apiChatMessage.message = this.chatMessage;
       apiChatMessage.dateSent = new Date();
       
-      this.chatService.postChatMessage(apiChatMessage).subscribe((data) => {
+      this.chatService.postMessageToChatGroup(this.chatGroupId, apiChatMessage).subscribe((data) => {
         this.scrollBottom();
       });
   

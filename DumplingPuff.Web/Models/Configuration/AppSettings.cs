@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DumplingPuff.Web.Models.Chat;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,5 +13,6 @@ namespace DumplingPuff.Web.Models.Configuration
         public string AuthenticationGoogleClientId { get; set; }
         public string AuthenticationGoogleClientSecret { get; set; }
         public string BaseApiUrl { get; set; }
+        public string DefaultChatGroupId => ChatGroup.DumplingPuffMainChatGroupId;
     }
 }
