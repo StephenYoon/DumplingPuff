@@ -100,7 +100,7 @@ export class ChatBoxComponent implements OnInit {
       var fullUserList: SocialUser[] = [];
 
       // Add users in the group chat
-      if (!this.chatUsers) {
+      if (this.chatUsers) {
         this.chatUsers.forEach(u => {
           fullUserList.push(u);
         });
