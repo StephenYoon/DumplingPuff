@@ -1,18 +1,19 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { SocialUser } from 'angularx-social-login';
 
 import { AppSettingsService } from '../../services/app-settings.service';
 import { ChatService } from '../../services/chat.service';
 import { CustomAuthService } from '../../services/custom-auth.service';
-import { SignedInUserService } from 'src/app/services/signed-in-user.service';
+import { SignedInUserService } from '../../services/signed-in-user.service';
 
 import { AppSettings } from '../../models/app-settings.model';
 import { ChatMessage } from '../../models/chat-message.model';
-import { map, switchMap } from 'rxjs/operators';
+import { ChatGroup } from '../../models/chat-group.model';
+
 import * as moment from 'moment';
-import { ChatGroup } from 'src/app/models/chat-group.model';
 
 @Component({
   selector: 'app-chat-box',
@@ -31,6 +32,10 @@ export class ChatBoxComponent implements OnInit {
   chatGroupId: string = '';
   chatGroup: ChatGroup;
 
+  appSettingsSubscription: any;
+  currentUserSubsription: any;
+  chatServiceSubscription: any;
+
   @ViewChild('chatContainerScroll', { read: ElementRef }) public scroll: ElementRef<any>;
   @ViewChild('chatInputBox', { read: ElementRef }) public chatInputBox: ElementRef<any>;
 
@@ -48,7 +53,7 @@ export class ChatBoxComponent implements OnInit {
       // MergeMap, ForkJoin > https://coryrylan.com/blog/angular-multiple-http-requests-with-rxjs
       // combineLatest > https://stackoverflow.com/questions/44004144/how-to-wait-for-two-observables-in-rxjs
       this.route.params.subscribe(params => {
-        this.appSettingsService.appSettings.subscribe(appSettings => {
+        this.appSettingsSubscription = this.appSettingsService.appSettings.subscribe(appSettings => {
           this.appSettings = appSettings;          
           this.chatGroupId = params.id;
 
@@ -56,15 +61,15 @@ export class ChatBoxComponent implements OnInit {
             this.chatGroupId = this.appSettings.defaultChatGroupId;
           }        
 
-          this.authService.getCurrentUser().subscribe((data) => {
+          this.currentUserSubsription = this.authService.getCurrentUser().subscribe((data) => {
             this.user = data;
           });
           
-          this.signedInUserService.getUsers().subscribe((data) => {
+          this.signedInUserService.users$.subscribe((data) => {
             this.signedInUsers = data;
           });
 
-          this.chatService.chatGroup$.subscribe((chatGroup) => {
+          this.chatServiceSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
             if (chatGroup) {
               this.chatUsers = chatGroup.users;
               this.chatGroup = chatGroup;
@@ -176,5 +181,15 @@ export class ChatBoxComponent implements OnInit {
       this.scroll.nativeElement.scrollTop = this.scroll.nativeElement.scrollHeight;
       //this.scroll.nativeElement.scrollTop = this.scroll.nativeElement.scrollHeight - this.scroll.nativeElement.clientHeight;
     }
+    
+    public ngOnDestroy() {
+      // Set user as offline by removing user from signedInUser list
+      this.signedInUserService.removeUser(this.user.email);
+
+      // Clean up
+      this.appSettingsSubscription.unsubscribe();
+      this.currentUserSubsription.unsubscribe();
+      this.signedInUserService.users$.unsubscribe();
+      this.chatServiceSubscription.unsubscribe();
+    }
   }
-  

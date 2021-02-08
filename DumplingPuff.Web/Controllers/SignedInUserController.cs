@@ -61,5 +61,15 @@ namespace DumplingPuff.Web.Controllers
 
             return Ok(new { Message = $"DELETE {this.GetType().Name} Request Completed at {DateTime.Now.ToLongDateString()}" });
         }
+
+        [HttpDelete("{email}")]
+        public IActionResult DeleteByEmail(string email)
+        {
+            _signedInUserService.RemoveByEmail(email);
+            var users = _signedInUserService.Get();
+            _hub.Clients.All.SendAsync("broadcastSignedInUsers", users);
+
+            return Ok(new { Message = $"DELETE {this.GetType().Name} Request Completed, user removed at {DateTime.Now.ToLongDateString()}" });
+        }
     }
 }

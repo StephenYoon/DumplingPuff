@@ -11,6 +11,6 @@
         public string LastName {get; set; }
         public string AuthToken {get; set; }
         public string IdToken {get; set; }
-        public string AuthorizationCode {get; set; }
+        public string AuthorizationCode { get; set; }
     }
 }

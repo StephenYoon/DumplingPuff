@@ -48,4 +48,8 @@ export class SignalRService {
       this.signedInUserService.users$ = data;
     });
   }
+  
+  public destroy(): void {
+    this.hubConnection.stop();
+  }
 }
