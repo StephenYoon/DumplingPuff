@@ -57,7 +57,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       this.route.params.subscribe(params => {
         this.appSettingsSubscription = this.appSettingsService.appSettings.subscribe(appSettings => {
           this.appSettings = appSettings;          
-          this.chatGroupId = params.id;
+          this.chatGroupId = params.id || null;
 
           this.chatServiceSubscription = this.chatService.getChatGroup(this.chatGroupId).subscribe((chatGroup) => {
             if (chatGroup) {
