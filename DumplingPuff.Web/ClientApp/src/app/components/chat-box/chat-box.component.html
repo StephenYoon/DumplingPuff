@@ -46,7 +46,7 @@
                 >
                 <div class="user">
                   <img [src]="signedInUser.photoUrl" alt="Retail Admin">
-                  <span class="status online"></span><!--online, busy, offline, away-->
+                  <span [ngClass]="userOnline(signedInUser)?'status online':'status offline'" ></span><!--online, busy, offline, away-->
                 </div>
                 <p class="name-time">
                   <span class="name">{{signedInUser.name}}</span>&nbsp;

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
@@ -20,7 +20,7 @@ import * as moment from 'moment';
   templateUrl: './chat-box.component.html',
   styleUrls: ['./chat-box.component.scss']
 })
-export class ChatBoxComponent implements OnInit {
+export class ChatBoxComponent implements OnInit, OnDestroy {
   appSettings: AppSettings;
   chatMessage: string = '';
   userSearch: string = '';
@@ -35,6 +35,7 @@ export class ChatBoxComponent implements OnInit {
   appSettingsSubscription: any;
   currentUserSubsription: any;
   chatServiceSubscription: any;
+  signedInUserServiceSubscription: any;
 
   @ViewChild('chatContainerScroll', { read: ElementRef }) public scroll: ElementRef<any>;
   @ViewChild('chatInputBox', { read: ElementRef }) public chatInputBox: ElementRef<any>;
@@ -47,7 +48,8 @@ export class ChatBoxComponent implements OnInit {
     public chatService: ChatService,
     public signedInUserService: SignedInUserService) { }
 
-    ngOnInit() {  
+    ngOnInit() {      
+      this.authService.refreshGoogleToken();
 
       // TODO: consider MergeMap, ForkJoin and/or combineLatest
       // MergeMap, ForkJoin > https://coryrylan.com/blog/angular-multiple-http-requests-with-rxjs
@@ -57,16 +59,12 @@ export class ChatBoxComponent implements OnInit {
           this.appSettings = appSettings;          
           this.chatGroupId = params.id;
 
-          if (!this.chatGroupId || this.chatGroupId == '') {
-            this.chatGroupId = this.appSettings.defaultChatGroupId;
-          }        
-
-          this.currentUserSubsription = this.authService.getCurrentUser().subscribe((data) => {
-            this.user = data;
-          });
-          
-          this.signedInUserService.users$.subscribe((data) => {
-            this.signedInUsers = data;
+          this.chatServiceSubscription = this.chatService.getChatGroup(this.chatGroupId).subscribe((chatGroup) => {
+            if (chatGroup) {
+              this.chatUsers = chatGroup.users;
+              this.chatGroup = chatGroup;
+              this.scrollBottom();
+            }
           });
 
           this.chatServiceSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
@@ -76,6 +74,19 @@ export class ChatBoxComponent implements OnInit {
               this.scrollBottom();
             }
           });
+
+          if (!this.chatGroupId || this.chatGroupId == '') {
+            this.chatGroupId = this.appSettings.defaultChatGroupId;
+          }        
+
+          this.currentUserSubsription = this.authService.getCurrentUser().subscribe((data) => {
+            this.user = data;
+          });
+          
+          this.signedInUserServiceSubscription = this.signedInUserService.users$.subscribe((data) => { 
+              this.signedInUsers = data; 
+          });
+
           
           if (!this.user) {
             alert("Please log in first, thanks!");
@@ -141,6 +152,11 @@ export class ChatBoxComponent implements OnInit {
       return filteredList && filteredList.length > 0;
     }
 
+    public userOnline(user: SocialUser): boolean {
+        var exists = this.userExists(user, this.signedInUsers);
+        return exists;
+    }
+
     public isChatLeft(chatUser: SocialUser): boolean {
       var currentUserEmail = this.user.email.trim().toLowerCase();
       var chatUserEmail = chatUser.email.trim().toLowerCase();
@@ -187,9 +203,9 @@ export class ChatBoxComponent implements OnInit {
       this.signedInUserService.removeUser(this.user.email);
 
       // Clean up
-      this.appSettingsSubscription.unsubscribe();
-      this.currentUserSubsription.unsubscribe();
-      this.signedInUserService.users$.unsubscribe();
-      this.chatServiceSubscription.unsubscribe();
+      if (this.appSettingsSubscription) this.appSettingsSubscription.unsubscribe();
+      if (this.currentUserSubsription) this.currentUserSubsription.unsubscribe();
+      if (this.signedInUserServiceSubscription) this.signedInUserServiceSubscription.unsubscribe();
+      if (this.chatServiceSubscription) this.chatServiceSubscription.unsubscribe();
     }
   }

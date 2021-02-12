@@ -18,17 +18,24 @@ export class SignedInUserService {
   }
   
   getUsers(): Observable<SocialUser[]> {
-    return this.apiService.get<SocialUser[]>(apiPath)
-      .pipe(map(res => {
+    this.apiService.get<SocialUser[]>(apiPath)
+      .pipe(map(users => {
           //console.log(res);
-          return res;
+          this.users$.next(users);
+          return users;
       }));
+
+    return this.users$;
   }
 
-  getUserByEmail(email: string): Observable<SocialUser[]> {
-    return this.apiService.get<SocialUser[]>(`${apiPath}/${email}`)
+  updateUsers(users: SocialUser[]): Observable<SocialUser[]>{
+    this.users$.next(users);
+    return this.users$;
+  }
+
+  getUserByEmail(email: string): Observable<SocialUser> {
+    return this.apiService.get<SocialUser>(`${apiPath}/${email}`)
       .pipe(map(users => {
-          this.users$.next(users);
           return users;
       }));
   }
