@@ -32,6 +32,14 @@ namespace DumplingPuff.Web.Services
             }
         }
 
+        public void RemoveByEmail(string email)
+        {
+            if (!string.IsNullOrEmpty(email))
+            {
+                _socialUsers.RemoveAll(u => u.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
+            }
+        }
+
         public void Clear()
         {
             _socialUsers.Clear();

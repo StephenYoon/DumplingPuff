@@ -1,25 +1,26 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { SocialUser } from 'angularx-social-login';
 
 import { AppSettingsService } from '../../services/app-settings.service';
 import { ChatService } from '../../services/chat.service';
 import { CustomAuthService } from '../../services/custom-auth.service';
-import { SignedInUserService } from 'src/app/services/signed-in-user.service';
+import { SignedInUserService } from '../../services/signed-in-user.service';
 
 import { AppSettings } from '../../models/app-settings.model';
 import { ChatMessage } from '../../models/chat-message.model';
-import { map, switchMap } from 'rxjs/operators';
+import { ChatGroup } from '../../models/chat-group.model';
+
 import * as moment from 'moment';
-import { ChatGroup } from 'src/app/models/chat-group.model';
 
 @Component({
   selector: 'app-chat-box',
   templateUrl: './chat-box.component.html',
   styleUrls: ['./chat-box.component.scss']
 })
-export class ChatBoxComponent implements OnInit {
+export class ChatBoxComponent implements OnInit, OnDestroy {
   appSettings: AppSettings;
   chatMessage: string = '';
   userSearch: string = '';
@@ -30,6 +31,11 @@ export class ChatBoxComponent implements OnInit {
 
   chatGroupId: string = '';
   chatGroup: ChatGroup;
+
+  appSettingsSubscription: any;
+  currentUserSubsription: any;
+  chatServiceSubscription: any;
+  signedInUserServiceSubscription: any;
 
   @ViewChild('chatContainerScroll', { read: ElementRef }) public scroll: ElementRef<any>;
   @ViewChild('chatInputBox', { read: ElementRef }) public chatInputBox: ElementRef<any>;
@@ -42,35 +48,45 @@ export class ChatBoxComponent implements OnInit {
     public chatService: ChatService,
     public signedInUserService: SignedInUserService) { }
 
-    ngOnInit() {  
+    ngOnInit() {      
+      this.authService.refreshGoogleToken();
 
       // TODO: consider MergeMap, ForkJoin and/or combineLatest
       // MergeMap, ForkJoin > https://coryrylan.com/blog/angular-multiple-http-requests-with-rxjs
       // combineLatest > https://stackoverflow.com/questions/44004144/how-to-wait-for-two-observables-in-rxjs
       this.route.params.subscribe(params => {
-        this.appSettingsService.appSettings.subscribe(appSettings => {
+        this.appSettingsSubscription = this.appSettingsService.appSettings.subscribe(appSettings => {
           this.appSettings = appSettings;          
           this.chatGroupId = params.id;
 
-          if (!this.chatGroupId || this.chatGroupId == '') {
-            this.chatGroupId = this.appSettings.defaultChatGroupId;
-          }        
-
-          this.authService.getCurrentUser().subscribe((data) => {
-            this.user = data;
-          });
-          
-          this.signedInUserService.getUsers().subscribe((data) => {
-            this.signedInUsers = data;
-          });
-
-          this.chatService.chatGroup$.subscribe((chatGroup) => {
+          this.chatServiceSubscription = this.chatService.getChatGroup(this.chatGroupId).subscribe((chatGroup) => {
             if (chatGroup) {
               this.chatUsers = chatGroup.users;
               this.chatGroup = chatGroup;
               this.scrollBottom();
             }
           });
+
+          this.chatServiceSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
+            if (chatGroup) {
+              this.chatUsers = chatGroup.users;
+              this.chatGroup = chatGroup;
+              this.scrollBottom();
+            }
+          });
+
+          if (!this.chatGroupId || this.chatGroupId == '') {
+            this.chatGroupId = this.appSettings.defaultChatGroupId;
+          }        
+
+          this.currentUserSubsription = this.authService.getCurrentUser().subscribe((data) => {
+            this.user = data;
+          });
+          
+          this.signedInUserServiceSubscription = this.signedInUserService.users$.subscribe((data) => { 
+              this.signedInUsers = data; 
+          });
+
           
           if (!this.user) {
             alert("Please log in first, thanks!");
@@ -136,6 +152,11 @@ export class ChatBoxComponent implements OnInit {
       return filteredList && filteredList.length > 0;
     }
 
+    public userOnline(user: SocialUser): boolean {
+        var exists = this.userExists(user, this.signedInUsers);
+        return exists;
+    }
+
     public isChatLeft(chatUser: SocialUser): boolean {
       var currentUserEmail = this.user.email.trim().toLowerCase();
       var chatUserEmail = chatUser.email.trim().toLowerCase();
@@ -176,5 +197,15 @@ export class ChatBoxComponent implements OnInit {
       this.scroll.nativeElement.scrollTop = this.scroll.nativeElement.scrollHeight;
       //this.scroll.nativeElement.scrollTop = this.scroll.nativeElement.scrollHeight - this.scroll.nativeElement.clientHeight;
     }
+    
+    public ngOnDestroy() {
+      // Set user as offline by removing user from signedInUser list
+      this.signedInUserService.removeUser(this.user.email);
+
+      // Clean up
+      if (this.appSettingsSubscription) this.appSettingsSubscription.unsubscribe();
+      if (this.currentUserSubsription) this.currentUserSubsription.unsubscribe();
+      if (this.signedInUserServiceSubscription) this.signedInUserServiceSubscription.unsubscribe();
+      if (this.chatServiceSubscription) this.chatServiceSubscription.unsubscribe();
+    }
   }
-  

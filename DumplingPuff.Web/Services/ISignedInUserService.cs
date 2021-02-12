@@ -9,5 +9,6 @@ namespace DumplingPuff.Web.Services
         void Clear();
         List<SocialUser> Get();
         SocialUser GetByEmail(string email);
+        void RemoveByEmail(string email);
     }
 }

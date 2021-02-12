@@ -28,14 +28,14 @@ export class SignalRService {
 
   public chatGroupListener = () => {
     this.hubConnection.on('broadcastChatGroup', (data) => {
-      this.chatService.chatGroup$.next(data);
+      this.chatService.updateChatGroup(data);
     });
   }
 
   // NOTE: not sure about this one
   /*
   public chatMessageBroadcast = (message: string) => {
-    this.hubConnection.invoke('broadcastChatGroup', message)
+    this.hubConnection.send('broadcastChatGroup', message)
       .catch(err => {
         console.error(err)
     });
@@ -44,8 +44,12 @@ export class SignalRService {
 
   public signedInUserListener = () => {
     this.hubConnection.on('broadcastSignedInUsers', (data) => {
-      console.log(`broadcastSignedInUsers: ${data}`);
-      this.signedInUserService.users$ = data;
+      console.log(`broadcastSignedInUsers: Number of signedInUsers ${JSON.stringify(data.length)}`);
+      this.signedInUserService.updateUsers(data);
     });
+  }
+  
+  public destroy(): void {
+    this.hubConnection.stop();
   }
 }

@@ -15,14 +15,12 @@ const apiPath = 'api/chat';
 })
 export class ChatService {
   chatGroup$: BehaviorSubject<ChatGroup>;
-  userHistory$: BehaviorSubject<SocialUser[]>;
 
   user: SocialUser;
   defaultHeaders: HttpHeaders;
 
   constructor(private apiService: ApiService) {
     this.chatGroup$ = new BehaviorSubject<ChatGroup>(null);
-    this.userHistory$ = new BehaviorSubject<SocialUser[]>([]);
   }
 
   getChatGroup(groupId: string): Observable<ChatGroup> {
@@ -31,6 +29,11 @@ export class ChatService {
           this.chatGroup$.next(data);
           return data;
       }));
+  }
+
+  updateChatGroup(chatGroup: ChatGroup): Observable<ChatGroup>{
+    this.chatGroup$.next(chatGroup);
+    return this.chatGroup$;
   }
 
   postMessageToChatGroup(groupId: string, chatMessage: ChatMessage): Observable<string> {

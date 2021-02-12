@@ -18,33 +18,43 @@ export class SignedInUserService {
   }
   
   getUsers(): Observable<SocialUser[]> {
-    var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    return this.apiService.get<SocialUser[]>(apiPath)
-      .pipe(map(res => {
+    this.apiService.get<SocialUser[]>(apiPath)
+      .pipe(map(users => {
           //console.log(res);
-          return res;
+          this.users$.next(users);
+          return users;
       }));
+
+    return this.users$;
   }
 
-  getUserByEmail(email: string): Observable<SocialUser[]> {
-    var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    return this.apiService.get<SocialUser[]>(`${apiPath}/${email}`)
+  updateUsers(users: SocialUser[]): Observable<SocialUser[]>{
+    this.users$.next(users);
+    return this.users$;
+  }
+
+  getUserByEmail(email: string): Observable<SocialUser> {
+    return this.apiService.get<SocialUser>(`${apiPath}/${email}`)
       .pipe(map(users => {
-          this.users$.next(users);
           return users;
       }));
   }
 
   addUser(user: SocialUser): void {
-    var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
     this.apiService.post<string, SocialUser>(apiPath, user)
       .subscribe(res => {
         console.log(res);
       })
   }
   
+  removeUser(email: string): void {
+    this.apiService.delete<string, string>(`${apiPath}/${email}`, 'na')
+      .subscribe(res => {
+        console.log(res);
+      })
+  }
+
   clearSignedInUsers(): void {
-    var options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
     this.apiService.delete<string, string>(apiPath, 'na')
       .subscribe(res => {
         console.log(res);
