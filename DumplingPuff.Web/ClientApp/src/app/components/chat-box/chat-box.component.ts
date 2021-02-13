@@ -35,6 +35,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
   appSettingsSubscription: any;
   currentUserSubsription: any;
   chatServiceSubscription: any;
+  chatGroupSubscription: any;
   signedInUserServiceSubscription: any;
 
   @ViewChild('chatContainerScroll', { read: ElementRef }) public scroll: ElementRef<any>;
@@ -65,14 +66,14 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
               this.chatGroup = chatGroup;
               this.scrollBottom();
             }
-          });
-
-          this.chatServiceSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
-            if (chatGroup) {
-              this.chatUsers = chatGroup.users;
-              this.chatGroup = chatGroup;
-              this.scrollBottom();
-            }
+            
+            this.chatGroupSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
+              if (chatGroup) {
+                this.chatUsers = chatGroup.users;
+                this.chatGroup = chatGroup;
+                this.scrollBottom();
+              }
+            });
           });
 
           if (!this.chatGroupId || this.chatGroupId == '') {
@@ -207,5 +208,6 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       if (this.currentUserSubsription) this.currentUserSubsription.unsubscribe();
       if (this.signedInUserServiceSubscription) this.signedInUserServiceSubscription.unsubscribe();
       if (this.chatServiceSubscription) this.chatServiceSubscription.unsubscribe();
+      if (this.chatGroupSubscription) this.chatGroupSubscription.unsubscribe();
     }
   }
