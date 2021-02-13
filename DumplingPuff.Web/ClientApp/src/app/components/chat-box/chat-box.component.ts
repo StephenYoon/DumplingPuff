@@ -60,6 +60,10 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
           this.appSettings = appSettings;          
           this.chatGroupId = params.id || null;
 
+          if (!this.chatGroupId || this.chatGroupId == '') {
+            this.chatGroupId = this.appSettings.defaultChatGroupId;
+          }
+
           this.chatServiceSubscription = this.chatService.getChatGroup(this.chatGroupId).subscribe((chatGroup) => {
             if (chatGroup) {
               this.chatUsers = chatGroup.users;
@@ -74,11 +78,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
                 this.scrollBottom();
               }
             });
-          });
-
-          if (!this.chatGroupId || this.chatGroupId == '') {
-            this.chatGroupId = this.appSettings.defaultChatGroupId;
-          }        
+          });  
 
           this.currentUserSubsription = this.authService.getCurrentUser().subscribe((data) => {
             this.user = data;

@@ -93,6 +93,7 @@ namespace DumplingPuff.Web
                 app.UseHsts();
             }
 
+            app.UseCors("CorsPolicy");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             if (!env.IsDevelopment())
@@ -104,7 +105,6 @@ namespace DumplingPuff.Web
             app.UseFileServer();
 
             app.UseAuthorization();
-            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
