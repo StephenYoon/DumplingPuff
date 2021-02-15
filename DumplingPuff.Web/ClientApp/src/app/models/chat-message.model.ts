@@ -4,4 +4,5 @@ export class ChatMessage {
   user: SocialUser;
   message: string;
   dateSent: Date;
+  isHidden: boolean;
 }

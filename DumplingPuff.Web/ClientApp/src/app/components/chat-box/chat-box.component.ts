@@ -12,7 +12,6 @@ import { SignedInUserService } from '../../services/signed-in-user.service';
 import { AppSettings } from '../../models/app-settings.model';
 import { ChatMessage } from '../../models/chat-message.model';
 import { ChatGroup } from '../../models/chat-group.model';
-
 import * as moment from 'moment';
 
 @Component({
@@ -62,32 +61,48 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
 
           if (!this.chatGroupId || this.chatGroupId == '') {
             this.chatGroupId = this.appSettings.defaultChatGroupId;
-          }
-
-          this.chatServiceSubscription = this.chatService.getChatGroup(this.chatGroupId).subscribe((chatGroup) => {
-            if (chatGroup) {
-              this.chatUsers = chatGroup.users;
-              this.chatGroup = chatGroup;
-              this.scrollBottom();
-            }
-            
-            this.chatGroupSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
-              if (chatGroup) {
-                this.chatUsers = chatGroup.users;
-                this.chatGroup = chatGroup;
-                this.scrollBottom();
-              }
-            });
-          });  
-
+          }          
+          
           this.currentUserSubsription = this.authService.getCurrentUser().subscribe((data) => {
             this.user = data;
+
+            if (this.user != null) {
+
+              // Send empty message to register user
+              var allUsers = this.filteredUsers();
+              var foundIndex = allUsers.findIndex(u => u.email.toLocaleLowerCase() == this.user.email.toLocaleLowerCase());
+              if (foundIndex <= 0) {
+                var emptyMessage = new ChatMessage();
+                emptyMessage.user = this.user;
+                emptyMessage.message = '(Signed in)';
+                emptyMessage.dateSent = new Date();
+                emptyMessage.isHidden = true;
+                this.chatService.postMessageToChatGroup(this.chatGroupId, emptyMessage);
+              }
+
+              // Subscribe to chat group
+              this.chatServiceSubscription = this.chatService.getChatGroup(this.chatGroupId).subscribe((chatGroup) => {
+                if (chatGroup) {
+                  this.chatUsers = chatGroup.users;
+                  this.chatGroup = chatGroup;
+                  this.scrollBottom();
+                }
+                
+                this.chatGroupSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
+                  if (chatGroup) {
+                    this.chatUsers = chatGroup.users;
+                    this.chatGroup = chatGroup;
+                    this.scrollBottom();
+                  }
+                });
+              });
+
+            }
           });
           
           this.signedInUserServiceSubscription = this.signedInUserService.users$.subscribe((data) => { 
               this.signedInUsers = data; 
           });
-
           
           if (!this.user) {
             alert("Please log in first, thanks!");
@@ -107,26 +122,30 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       return moment(dateValue).format('lll');
     }
   
-    public getFormattedUserTime(): string {
-      return moment().format('h:mm:ss a')
+    public getFormattedUserTime(signedInUser: SocialUser): string {
+      var msgs = this.chatGroup.messages.filter(msg => msg.user.email.toLowerCase() == signedInUser.email.toLowerCase());
+
+      if (msgs != null && msgs.length) {
+        var sortedMsgsByDate = msgs.slice().sort((a, b) => new Date(b.dateSent).getTime() - new Date(a.dateSent).getTime());
+        var latestSortedMsgDate = new Date(sortedMsgsByDate[0].dateSent);
+        var formattedDate = moment(latestSortedMsgDate).format('h:mm:ss a');
+        return formattedDate;
+      }
+
+      var earliestMsgDate = new Date(this.chatGroup.messages[0].dateSent);
+      var defaultDate = moment(earliestMsgDate).format('h:mm:ss a');
+      return defaultDate;
     }
 
     public filteredUsers(): SocialUser[] {
 
-      // Get list of users from chat history
-      var fullUserList: SocialUser[] = [];
-
-      // Add users in the group chat
-      if (this.chatUsers) {
-        this.chatUsers.forEach(u => {
-          fullUserList.push(u);
-        });
-      }
+      // Get list of users from chat history, start with chat users
+      var fullUserList = this.chatUsers.slice();
       
       // Add signed-in users
       this.signedInUsers.forEach(su => {
-        var exists = this.userExists(su, fullUserList);
-        if (!exists) {
+        var foundIndex = fullUserList.findIndex(su => su.email.toLowerCase() == this.user.email.toLowerCase());
+        if (foundIndex <= 0) {
           fullUserList.push(su);
         }
       });
@@ -144,18 +163,13 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       return filteredList;
     }
 
-    public userExists(user: SocialUser, userList: SocialUser[]): boolean {
-      var exists = false;
-      var filteredList = userList.filter(u => {
-        return user.email.toLowerCase() == u.email.toLowerCase();
-      });
-
-      return filteredList && filteredList.length > 0;
+    public userPhotoSrcUrl(user: SocialUser): string {
+      return user.photoUrl ?? '../../../assets/default_avatar.JPG';
     }
 
-    public userOnline(user: SocialUser): boolean {
-        var exists = this.userExists(user, this.signedInUsers);
-        return exists;
+    public userOnline(user: SocialUser): boolean {      
+      var foundIndex = this.signedInUsers.findIndex(su => su.email.toLowerCase() == user.email.toLowerCase());
+      return foundIndex >= 0;
     }
 
     public isChatLeft(chatUser: SocialUser): boolean {

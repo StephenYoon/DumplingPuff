@@ -9,5 +9,6 @@ namespace DumplingPuff.Web.Models.Chat
         public SocialUser User { get; set; }
         public string Message { get; set; }
         public DateTime DateSent { get; set; }
+        public bool IsHidden { get; set; }
     }
 }
