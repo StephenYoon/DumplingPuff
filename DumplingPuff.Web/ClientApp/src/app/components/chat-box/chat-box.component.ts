@@ -71,7 +71,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
               // Send empty message to register user
               var allUsers = this.filteredUsers();
               var foundIndex = allUsers.findIndex(u => u.email.toLocaleLowerCase() == this.user.email.toLocaleLowerCase());
-              if (foundIndex <= 0) {
+              if (foundIndex < 0) {
                 var emptyMessage = new ChatMessage();
                 emptyMessage.user = this.user;
                 emptyMessage.message = '(Signed in)';
@@ -132,9 +132,13 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
         return formattedDate;
       }
 
-      var earliestMsgDate = new Date(this.chatGroup.messages[0].dateSent);
-      var defaultDate = moment(earliestMsgDate).format('h:mm:ss a');
-      return defaultDate;
+      if (!!this.chatGroup.messages && this.chatGroup.messages.length) {
+        var earliestMsgDate = new Date(this.chatGroup.messages[0].dateSent);
+        var defaultDate = moment(earliestMsgDate).format('h:mm:ss a');
+        return defaultDate;
+      }
+
+      return '';
     }
 
     public filteredUsers(): SocialUser[] {
@@ -145,7 +149,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       // Add signed-in users
       this.signedInUsers.forEach(su => {
         var foundIndex = fullUserList.findIndex(su => su.email.toLowerCase() == this.user.email.toLowerCase());
-        if (foundIndex <= 0) {
+        if (foundIndex < 0) {
           fullUserList.push(su);
         }
       });

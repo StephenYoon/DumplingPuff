@@ -82,6 +82,9 @@ export class CustomAuthService implements OnDestroy {
   }
 
   refreshGoogleToken(): void {
+    if (!!this.userData) {
+      this.signedInUserService.addUser(this.userData);
+    }
     this.authService.refreshAuthToken(GoogleLoginProvider.PROVIDER_ID);
   }
 
