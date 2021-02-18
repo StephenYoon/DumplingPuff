@@ -68,6 +68,9 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
 
             if (this.user != null) {
 
+              // Sign-in user
+              this.signedInUserService.addUser(this.user);
+
               // Send empty message to register user
               var allUsers = this.filteredUsers();
               var foundIndex = allUsers.findIndex(u => u.email.toLocaleLowerCase() == this.user.email.toLocaleLowerCase());
