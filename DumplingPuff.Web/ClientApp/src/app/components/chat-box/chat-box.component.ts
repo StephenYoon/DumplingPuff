@@ -67,6 +67,9 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
             this.user = data;
 
             if (this.user != null) {
+              
+              // Sign-in user	
+              this.signedInUserService.addUser(this.user);
 
               // Send empty message to register user
               this.sendSystemMessage('signed in');
@@ -81,6 +84,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
                 this.chatGroupSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
                   if (chatGroup) {
                     this.chatGroup = chatGroup;
+                    this.updateChatUsers();
                     this.scrollBottom();
                   }
                 });
@@ -90,7 +94,11 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
 
             console.log('User not found.');
           });
-                    
+
+          this.signedInUserServiceSubscription = this.signedInUserService.users$.subscribe((data) => { 	
+            this.signedInUsers = data; 	
+          });
+
           if (!this.user) {
             alert("Please log in first, thanks!");
             this.router.navigate(['home']);
@@ -106,7 +114,9 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       emptyMessage.message = `${this.user.email} ${messageText}.`;
       emptyMessage.dateSent = new Date();
       emptyMessage.isHidden = true;
-      this.chatService.postMessageToChatGroup(this.chatGroupId, emptyMessage);
+      this.chatService.postMessageToChatGroup(this.chatGroupId, emptyMessage).subscribe((res) => {
+        console.log(res);
+      });
     }
 
     public getFormattedDateTime(dateValue: Date): string {
@@ -138,28 +148,33 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       return '';
     }
 
+    public getChatMessages(): ChatMessage[] {
+      var messages = this.chatGroup.messages.filter((msg) => {return !msg.isHidden;});
+      return messages;
+    }
+
     public updateChatUsers(): void {
 
       // Get list of users from chat history, start with chat users
-      var fullUserList = this.chatGroup.users.slice();
+      var chatUserList = this.chatGroup.users.slice();
       
-      // Add signed-in users
-      this.signedInUsers.forEach(su => {
-        var foundIndex = fullUserList.findIndex(su => su.email.toLowerCase() == this.user.email.toLowerCase());
-        if (foundIndex < 0) {
-          fullUserList.push(su);
-        }
-      });
+      // // Add signed-in users
+      // this.signedInUsers.forEach(su => {
+      //   var foundIndex = fullUserList.findIndex(su => su.email.toLowerCase() == this.user.email.toLowerCase());
+      //   if (foundIndex < 0) {
+      //     fullUserList.push(su);
+      //   }
+      // });
 
       // Filter list if applicable
       if (!this.userSearch || this.userSearch.trim() == '') {
-        this.chatUsers = filteredList;
+        this.chatUsers = chatUserList;
         return;
       }
 
       // Filter list further if search text exists
       var lowerCaseSearchTerm = this.userSearch.toLowerCase();
-      var filteredList = fullUserList.filter(user => {
+      var filteredList = chatUserList.filter(user => {
          return user.name.toLowerCase().includes(lowerCaseSearchTerm);
       });
 

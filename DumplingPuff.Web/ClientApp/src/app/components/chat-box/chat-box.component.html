@@ -63,11 +63,11 @@
               <span>To: <span class="name">Everyone</span></span>
               </div>
               <div class="chat-container" #chatContainerScroll>
-                <ul class="chat-box" *ngIf='chatGroup && chatGroup.messages'>
+                <ul class="chat-box" *ngIf='chatGroup && getChatMessages()'>
                   <li 
                     class="chat-left"
                     [ngClass]="isChatLeft(chatItem.user)?'chat-left':'chat-right'"
-                    *ngFor="let chatItem of chatGroup.messages.filter((msg) => { return !msg.isHidden; })"
+                    *ngFor="let chatItem of getChatMessages()"
                   >
                   <div class="chat-avatar">
                     <img [src]="userPhotoSrcUrl(chatItem.user)">
