@@ -35,7 +35,7 @@ export class SignalRService {
   // NOTE: not sure about this one
   /*
   public chatMessageBroadcast = (message: string) => {
-    this.hubConnection.send('broadcastChatGroup', message)
+    this.hubConnection.send('updateChatGroup', message)
       .catch(err => {
         console.error(err)
     });
