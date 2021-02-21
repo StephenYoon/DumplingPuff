@@ -23,12 +23,9 @@ namespace DumplingPuff.Web.Controllers
 
         // GET: AppSettings
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var settings = new JsonResult(_appSettings)
-            {
-                StatusCode = 201
-            };
+            var settings = await Task.Run(() => new JsonResult(_appSettings) { StatusCode = 201 });
             return settings;
         }
     }

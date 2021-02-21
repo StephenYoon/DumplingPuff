@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using DumplingPuff.Web.Hubs;
@@ -25,29 +26,30 @@ namespace DumplingPuff.Web.Controllers
         }
 
         [HttpGet("chatgroup/{groupId}")]
-        public IActionResult GetChatGroup(string groupId)
+        public async Task<IActionResult> GetChatGroupAsync(string groupId)
         {
             var broadcastContent = _chatService.GetChatGroup(groupId);
-            _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+            await _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+
             return Ok(_chatService.GetChatGroup(groupId));
         }
 
         [HttpPost("chatgroup/{groupId}")]
-        public IActionResult Post(string groupId, [FromBody] ChatMessage chatMessage)
+        public async Task<IActionResult> PostAsync(string groupId, [FromBody] ChatMessage chatMessage)
         {
             _chatService.AddChatMessageToGroup(groupId, chatMessage);
             var broadcastContent = _chatService.GetChatGroup(groupId);
-            _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+            await _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
 
             return Ok(new { Message = $"POST {this.GetType().Name} Request Completed at {DateTime.Now.ToLongDateString()}" });
         }
 
         [HttpDelete("chatgroup/{groupId}")]
-        public IActionResult Delete(string groupId)
+        public async Task<IActionResult> DeleteAsync(string groupId)
         {
             _chatService.ClearChatGroupMessages(groupId);
             var broadcastContent = _chatService.GetChatGroup(groupId);
-            _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+            await _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
 
             return Ok(new { Message = $"DELETE {this.GetType().Name} Completed at {DateTime.Now.ToLongDateString()}" });
         }
