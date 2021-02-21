@@ -22,7 +22,7 @@ import { SignedInUserService } from './signed-in-user.service';
 })
 export class CustomAuthService implements OnDestroy {
   userData: SocialUser;
-  private userData$: BehaviorSubject<SocialUser>;
+  currentUser$: BehaviorSubject<SocialUser>;
 
   constructor(
     public authService: SocialAuthService,
@@ -30,27 +30,27 @@ export class CustomAuthService implements OnDestroy {
     public router: Router,
     public ngZone: NgZone // NgZone service to remove outside scope warning
   ) {
-    this.userData$ = new BehaviorSubject<SocialUser>(null);
+    this.currentUser$ = new BehaviorSubject<SocialUser>(null);
 
     // Setting logged in user in localstorage else null
     this.authService.authState.subscribe(user => {
       if (user) {
         this.userData = user;
-        this.userData$.next(user);
+        this.currentUser$.next(user);
         localStorage.setItem('user', JSON.stringify(this.userData));
         this.signedInUserService.addUser(user);
       } else {
         localStorage.setItem('user', null);
-        this.userData$.next(null);
+        this.currentUser$.next(null);
       }
     });
   }
   
   getCurrentUser(): BehaviorSubject<SocialUser> {
     var retrievedUser = JSON.parse(localStorage.getItem('user')) as SocialUser;
-    this.userData$.next(retrievedUser);
+    this.currentUser$.next(retrievedUser);
 
-    return this.userData$;
+    return this.currentUser$;
   }
 
   signInWithGoogle(): void {
@@ -76,7 +76,7 @@ export class CustomAuthService implements OnDestroy {
   signOut(): void {
     this.authService.signOut().then(() => {
       localStorage.removeItem('user');
-      this.userData$.next(null);
+      this.currentUser$.next(null);
       this.router.navigate(['/']);
     });
   }

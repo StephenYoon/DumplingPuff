@@ -42,7 +42,7 @@
               <ul class="users" *ngIf='chatUsers'>
                 <li 
                 class="person" 
-                *ngFor="let signedInUser of filteredUsers()"
+                *ngFor="let signedInUser of chatUsers"
                 >
                 <div class="user">
                   <img [src]="userPhotoSrcUrl(signedInUser)">
@@ -67,7 +67,7 @@
                   <li 
                     class="chat-left"
                     [ngClass]="isChatLeft(chatItem.user)?'chat-left':'chat-right'"
-                    *ngFor="let chatItem of chatGroup.messages"
+                    *ngFor="let chatItem of chatGroup.messages.filter((msg) => { return !msg.isHidden; })"
                   >
                   <div class="chat-avatar">
                     <img [src]="userPhotoSrcUrl(chatItem.user)">

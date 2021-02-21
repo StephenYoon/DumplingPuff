@@ -63,37 +63,23 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
             this.chatGroupId = this.appSettings.defaultChatGroupId;
           }          
           
-          this.currentUserSubsription = this.authService.getCurrentUser().subscribe((data) => {
+          this.currentUserSubsription = this.authService.currentUser$.subscribe((data) => {
             this.user = data;
 
             if (this.user != null) {
 
-              // Sign-in user
-              this.signedInUserService.addUser(this.user);
-
               // Send empty message to register user
-              var allUsers = this.filteredUsers();
-              var foundIndex = allUsers.findIndex(u => u.email.toLocaleLowerCase() == this.user.email.toLocaleLowerCase());
-              if (foundIndex < 0) {
-                var emptyMessage = new ChatMessage();
-                emptyMessage.user = this.user;
-                emptyMessage.message = '(Signed in)';
-                emptyMessage.dateSent = new Date();
-                emptyMessage.isHidden = true;
-                this.chatService.postMessageToChatGroup(this.chatGroupId, emptyMessage);
-              }
+              this.sendSystemMessage('signed in');
 
               // Subscribe to chat group
               this.chatServiceSubscription = this.chatService.getChatGroup(this.chatGroupId).subscribe((chatGroup) => {
                 if (chatGroup) {
-                  this.chatUsers = chatGroup.users;
                   this.chatGroup = chatGroup;
                   this.scrollBottom();
                 }
                 
                 this.chatGroupSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
                   if (chatGroup) {
-                    this.chatUsers = chatGroup.users;
                     this.chatGroup = chatGroup;
                     this.scrollBottom();
                   }
@@ -101,18 +87,26 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
               });
 
             }
+
+            console.log('User not found.');
           });
-          
-          this.signedInUserServiceSubscription = this.signedInUserService.users$.subscribe((data) => { 
-              this.signedInUsers = data; 
-          });
-          
+                    
           if (!this.user) {
             alert("Please log in first, thanks!");
             this.router.navigate(['home']);
           }          
         })
       });
+    }
+
+    public sendSystemMessage(messageText: string): void { 
+      // Send empty message to register user
+      var emptyMessage = new ChatMessage();
+      emptyMessage.user = this.user;
+      emptyMessage.message = `${this.user.email} ${messageText}.`;
+      emptyMessage.dateSent = new Date();
+      emptyMessage.isHidden = true;
+      this.chatService.postMessageToChatGroup(this.chatGroupId, emptyMessage);
     }
 
     public getFormattedDateTime(dateValue: Date): string {
@@ -144,10 +138,10 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       return '';
     }
 
-    public filteredUsers(): SocialUser[] {
+    public updateChatUsers(): void {
 
       // Get list of users from chat history, start with chat users
-      var fullUserList = this.chatUsers.slice();
+      var fullUserList = this.chatGroup.users.slice();
       
       // Add signed-in users
       this.signedInUsers.forEach(su => {
@@ -159,15 +153,17 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
 
       // Filter list if applicable
       if (!this.userSearch || this.userSearch.trim() == '') {
-        return fullUserList;
+        this.chatUsers = filteredList;
+        return;
       }
 
+      // Filter list further if search text exists
       var lowerCaseSearchTerm = this.userSearch.toLowerCase();
       var filteredList = fullUserList.filter(user => {
          return user.name.toLowerCase().includes(lowerCaseSearchTerm);
       });
 
-      return filteredList;
+      this.chatUsers = filteredList;
     }
 
     public userPhotoSrcUrl(user: SocialUser): string {
@@ -223,6 +219,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     public ngOnDestroy() {
       // Set user as offline by removing user from signedInUser list
       this.signedInUserService.removeUser(this.user.email);
+      this.sendSystemMessage('signed out');
 
       // Clean up
       if (this.appSettingsSubscription) this.appSettingsSubscription.unsubscribe();
