@@ -7,6 +7,7 @@ using DumplingPuff.Web.Hubs;
 using DumplingPuff.Web.Models;
 using DumplingPuff.Web.Services;
 using DumplingPuff.Web.Attributes;
+using System.Threading.Tasks;
 
 namespace DumplingPuff.Web.Controllers
 {
@@ -25,21 +26,21 @@ namespace DumplingPuff.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> GetAsync()
         {
-            var users = _signedInUserService.Get();
+            var users = await Task.Run(() => _signedInUserService.Get());
             return Ok(users);
         }
 
         [HttpGet("{email}")]
-        public IActionResult GetByEmail(string email)
+        public async Task<IActionResult> GetByEmailAsync(string email)
         {
-            var user = _signedInUserService.GetByEmail(email);
+            var user = await Task.Run(() => _signedInUserService.GetByEmail(email));
             return Ok(user);
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] SocialUser user)
+        public async Task<IActionResult> PostAsync([FromBody] SocialUser user)
         {
             var users = _signedInUserService.Get();
             if (!users.Select(u => u.Email).Any(email => email.ToLowerInvariant() == user.Email.ToLowerInvariant()))
@@ -48,27 +49,27 @@ namespace DumplingPuff.Web.Controllers
                 users = _signedInUserService.Get();
             }
 
-            _hub.Clients.All.SendAsync("broadcastSignedInUsers", users);
+            await _hub.Clients.All.SendAsync("broadcastSignedInUsers", users);
 
             return Ok(new { Message = $"POST {this.GetType().Name} Request Completed at {DateTime.Now.ToLongDateString()}" });
         }
 
         [HttpDelete]
-        public IActionResult Delete()
+        public async Task<IActionResult> DeleteAsync()
         {
             _signedInUserService.Clear();
             var users = _signedInUserService.Get();
-            _hub.Clients.All.SendAsync("broadcastSignedInUsers", users);
+            await _hub.Clients.All.SendAsync("broadcastSignedInUsers", users);
 
             return Ok(new { Message = $"DELETE {this.GetType().Name} Request Completed at {DateTime.Now.ToLongDateString()}" });
         }
 
         [HttpDelete("{email}")]
-        public IActionResult DeleteByEmail(string email)
+        public async Task<IActionResult> DeleteByEmailAsync(string email)
         {
             _signedInUserService.RemoveByEmail(email);
             var users = _signedInUserService.Get();
-            _hub.Clients.All.SendAsync("broadcastSignedInUsers", users);
+            await _hub.Clients.All.SendAsync("broadcastSignedInUsers", users);
 
             return Ok(new { Message = $"DELETE {this.GetType().Name} Request Completed, user removed at {DateTime.Now.ToLongDateString()}" });
         }
