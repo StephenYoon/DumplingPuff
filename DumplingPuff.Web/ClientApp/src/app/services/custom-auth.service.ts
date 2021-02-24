@@ -46,6 +46,11 @@ export class CustomAuthService implements OnDestroy {
     });
   }
   
+  getUser(): SocialUser {
+    var retrievedUser = JSON.parse(localStorage.getItem('user')) as SocialUser;
+    return retrievedUser;
+  }
+
   getCurrentUser(): BehaviorSubject<SocialUser> {
     var retrievedUser = JSON.parse(localStorage.getItem('user')) as SocialUser;
     this.currentUser$.next(retrievedUser);

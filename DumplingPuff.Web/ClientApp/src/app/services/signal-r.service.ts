@@ -16,6 +16,7 @@ import { SignedInUserService } from './signed-in-user.service';
 export class SignalRService {
   reconnecting: Subject<boolean> = new Subject();
   currentUser: SocialUser;
+  chatGroupId: string;
   
   private signalrConnection: signalR.HubConnection;
   private reconnectInterval: NodeJS.Timer;
@@ -53,14 +54,13 @@ export class SignalRService {
   public async connect(): Promise<void> {
     console.log('Connecting...');
     const results = await Promise.all([
-      this.authService.getCurrentUser().toPromise(),      
       this.signalrConnection
         .start()
         .then(() => console.log('Connection started'))
         .catch(err => console.log('Error while starting connection: ' + err))
     ]);
 
-    const user = results[0];
+    const user = this.authService.getUser(); //results[0];
     console.log('Got User: ', user.email);
     console.log('Connected');
   }
@@ -77,6 +77,32 @@ export class SignalRService {
     });
   }
 
+  public sendChatMessage(groupId: string, message: ChatMessage): void {
+    this.signalrConnection.send('SendChatMessage', groupId, JSON.stringify(message));
+  }
+
+  public async revealCards(groupId: string): Promise<void> {
+    await this.signalrConnection.send('RevealCards', groupId);
+  }
+
+  public async playerJoinedGame(groupId: string): Promise<void> {
+    this.chatGroupId = groupId;
+    await this.signalrConnection.send('PlayerJoinedGame', groupId, this.currentUser.email, this.currentUser.name);
+  }
+
+  public async playerReconnected(groupId: string): Promise<void> {
+    await this.signalrConnection.send('PlayerReconnected', groupId, this.currentUser.email, this.currentUser.name);
+  }
+
+  public async playerLeftGame(groupId: string): Promise<void> {
+    this.chatGroupId = null;
+    await this.signalrConnection.send('PlayerLeftGame', groupId, this.currentUser.email);
+  }
+
+  public async deleteGame(groupId: string): Promise<void> {
+    await this.signalrConnection.send('DeleteGame', groupId);
+  }
+  
   // NOTE: not sure about this one
   /*
   public chatMessageBroadcast = (message: string) => {

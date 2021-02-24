@@ -18,7 +18,6 @@ import { SignalRServiceResolver } from './services/signal-r-service.resolver';
 const routes: Routes = [
   { path: 'home', component: HomeComponent, pathMatch: 'full' },
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: 'chatbox', component: ChatBoxComponent },
   { path: 'chatbox/:id', component: ChatBoxComponent },
   { path: 'fetch-data', component: FetchDataComponent },
 ];

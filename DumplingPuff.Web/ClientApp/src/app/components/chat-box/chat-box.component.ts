@@ -4,15 +4,16 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { SocialUser } from 'angularx-social-login';
 
-import { AppSettingsService } from '../../services/app-settings.service';
 import { ChatService } from '../../services/chat.service';
 import { CustomAuthService } from '../../services/custom-auth.service';
 import { SignedInUserService } from '../../services/signed-in-user.service';
+import { SignalRService } from 'src/app/services/signal-r.service';
 
-import { AppSettings } from '../../models/app-settings.model';
 import { ChatMessage } from '../../models/chat-message.model';
 import { ChatGroup } from '../../models/chat-group.model';
 import * as moment from 'moment';
+
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-chat-box',
@@ -20,14 +21,15 @@ import * as moment from 'moment';
   styleUrls: ['./chat-box.component.scss']
 })
 export class ChatBoxComponent implements OnInit, OnDestroy {
-  appSettings: AppSettings;
   chatMessage: string = '';
   userSearch: string = '';
   user: SocialUser;
   signedInUsers: SocialUser[] = [];
   selectedUsers: SocialUser[] = [];
   chatUsers: SocialUser[] = [];
+  baseUrl: string;
 
+  defaultChatGroupId: string = 'dumpling-puff-chat-room';
   chatGroupId: string = '';
   chatGroup: ChatGroup;
 
@@ -43,67 +45,57 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private appSettingsService: AppSettingsService,
     private authService: CustomAuthService,
     public chatService: ChatService,
-    public signedInUserService: SignedInUserService) { }
+    public signedInUserService: SignedInUserService,
+    public signalRService: SignalRService) { }
 
     ngOnInit() {      
       this.authService.refreshGoogleToken();
+      this.baseUrl = environment.baseApiUrl;
 
       // TODO: consider MergeMap, ForkJoin and/or combineLatest
       // MergeMap, ForkJoin > https://coryrylan.com/blog/angular-multiple-http-requests-with-rxjs
       // combineLatest > https://stackoverflow.com/questions/44004144/how-to-wait-for-two-observables-in-rxjs
       this.route.params.subscribe(params => {
-        this.appSettingsSubscription = this.appSettingsService.appSettings.subscribe(appSettings => {
-          this.appSettings = appSettings;          
-          this.chatGroupId = params.id || null;
+       
+        this.chatGroupId = params.id || this.defaultChatGroupId;
+        this.user = this.authService.getUser();
 
-          if (!this.chatGroupId || this.chatGroupId == '') {
-            this.chatGroupId = this.appSettings.defaultChatGroupId;
-          }          
-          
-          this.currentUserSubsription = this.authService.currentUser$.subscribe((data) => {
-            this.user = data;
+        if (this.user != null) {
 
-            if (this.user != null) {
-              
-              // Sign-in user	
-              this.signedInUserService.addUser(this.user);
+          // Sign-in user	
+          this.signedInUserService.addUser(this.user);
 
-              // Send empty message to register user
-              this.sendSystemMessage('signed in');
+          // Send empty message to register user
+          this.sendSystemMessage('signed in');
 
-              // Subscribe to chat group
-              this.chatServiceSubscription = this.chatService.getChatGroup(this.chatGroupId).subscribe((chatGroup) => {
-                if (chatGroup) {
-                  this.chatGroup = chatGroup;
-                  this.scrollBottom();
-                }
-                
-                this.chatGroupSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
-                  if (chatGroup) {
-                    this.chatGroup = chatGroup;
-                    this.updateChatUsers();
-                    this.scrollBottom();
-                  }
-                });
-              });
-
+          // Subscribe to chat group
+          this.chatServiceSubscription = this.chatService.getChatGroup(this.chatGroupId).subscribe((chatGroup) => {
+            if (chatGroup) {
+              this.chatGroup = chatGroup;
+              this.scrollBottom();
             }
-
-            console.log('User not found.');
+            
+            this.chatGroupSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
+              if (chatGroup) {
+                this.chatGroup = chatGroup;
+                this.updateChatUsers();
+                this.scrollBottom();
+              }
+            });
           });
+        }
 
-          this.signedInUserServiceSubscription = this.signedInUserService.users$.subscribe((data) => { 	
-            this.signedInUsers = data; 	
-          });
+        this.signedInUserServiceSubscription = this.signedInUserService.users$.subscribe((data) => { 	
+          this.signedInUsers = data; 	
+        });
 
-          if (!this.user) {
-            alert("Please log in first, thanks!");
-            this.router.navigate(['home']);
-          }          
-        })
+        if (!this.user) {
+          alert("Please log in first, thanks!");
+          this.router.navigate(['home']);
+        }
+          
       });
     }
 
@@ -114,6 +106,8 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       emptyMessage.message = `${this.user.email} ${messageText}.`;
       emptyMessage.dateSent = new Date();
       emptyMessage.isHidden = true;
+
+      this.signalRService.sendChatMessage(this.chatGroupId, emptyMessage);
       this.chatService.postMessageToChatGroup(this.chatGroupId, emptyMessage).subscribe((res) => {
         console.log(res);
       });
@@ -218,6 +212,8 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       apiChatMessage.message = this.chatMessage;
       apiChatMessage.dateSent = new Date();
       
+      
+      this.signalRService.sendChatMessage(this.chatGroupId, apiChatMessage);
       this.chatService.postMessageToChatGroup(this.chatGroupId, apiChatMessage).subscribe((data) => {
         this.scrollBottom();
       });
