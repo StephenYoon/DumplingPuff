@@ -13,6 +13,7 @@ import { SignedInUserService } from './signed-in-user.service';
   providedIn: 'root'
 })
 export class SignalRService {
+  baseApiUrl: string;
   reconnecting: Subject<boolean> = new Subject();
   chatGroup$: BehaviorSubject<ChatGroup>;
   currentUser: SocialUser;
@@ -30,10 +31,12 @@ export class SignalRService {
   }  
   
   public setupSignalRConnection = () => {
-    var baseApiUrl = environment.baseApiUrl;
+    this.baseApiUrl = environment.baseApiUrl;
     this.signalrConnection = new signalR.HubConnectionBuilder()
-                            .withUrl(baseApiUrl + '/chat')
+                            .withUrl(this.baseApiUrl + '/chat')
                             .build();
+                            
+    console.log(`BaseApiUrl set to: ${this.baseApiUrl}`);
 
     this.signalrConnection.on('broadcastChatGroup', (data) => {
       this.chatGroup$.next(data);
@@ -57,7 +60,10 @@ export class SignalRService {
       this.signalrConnection
         .start()
         .then(() => console.log('Connection started'))
-        .catch(err => console.log('Error while starting connection: ' + err))
+        .catch(err => {
+          console.error('Error while starting connection: ' + err);
+          console.error(`Error while staring connection with BaseApiUrl set to: ${this.baseApiUrl}`);
+        })
     ]);
 
     const user = this.authService.getUser(); //results[0];
