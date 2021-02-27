@@ -24,6 +24,21 @@ namespace DumplingPuff.Web.Services
             return chatGroup;
         }
 
+        public void AddUserToGroup(string groupId, SocialUser user)
+        {
+            if (user == null)
+            {
+                return;
+            }
+
+            var chatGroup = GetChatGroup(groupId);
+
+            if (!chatGroup.Users.Any(u => u.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                chatGroup.Users.Add(user);
+            }
+        }
+
         public void AddChatMessageToGroup(string groupId, ChatMessage message)
         {
             if (message.User == null)
@@ -44,7 +59,9 @@ namespace DumplingPuff.Web.Services
                 chatGroup = new ChatGroup(groupId);
                 _chatGroups.Add(chatGroup);
             }
+
             chatGroup.Messages.Add(message);
+            AddUserToGroup(groupId, message.User);
         }
 
         public void ClearChatGroupMessages(string groupId)

@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.SignalR;
 using DumplingPuff.Web.Models.Chat;
 using DumplingPuff.Web.Services;
+using DumplingPuff.Web.Models;
 
 namespace DumplingPuff.Web.Hubs
 {
@@ -18,6 +19,65 @@ namespace DumplingPuff.Web.Hubs
         {
             _chatService = chatService;
         }
+
+        public async Task SendChatMessage(string groupId, string chatMessageDto)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            var chatMessage = JsonSerializer.Deserialize<ChatMessage>(chatMessageDto, options);
+
+            _chatService.AddChatMessageToGroup(groupId, chatMessage);
+            var broadcastContent = _chatService.GetChatGroup(groupId);
+            await Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+        }
+
+        public async Task UpdateChatGroup(string groupId, string chatMessageDto)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            var chatMessage = JsonSerializer.Deserialize<ChatMessage>(chatMessageDto, options);
+
+            _chatService.AddChatMessageToGroup(groupId, chatMessage);
+            var broadcastContent = _chatService.GetChatGroup(groupId);
+            await Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+        }
+
+        public async Task UserJoinedChat(string groupId, string userDto)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            var user = JsonSerializer.Deserialize<SocialUser>(userDto, options);
+
+            _chatService.AddUserToGroup(groupId, user);
+            var broadcastContent = _chatService.GetChatGroup(groupId);
+            await Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+        }
+
+        public async Task UserReconnected(string groupId, string userDto)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            var user = JsonSerializer.Deserialize<SocialUser>(userDto, options);
+
+            _chatService.AddUserToGroup(groupId, user);
+            var broadcastContent = _chatService.GetChatGroup(groupId);
+            await Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+        }
+
+        public override Task OnConnectedAsync() =>
+            Clients.All.SendAsync("broadcastSystemMessage", $"{Context.User.Identity.Name} JOINED");
+
+        public Task Echo(string name, string message) =>
+            Clients.Client(Context.ConnectionId)
+                   .SendAsync("echo", name, $"{message} (echo from server)");
 
         public async Task AddToGroup(string groupName)
         {
@@ -32,31 +92,5 @@ namespace DumplingPuff.Web.Hubs
 
             await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has left the group {groupName}.");
         }
-
-        public async Task SendChatMessage(string groupId, string chatMessage)
-        {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            var msg = JsonSerializer.Deserialize<ChatMessage>(chatMessage, options);
-            //_chatService.AddChatMessageToGroup(groupId, chatMessage);
-            //var broadcastContent = _chatService.GetChatGroup(groupId);
-            await Clients.All.SendAsync("test", chatMessage);
-        }
-
-        public async Task UpdateChatGroup(string groupId, ChatMessage chatMessage)
-        {
-            _chatService.AddChatMessageToGroup(groupId, chatMessage);
-            var broadcastContent = _chatService.GetChatGroup(groupId);
-            await Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
-        }
-
-        public override Task OnConnectedAsync() =>
-            Clients.All.SendAsync("broadcastSystemMessage", $"{Context.User.Identity.Name} JOINED");
-
-        public Task Echo(string name, string message) =>
-            Clients.Client(Context.ConnectionId)
-                   .SendAsync("echo", name, $"{message} (echo from server)");
     }
 }

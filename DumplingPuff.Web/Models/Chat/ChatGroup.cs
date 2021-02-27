@@ -12,27 +12,13 @@ namespace DumplingPuff.Web.Models.Chat
         {
             Id = groupId;
             Messages = new List<ChatMessage>();
+            Users = new List<SocialUser>();
         }
 
         public string Id { get; set; }
 
         public List<ChatMessage> Messages { get; set; }
 
-        public List<SocialUser> Users 
-        {
-            get 
-            {
-                var allUsers = Messages != null
-                    ? Messages.Select(m => m.User).ToList()
-                    : new List<SocialUser>();
-
-                var distinctUsers = allUsers
-                  .GroupBy(u => u.Email.ToLowerInvariant())
-                  .Select(g => g.First())
-                  .ToList();
-
-                return distinctUsers;
-            }
-        }
+        public List<SocialUser> Users { get; set; }
     }
 }

@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import * as signalR from "@microsoft/signalr";  // or from "@aspnet/signalr" if you are using an older library
 import { SocialUser } from 'angularx-social-login';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { ChatGroup } from '../models/chat-group.model';
 import { ChatMessage } from '../models/chat-message.model';
-import { AppSettingsService } from './app-settings.service';
 
-import { ChatService } from './chat.service';
 import { CustomAuthService } from './custom-auth.service';
 import { SignedInUserService } from './signed-in-user.service';
 
@@ -15,6 +14,7 @@ import { SignedInUserService } from './signed-in-user.service';
 })
 export class SignalRService {
   reconnecting: Subject<boolean> = new Subject();
+  chatGroup$: BehaviorSubject<ChatGroup>;
   currentUser: SocialUser;
   chatGroupId: string;
   
@@ -22,11 +22,11 @@ export class SignalRService {
   private reconnectInterval: NodeJS.Timer;
 
   constructor(
-    private chatService: ChatService,
     private signedInUserService: SignedInUserService,
     private authService: CustomAuthService
   ) {
     this.setupSignalRConnection();
+    this.chatGroup$ = new BehaviorSubject<ChatGroup>(null);
   }  
   
   public setupSignalRConnection = () => {
@@ -35,8 +35,8 @@ export class SignalRService {
                             .withUrl(baseApiUrl + '/chat')
                             .build();
 
-    this.signalrConnection.on('broadcastChatGroup', (data) => { 
-      this.chatService.updateChatGroup(data); 
+    this.signalrConnection.on('broadcastChatGroup', (data) => {
+      this.chatGroup$.next(data);
     });
 
     this.signalrConnection.on('broadcastSignedInUsers', (data) => {
@@ -61,6 +61,7 @@ export class SignalRService {
     ]);
 
     const user = this.authService.getUser(); //results[0];
+    this.currentUser = user;
     console.log('Got User: ', user.email);
     console.log('Connected');
   }
@@ -81,26 +82,22 @@ export class SignalRService {
     this.signalrConnection.send('SendChatMessage', groupId, JSON.stringify(message));
   }
 
-  public async revealCards(groupId: string): Promise<void> {
-    await this.signalrConnection.send('RevealCards', groupId);
-  }
-
-  public async playerJoinedGame(groupId: string): Promise<void> {
+  public async userJoinedChat(groupId: string): Promise<void> {
     this.chatGroupId = groupId;
-    await this.signalrConnection.send('PlayerJoinedGame', groupId, this.currentUser.email, this.currentUser.name);
+    await this.signalrConnection.send('UserJoinedChat', groupId, JSON.stringify(this.currentUser));
   }
 
-  public async playerReconnected(groupId: string): Promise<void> {
-    await this.signalrConnection.send('PlayerReconnected', groupId, this.currentUser.email, this.currentUser.name);
+  public async userReconnected(groupId: string): Promise<void> {
+    await this.signalrConnection.send('UserReconnected', groupId, JSON.stringify(this.currentUser));
   }
 
-  public async playerLeftGame(groupId: string): Promise<void> {
+  public async userLeftChat(groupId: string): Promise<void> {
     this.chatGroupId = null;
-    await this.signalrConnection.send('PlayerLeftGame', groupId, this.currentUser.email);
+    await this.signalrConnection.send('UserLeftChat', groupId, JSON.stringify(this.currentUser));
   }
 
-  public async deleteGame(groupId: string): Promise<void> {
-    await this.signalrConnection.send('DeleteGame', groupId);
+  public async deleteChat(groupId: string): Promise<void> {
+    await this.signalrConnection.send('DeleteChat', groupId);
   }
   
   // NOTE: not sure about this one

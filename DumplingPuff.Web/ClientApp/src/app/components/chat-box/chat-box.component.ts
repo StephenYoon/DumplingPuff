@@ -65,26 +65,27 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
         if (this.user != null) {
 
           // Sign-in user	
-          this.signedInUserService.addUser(this.user);
+          //this.signedInUserService.addUser(this.user);
+          this.signalRService.userJoinedChat(this.chatGroupId);
 
           // Send empty message to register user
-          this.sendSystemMessage('signed in');
+          //this.sendSystemMessage('signed in');
 
           // Subscribe to chat group
-          this.chatServiceSubscription = this.chatService.getChatGroup(this.chatGroupId).subscribe((chatGroup) => {
-            if (chatGroup) {
-              this.chatGroup = chatGroup;
-              this.scrollBottom();
-            }
+          // this.chatServiceSubscription = this.chatService.getChatGroup(this.chatGroupId).subscribe((chatGroup) => {
+          //   if (chatGroup) {
+          //     this.chatGroup = chatGroup;
+          //     this.scrollBottom();
+          //   }
             
-            this.chatGroupSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
+            this.chatGroupSubscription = this.signalRService.chatGroup$.subscribe((chatGroup) => {
               if (chatGroup) {
                 this.chatGroup = chatGroup;
                 this.updateChatUsers();
                 this.scrollBottom();
               }
             });
-          });
+          // });
         }
 
         this.signedInUserServiceSubscription = this.signedInUserService.users$.subscribe((data) => { 	
@@ -108,9 +109,9 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       emptyMessage.isHidden = true;
 
       this.signalRService.sendChatMessage(this.chatGroupId, emptyMessage);
-      this.chatService.postMessageToChatGroup(this.chatGroupId, emptyMessage).subscribe((res) => {
-        console.log(res);
-      });
+      // this.chatService.postMessageToChatGroup(this.chatGroupId, emptyMessage).subscribe((res) => {
+      //   console.log(res);
+      // });
     }
 
     public getFormattedDateTime(dateValue: Date): string {
@@ -150,6 +151,10 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     public updateChatUsers(): void {
 
       // Get list of users from chat history, start with chat users
+      if (!this.chatGroup){
+        return;
+      }
+
       var chatUserList = this.chatGroup.users.slice();
       
       // // Add signed-in users
@@ -211,12 +216,11 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       apiChatMessage.user = this.user;
       apiChatMessage.message = this.chatMessage;
       apiChatMessage.dateSent = new Date();
-      
-      
+            
       this.signalRService.sendChatMessage(this.chatGroupId, apiChatMessage);
-      this.chatService.postMessageToChatGroup(this.chatGroupId, apiChatMessage).subscribe((data) => {
-        this.scrollBottom();
-      });
+      // this.chatService.postMessageToChatGroup(this.chatGroupId, apiChatMessage).subscribe((data) => {
+      //   this.scrollBottom();
+      // });
   
       this.chatMessage = '';
     }
