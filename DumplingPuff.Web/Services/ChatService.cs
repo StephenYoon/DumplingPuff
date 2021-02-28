@@ -21,7 +21,49 @@ namespace DumplingPuff.Web.Services
         public ChatGroup GetChatGroup(string groupId)
         {
             var chatGroup = _chatGroups.FirstOrDefault(g => g.Id.Equals(groupId, StringComparison.InvariantCultureIgnoreCase));
+
+            if (chatGroup == null)
+            {
+                chatGroup = new ChatGroup(groupId);
+                _chatGroups.Add(chatGroup);
+            }
+
             return chatGroup;
+        }
+
+        public void AddUser(string groupId, SocialUser user)
+        {
+            if (user == null)
+            {
+                return;
+            }
+
+            var chatGroup = GetChatGroup(groupId);
+
+            if (!chatGroup.Users.Any(u => u.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                chatGroup.Users.Add(user);
+            }
+
+            if (!chatGroup.ActiveUsersByEmail.Any(activeEmail => activeEmail.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                chatGroup.ActiveUsersByEmail.Add(user.Email);
+            }
+        }
+
+        public void RemoveUser(string groupId, SocialUser user)
+        {
+            if (user == null)
+            {
+                return;
+            }
+
+            var chatGroup = GetChatGroup(groupId);
+
+            if (chatGroup.ActiveUsersByEmail.Any(activeEmail => activeEmail.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                chatGroup.ActiveUsersByEmail.Remove(user.Email);
+            }
         }
 
         public void AddChatMessageToGroup(string groupId, ChatMessage message)
@@ -44,7 +86,9 @@ namespace DumplingPuff.Web.Services
                 chatGroup = new ChatGroup(groupId);
                 _chatGroups.Add(chatGroup);
             }
+
             chatGroup.Messages.Add(message);
+            AddUser(groupId, message.User);
         }
 
         public void ClearChatGroupMessages(string groupId)

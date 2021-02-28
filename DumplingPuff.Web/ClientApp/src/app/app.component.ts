@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { AppSettingsService } from './services/app-settings.service';
 import { SignalRService } from './services/signal-r.service';
 import { SocialUser } from 'angularx-social-login';
 import { AppSettings } from './models/app-settings.model';
@@ -16,25 +14,10 @@ export class AppComponent implements OnInit {
   user: SocialUser;
   
   constructor(
-    public signalRService: SignalRService, 
-    private appSettingsService: AppSettingsService,
-    private http: HttpClient) { }
+    public signalRService: SignalRService
+  ) { }
 
   ngOnInit() {
-    this.appSettingsService.appSettings.subscribe(appSettings => {
-      this.appSettings = appSettings;
-      
-      this.signalRService.startConnection(this.appSettings.baseApiUrl);
-      this.signalRService.chatGroupListener();
-      this.signalRService.signedInUserListener();
-      this.startHttpRequest();
-    })
-  }
-    
-  private startHttpRequest = () => {
-    this.http.get(this.appSettings.baseApiUrl + '/api/chat')
-      .subscribe(res => {
-        console.log('Started listening: ' + res);
-      })
+    //this.signalRService.connect();
   }
 }

@@ -4,15 +4,15 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { SocialUser } from 'angularx-social-login';
 
-import { AppSettingsService } from '../../services/app-settings.service';
 import { ChatService } from '../../services/chat.service';
 import { CustomAuthService } from '../../services/custom-auth.service';
-import { SignedInUserService } from '../../services/signed-in-user.service';
+import { SignalRService } from 'src/app/services/signal-r.service';
 
-import { AppSettings } from '../../models/app-settings.model';
 import { ChatMessage } from '../../models/chat-message.model';
 import { ChatGroup } from '../../models/chat-group.model';
 import * as moment from 'moment';
+
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-chat-box',
@@ -20,14 +20,14 @@ import * as moment from 'moment';
   styleUrls: ['./chat-box.component.scss']
 })
 export class ChatBoxComponent implements OnInit, OnDestroy {
-  appSettings: AppSettings;
   chatMessage: string = '';
   userSearch: string = '';
   user: SocialUser;
-  signedInUsers: SocialUser[] = [];
   selectedUsers: SocialUser[] = [];
   chatUsers: SocialUser[] = [];
+  baseUrl: string;
 
+  defaultChatGroupId: string = 'dumpling-puff-chat-room';
   chatGroupId: string = '';
   chatGroup: ChatGroup;
 
@@ -35,87 +35,47 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
   currentUserSubsription: any;
   chatServiceSubscription: any;
   chatGroupSubscription: any;
-  signedInUserServiceSubscription: any;
-
   @ViewChild('chatContainerScroll', { read: ElementRef }) public scroll: ElementRef<any>;
   @ViewChild('chatInputBox', { read: ElementRef }) public chatInputBox: ElementRef<any>;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private appSettingsService: AppSettingsService,
-    private authService: CustomAuthService,
+    private customAuthService: CustomAuthService,
     public chatService: ChatService,
-    public signedInUserService: SignedInUserService) { }
+    public signalRService: SignalRService) { }
 
     ngOnInit() {      
-      this.authService.refreshGoogleToken();
+      //this.customAuthService.refreshGoogleToken();
+      this.baseUrl = environment.baseApiUrl;
 
       // TODO: consider MergeMap, ForkJoin and/or combineLatest
       // MergeMap, ForkJoin > https://coryrylan.com/blog/angular-multiple-http-requests-with-rxjs
       // combineLatest > https://stackoverflow.com/questions/44004144/how-to-wait-for-two-observables-in-rxjs
       this.route.params.subscribe(params => {
-        this.appSettingsSubscription = this.appSettingsService.appSettings.subscribe(appSettings => {
-          this.appSettings = appSettings;          
-          this.chatGroupId = params.id || null;
+       
+        this.chatGroupId = params.id || this.defaultChatGroupId;
+        this.user = this.customAuthService.getUser();
 
-          if (!this.chatGroupId || this.chatGroupId == '') {
-            this.chatGroupId = this.appSettings.defaultChatGroupId;
-          }          
-          
-          this.currentUserSubsription = this.authService.currentUser$.subscribe((data) => {
-            this.user = data;
+        if (this.user != null) {
 
-            if (this.user != null) {
-              
-              // Sign-in user	
-              this.signedInUserService.addUser(this.user);
-
-              // Send empty message to register user
-              this.sendSystemMessage('signed in');
-
-              // Subscribe to chat group
-              this.chatServiceSubscription = this.chatService.getChatGroup(this.chatGroupId).subscribe((chatGroup) => {
-                if (chatGroup) {
-                  this.chatGroup = chatGroup;
-                  this.scrollBottom();
-                }
-                
-                this.chatGroupSubscription = this.chatService.chatGroup$.subscribe((chatGroup) => {
-                  if (chatGroup) {
-                    this.chatGroup = chatGroup;
-                    this.updateChatUsers();
-                    this.scrollBottom();
-                  }
-                });
-              });
-
+          // Sign-in user	
+          this.signalRService.userJoinedChat(this.chatGroupId);
+            
+          this.chatGroupSubscription = this.signalRService.chatGroup$.subscribe((chatGroup) => {
+            if (chatGroup) {
+              this.chatGroup = chatGroup;
+              this.updateChatUsers();
+              this.scrollBottom();
             }
-
-            console.log('User not found.');
           });
+        }
 
-          this.signedInUserServiceSubscription = this.signedInUserService.users$.subscribe((data) => { 	
-            this.signedInUsers = data; 	
-          });
-
-          if (!this.user) {
-            alert("Please log in first, thanks!");
-            this.router.navigate(['home']);
-          }          
-        })
-      });
-    }
-
-    public sendSystemMessage(messageText: string): void { 
-      // Send empty message to register user
-      var emptyMessage = new ChatMessage();
-      emptyMessage.user = this.user;
-      emptyMessage.message = `${this.user.email} ${messageText}.`;
-      emptyMessage.dateSent = new Date();
-      emptyMessage.isHidden = true;
-      this.chatService.postMessageToChatGroup(this.chatGroupId, emptyMessage).subscribe((res) => {
-        console.log(res);
+        if (!this.user) {
+          alert("Please log in first, thanks!");
+          this.router.navigate(['home']);
+        }
+          
       });
     }
 
@@ -156,16 +116,12 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     public updateChatUsers(): void {
 
       // Get list of users from chat history, start with chat users
+      if (!this.chatGroup){
+        return;
+      }
+
       var chatUserList = this.chatGroup.users.slice();
       
-      // // Add signed-in users
-      // this.signedInUsers.forEach(su => {
-      //   var foundIndex = fullUserList.findIndex(su => su.email.toLowerCase() == this.user.email.toLowerCase());
-      //   if (foundIndex < 0) {
-      //     fullUserList.push(su);
-      //   }
-      // });
-
       // Filter list if applicable
       if (!this.userSearch || this.userSearch.trim() == '') {
         this.chatUsers = chatUserList;
@@ -186,7 +142,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     }
 
     public userOnline(user: SocialUser): boolean {      
-      var foundIndex = this.signedInUsers.findIndex(su => su.email.toLowerCase() == user.email.toLowerCase());
+      var foundIndex = this.chatGroup.activeUsersByEmail.findIndex(activeUserEmail => activeUserEmail.toLowerCase() == user.email.toLowerCase());
       return foundIndex >= 0;
     }
 
@@ -217,11 +173,9 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       apiChatMessage.user = this.user;
       apiChatMessage.message = this.chatMessage;
       apiChatMessage.dateSent = new Date();
-      
-      this.chatService.postMessageToChatGroup(this.chatGroupId, apiChatMessage).subscribe((data) => {
-        this.scrollBottom();
-      });
-  
+            
+      this.signalRService.sendChatMessage(this.chatGroupId, apiChatMessage);
+
       this.chatMessage = '';
     }
   
@@ -233,13 +187,11 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     
     public ngOnDestroy() {
       // Set user as offline by removing user from signedInUser list
-      this.signedInUserService.removeUser(this.user.email);
-      this.sendSystemMessage('signed out');
+      this.signalRService.userLeftChat(this.chatGroupId);
 
       // Clean up
       if (this.appSettingsSubscription) this.appSettingsSubscription.unsubscribe();
       if (this.currentUserSubsription) this.currentUserSubsription.unsubscribe();
-      if (this.signedInUserServiceSubscription) this.signedInUserServiceSubscription.unsubscribe();
       if (this.chatServiceSubscription) this.chatServiceSubscription.unsubscribe();
       if (this.chatGroupSubscription) this.chatGroupSubscription.unsubscribe();
     }
