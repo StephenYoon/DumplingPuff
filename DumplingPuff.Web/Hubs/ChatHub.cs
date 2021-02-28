@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 using DumplingPuff.Web.Models.Chat;
 using DumplingPuff.Web.Services;
 using DumplingPuff.Web.Models;
+using Google.Apis.Auth.OAuth2;
 
 namespace DumplingPuff.Web.Hubs
 {
@@ -30,7 +31,8 @@ namespace DumplingPuff.Web.Hubs
 
             _chatService.AddChatMessageToGroup(groupId, chatMessage);
             var broadcastContent = _chatService.GetChatGroup(groupId);
-            await Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+            await Clients.Group(groupId).SendAsync("broadcastChatGroup", broadcastContent);
+            await Clients.Group(groupId).SendAsync("notification", $"ChatHub Notification: {chatMessage.User.Email} ({Context.ConnectionId}) sent message to group {groupId}.");
         }
 
         public async Task UpdateChatGroup(string groupId, string chatMessageDto)
@@ -43,7 +45,8 @@ namespace DumplingPuff.Web.Hubs
 
             _chatService.AddChatMessageToGroup(groupId, chatMessage);
             var broadcastContent = _chatService.GetChatGroup(groupId);
-            await Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+            await Clients.Group(groupId).SendAsync("broadcastChatGroup", broadcastContent);
+            await Clients.Group(groupId).SendAsync("notification", $"ChatHub Notification: {chatMessage.User.Email} ({Context.ConnectionId}) updated group {groupId}.");
         }
 
         public async Task UserJoinedChat(string groupId, string userDto)
@@ -54,9 +57,11 @@ namespace DumplingPuff.Web.Hubs
             };
             var user = JsonSerializer.Deserialize<SocialUser>(userDto, options);
 
-            _chatService.AddUserToGroup(groupId, user);
+            _chatService.AddUser(groupId, user);
             var broadcastContent = _chatService.GetChatGroup(groupId);
-            await Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
+            await Clients.Group(groupId).SendAsync("broadcastChatGroup", broadcastContent);
+            await Clients.Group(groupId).SendAsync("notification", $"ChatHub Notification: {user.Email} ({Context.ConnectionId}) joined group {groupId}.");
         }
 
         public async Task UserReconnected(string groupId, string userDto)
@@ -67,9 +72,26 @@ namespace DumplingPuff.Web.Hubs
             };
             var user = JsonSerializer.Deserialize<SocialUser>(userDto, options);
 
-            _chatService.AddUserToGroup(groupId, user);
+            _chatService.AddUser(groupId, user);
             var broadcastContent = _chatService.GetChatGroup(groupId);
-            await Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
+            await Clients.Group(groupId).SendAsync("broadcastChatGroup", broadcastContent);
+            await Clients.Group(groupId).SendAsync("notification", $"ChatHub Notification: {user.Email} ({Context.ConnectionId}) reconnected to group {groupId}.");
+        }
+
+        public async Task UserLeftChat(string groupId, string userDto)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            var user = JsonSerializer.Deserialize<SocialUser>(userDto, options);
+
+            _chatService.RemoveUser(groupId, user);
+            var broadcastContent = _chatService.GetChatGroup(groupId);
+
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
+            await Clients.Group(groupId).SendAsync("notification", $"ChatHub Notification: {user.Email} ({Context.ConnectionId}) left group {groupId}.");
+            await Clients.Group(groupId).SendAsync("broadcastChatGroup", broadcastContent);
         }
 
         public override Task OnConnectedAsync() =>

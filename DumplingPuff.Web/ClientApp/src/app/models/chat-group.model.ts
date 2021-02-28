@@ -5,4 +5,5 @@ export class ChatGroup {
   id: string;
   messages: ChatMessage[];
   users: SocialUser[];
+  activeUsersByEmail: string[];
 }

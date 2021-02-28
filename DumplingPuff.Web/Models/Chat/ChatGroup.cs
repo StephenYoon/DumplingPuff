@@ -13,6 +13,7 @@ namespace DumplingPuff.Web.Models.Chat
             Id = groupId;
             Messages = new List<ChatMessage>();
             Users = new List<SocialUser>();
+            ActiveUsersByEmail = new List<string>();
         }
 
         public string Id { get; set; }
@@ -20,5 +21,7 @@ namespace DumplingPuff.Web.Models.Chat
         public List<ChatMessage> Messages { get; set; }
 
         public List<SocialUser> Users { get; set; }
+
+        public List<string> ActiveUsersByEmail { get; set; }
     }
 }

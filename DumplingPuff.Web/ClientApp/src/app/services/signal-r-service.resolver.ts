@@ -6,13 +6,13 @@ import { AppSettings } from '../models/app-settings.model';
 import { SignalRService } from './signal-r.service';
 
 @Injectable()
-export class SignalRServiceResolver implements Resolve<void> {
+export class SignalRServiceResolver implements Resolve<boolean> {
 
   constructor(
     private signalRService: SignalRService
   ) {}
 
-  public resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): void | Observable<void> | Promise<void> {
+  public resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
     return this.signalRService.connect();
   }
 }

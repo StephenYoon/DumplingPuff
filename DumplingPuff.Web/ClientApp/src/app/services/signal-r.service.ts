@@ -7,7 +7,6 @@ import { ChatGroup } from '../models/chat-group.model';
 import { ChatMessage } from '../models/chat-message.model';
 
 import { CustomAuthService } from './custom-auth.service';
-import { SignedInUserService } from './signed-in-user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +22,6 @@ export class SignalRService {
   private reconnectInterval: NodeJS.Timer;
 
   constructor(
-    private signedInUserService: SignedInUserService,
     private authService: CustomAuthService
   ) {
     this.setupSignalRConnection();
@@ -44,7 +42,10 @@ export class SignalRService {
 
     this.signalrConnection.on('broadcastSignedInUsers', (data) => {
       console.log(`broadcastSignedInUsers: Number of signedInUsers ${JSON.stringify(data.length)}`);
-      this.signedInUserService.updateUsers(data);
+    });
+
+    this.signalrConnection.on('notification', (data) => {
+      console.log(`${data}`);
     });
 
     this.signalrConnection.onclose(() => {
@@ -54,22 +55,23 @@ export class SignalRService {
     });
   }
   
-  public async connect(): Promise<void> {
+  public async connect(): Promise<boolean> {
     console.log('Connecting...');
     const results = await Promise.all([
       this.signalrConnection
         .start()
-        .then(() => console.log('Connection started'))
+        .then(() => {
+          console.log('Connected!');
+        })
         .catch(err => {
           console.error('Error while starting connection: ' + err);
-          console.error(`Error while staring connection with BaseApiUrl set to: ${this.baseApiUrl}`);
         })
     ]);
 
     const user = this.authService.getUser(); //results[0];
     this.currentUser = user;
     console.log('Got User: ', user.email);
-    console.log('Connected');
+    return true;
   }
 
   private reconnect(): void {

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { SignalRService } from './services/signal-r.service';
 import { SocialUser } from 'angularx-social-login';
 import { AppSettings } from './models/app-settings.model';
@@ -19,6 +18,6 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.signalRService.connect();
+    //this.signalRService.connect();
   }
 }
