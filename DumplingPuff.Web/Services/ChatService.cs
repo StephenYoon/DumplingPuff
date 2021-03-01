@@ -18,6 +18,11 @@ namespace DumplingPuff.Web.Services
             ValidateMainChatRoom();
         }
 
+        public List<ChatGroup> GetChatGroups()
+        {
+            return _chatGroups;
+        }
+
         public ChatGroup GetChatGroup(string groupId)
         {
             var chatGroup = _chatGroups.FirstOrDefault(g => g.Id.Equals(groupId, StringComparison.InvariantCultureIgnoreCase));

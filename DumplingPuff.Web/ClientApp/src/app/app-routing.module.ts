@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { AuthGuard } from './authentication/auth.guard';
 import { HomeComponent } from './components/home/home.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { FetchDataComponent } from './components/fetch-data/fetch-data.component';
@@ -18,7 +19,7 @@ import { SignalRServiceResolver } from './services/signal-r-service.resolver';
 const routes: Routes = [
   { path: 'home', component: HomeComponent, pathMatch: 'full' },
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: 'chatbox/:id', component: ChatBoxComponent },
+  { path: 'chatbox/:id', component: ChatBoxComponent, canActivate : [AuthGuard] },
   { path: 'fetch-data', component: FetchDataComponent },
 ];
 

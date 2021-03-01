@@ -19,7 +19,7 @@ import {
   providedIn: 'root',
 })
 export class CustomAuthService implements OnDestroy {
-  userData: SocialUser;
+  currentUser: SocialUser;
   currentUser$: BehaviorSubject<SocialUser>;
 
   constructor(
@@ -32,9 +32,9 @@ export class CustomAuthService implements OnDestroy {
     // Setting logged in user in localstorage else null
     this.authService.authState.subscribe(user => {
       if (user) {
-        this.userData = user;
+        this.currentUser = user;
         this.currentUser$.next(user);
-        localStorage.setItem('user', JSON.stringify(this.userData));
+        localStorage.setItem('user', JSON.stringify(this.currentUser));
       } else {
         localStorage.setItem('user', null);
         this.currentUser$.next(null);
@@ -52,6 +52,11 @@ export class CustomAuthService implements OnDestroy {
     this.currentUser$.next(retrievedUser);
 
     return this.currentUser$;
+  }
+
+  isLoggedIn() {
+    var retrievedUser = this.getUser();
+    return !!retrievedUser;
   }
 
   signInWithGoogle(): void {
@@ -87,5 +92,6 @@ export class CustomAuthService implements OnDestroy {
   }
 
   ngOnDestroy() {
+    //localStorage.removeItem('user');
   }
 }

@@ -57,6 +57,17 @@ namespace DumplingPuff.Web.Hubs
             };
             var user = JsonSerializer.Deserialize<SocialUser>(userDto, options);
 
+            // Remove user from other chats to avoid getting unnecessary updates
+            var chatGroups = _chatService.GetChatGroups();
+            foreach (var chatGroup in chatGroups)
+            {
+                if (!chatGroup.Id.Equals(groupId, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    await UserLeftChat(groupId, userDto);
+                }
+            }
+
+            // Add user to chat
             _chatService.AddUser(groupId, user);
             var broadcastContent = _chatService.GetChatGroup(groupId);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
@@ -91,7 +102,7 @@ namespace DumplingPuff.Web.Hubs
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
             await Clients.Group(groupId).SendAsync("notification", $"ChatHub Notification: {user.Email} ({Context.ConnectionId}) left group {groupId}.");
-            await Clients.Group(groupId).SendAsync("broadcastChatGroup", broadcastContent);
+            //await Clients.Group(groupId).SendAsync("broadcastChatGroup", broadcastContent);
         }
 
         public override Task OnConnectedAsync() =>

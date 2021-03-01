@@ -11,6 +11,7 @@ import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { FetchDataComponent } from './components/fetch-data/fetch-data.component';
 
+import { AuthGuard } from './authentication/auth.guard';
 import { SignalRService } from './services/signal-r.service';
 
 import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
@@ -66,6 +67,7 @@ export function initApp(signalRService: SignalRService) {
     SocialLoginModule
   ],
   providers: [
+    AuthGuard,
     {
       provide: APP_INITIALIZER,
       useFactory: initApp,

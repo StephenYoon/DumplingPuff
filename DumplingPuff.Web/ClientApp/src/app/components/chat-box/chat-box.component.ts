@@ -4,7 +4,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { SocialUser } from 'angularx-social-login';
 
-import { ChatService } from '../../services/chat.service';
 import { CustomAuthService } from '../../services/custom-auth.service';
 import { SignalRService } from 'src/app/services/signal-r.service';
 
@@ -42,7 +41,6 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private customAuthService: CustomAuthService,
-    public chatService: ChatService,
     public signalRService: SignalRService) { }
 
     ngOnInit() {      

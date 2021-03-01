@@ -22,7 +22,7 @@ export class SignalRService {
   private reconnectInterval: NodeJS.Timer;
 
   constructor(
-    private authService: CustomAuthService
+    private customAuthService: CustomAuthService
   ) {
     this.setupSignalRConnection();
     this.chatGroup$ = new BehaviorSubject<ChatGroup>(null);
@@ -68,9 +68,13 @@ export class SignalRService {
         })
     ]);
 
-    const user = this.authService.getUser(); //results[0];
-    this.currentUser = user;
-    console.log('Got User: ', user.email);
+    const user = this.customAuthService.getUser(); //results[0];
+    if (!!this.currentUser) {
+      this.currentUser = user;
+      console.log('Got User: ', user.email);
+    } else {
+      console.log('User not logged in.');
+    }
     return true;
   }
 
@@ -92,16 +96,19 @@ export class SignalRService {
 
   public async userJoinedChat(groupId: string): Promise<void> {
     this.chatGroupId = groupId;
-    await this.signalrConnection.send('UserJoinedChat', groupId, JSON.stringify(this.currentUser));
+    var user = this.customAuthService.getUser();
+    await this.signalrConnection.send('UserJoinedChat', groupId, JSON.stringify(user));
   }
 
   public async userReconnected(groupId: string): Promise<void> {
-    await this.signalrConnection.send('UserReconnected', groupId, JSON.stringify(this.currentUser));
+    var user = this.customAuthService.getUser();
+    await this.signalrConnection.send('UserReconnected', groupId, JSON.stringify(user));
   }
 
   public async userLeftChat(groupId: string): Promise<void> {
     this.chatGroupId = null;
-    await this.signalrConnection.send('UserLeftChat', groupId, JSON.stringify(this.currentUser));
+    var user = this.customAuthService.getUser();
+    await this.signalrConnection.send('UserLeftChat', groupId, JSON.stringify(user));
   }
 
   public async deleteChat(groupId: string): Promise<void> {
