@@ -63,7 +63,7 @@ namespace DumplingPuff.Web.Hubs
             {
                 if (!chatGroup.Id.Equals(groupId, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    await UserLeftChat(groupId, userDto);
+                    await UserLeftChat(chatGroup.Id, userDto);
                 }
             }
 
@@ -102,7 +102,7 @@ namespace DumplingPuff.Web.Hubs
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
             await Clients.Group(groupId).SendAsync("notification", $"ChatHub Notification: {user.Email} ({Context.ConnectionId}) left group {groupId}.");
-            //await Clients.Group(groupId).SendAsync("broadcastChatGroup", broadcastContent);
+            await Clients.Group(groupId).SendAsync("broadcastChatGroup", broadcastContent);
         }
 
         public override Task OnConnectedAsync() =>

@@ -90,8 +90,13 @@ export class SignalRService {
     });
   }
 
-  public sendChatMessage(groupId: string, message: ChatMessage): void {
-    this.signalrConnection.send('SendChatMessage', groupId, JSON.stringify(message));
+  public sendChatMessage(groupId: string, message: string): void {    
+    var chatMessage = new ChatMessage();
+    chatMessage.user = this.customAuthService.getUser();
+    chatMessage.message = message;
+    chatMessage.dateSent = new Date();
+
+    this.signalrConnection.send('SendChatMessage', groupId, JSON.stringify(chatMessage));
   }
 
   public async userJoinedChat(groupId: string): Promise<void> {
