@@ -1,10 +1,10 @@
-﻿using DumplingPuff.Web.Models.Chat;
+﻿using DumplingPuff.Models.Chat;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DumplingPuff.Web.Models.Configuration
+namespace DumplingPuff.Models.Configuration
 {
     public class AppSettings : IAppSettings
     {
@@ -14,5 +14,6 @@ namespace DumplingPuff.Web.Models.Configuration
         public string AuthenticationGoogleClientSecret { get; set; }
         public string BaseApiUrl { get; set; }
         public string DefaultChatGroupId => ChatGroup.DumplingPuffMainChatGroupId;
+        public string DumplingPuffDatabaseConnection { get; set; }
     }
 }

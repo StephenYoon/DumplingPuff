@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using DumplingPuff.Web.Models.Configuration;
+using DumplingPuff.Models.Configuration;
 using DumplingPuff.Web.Hubs;
 using DumplingPuff.Web.Services;
 

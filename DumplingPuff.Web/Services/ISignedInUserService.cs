@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using DumplingPuff.Web.Models;
+using DumplingPuff.Models;
 
 namespace DumplingPuff.Web.Services
 {
