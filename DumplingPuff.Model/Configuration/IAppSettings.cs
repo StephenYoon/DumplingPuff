@@ -1,4 +1,4 @@
-﻿namespace DumplingPuff.Web.Models.Configuration
+﻿namespace DumplingPuff.Models.Configuration
 {
     public interface IAppSettings
     {
@@ -6,5 +6,6 @@
         string AuthenticationGoogleClientId { get; set; }
         string AuthenticationGoogleClientSecret { get; set; }
         string DefaultChatGroupId { get; }
+        string DumplingPuffDatabaseConnection { get; set; }
     }
 }

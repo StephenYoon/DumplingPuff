@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using DumplingPuff.Web.Models;
-using DumplingPuff.Web.Models.Chat;
+using DumplingPuff.Models;
+using DumplingPuff.Models.Chat;
 
 namespace DumplingPuff.Web.Services
 {

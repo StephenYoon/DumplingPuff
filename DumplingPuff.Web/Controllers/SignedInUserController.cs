@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using DumplingPuff.Web.Hubs;
-using DumplingPuff.Web.Models;
+using DumplingPuff.Models;
 using DumplingPuff.Web.Services;
 using DumplingPuff.Web.Attributes;
 using System.Threading.Tasks;

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using DumplingPuff.Web.Hubs;
-using DumplingPuff.Web.Models.Chat;
+using DumplingPuff.Models.Chat;
 using DumplingPuff.Web.Services;
 using DumplingPuff.Web.Attributes;
 

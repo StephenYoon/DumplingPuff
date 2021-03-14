@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.SignalR;
-using DumplingPuff.Web.Models.Chat;
+using DumplingPuff.Models.Chat;
 using DumplingPuff.Web.Services;
-using DumplingPuff.Web.Models;
+using DumplingPuff.Models;
 using Google.Apis.Auth.OAuth2;
 
 namespace DumplingPuff.Web.Hubs

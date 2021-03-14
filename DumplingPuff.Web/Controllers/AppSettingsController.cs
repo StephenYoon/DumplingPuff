@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using DumplingPuff.Web.Attributes;
-using DumplingPuff.Web.Models.Configuration;
+using DumplingPuff.Models.Configuration;
 
 namespace DumplingPuff.Web.Controllers
 {

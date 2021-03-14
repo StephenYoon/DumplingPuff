@@ -1,4 +1,4 @@
-﻿namespace DumplingPuff.Web.Models
+﻿namespace DumplingPuff.Models
 {
     public class SocialUser
     {
