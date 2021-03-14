@@ -26,7 +26,7 @@ namespace DumplingPuff.DataAccess.Repository
         public Repository(IConnectionFactory connectionFactory)
         {
             OrmConfiguration.DefaultDialect = SqlDialect.MsSql;
-            Database = connectionFactory.CreatePortalConnection();
+            Database = connectionFactory.CreateDumplingPuffConnection();
         }
 
         /// <summary>

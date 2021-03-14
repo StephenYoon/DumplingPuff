@@ -5,6 +5,6 @@ namespace DumplingPuff.DataAccess.Connection
 {
     public interface IConnectionFactory
     {
-        SqlConnection CreatePortalConnection();
+        SqlConnection CreateDumplingPuffConnection();
     }
 }

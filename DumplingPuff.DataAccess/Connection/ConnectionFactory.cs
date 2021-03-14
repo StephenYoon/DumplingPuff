@@ -13,7 +13,7 @@ namespace DumplingPuff.DataAccess.Connection
             _appSettings = settings;
         }
 
-        public SqlConnection CreatePortalConnection()
+        public SqlConnection CreateDumplingPuffConnection()
         {
             var connectionBuilder = new SqlConnectionStringBuilder(_appSettings.DumplingPuffDatabaseConnection);
             return new SqlConnection(connectionBuilder.ToString());
