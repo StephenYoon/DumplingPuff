@@ -27,6 +27,7 @@ namespace DumplingPuff.Web
             var settings = Configuration.Get<AppSettings>();
             settings.AuthenticationGoogleClientId = Configuration.GetValue<string>("Authentication:Google:ClientId");
             settings.BaseApiUrl = Configuration.GetValue<string>("BaseApiUrl");
+            settings.DumplingPuffDatabaseConnection = Configuration.GetValue<string>("Databases:DumplingPuff");
             services.AddSingleton<IAppSettings>(t => settings);
 
             // Services

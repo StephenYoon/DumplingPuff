@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DumplingPuff.DataAccess.Repository
+namespace DumplingPuff.DataAccess.Repository.Interfaces
 {
     /// <summary>
     /// Defines generic methods for interacting with the database.
