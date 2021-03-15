@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DumplingPuff.Database.Build", "DumplingPuff.Database.Build\DumplingPuff.Database.Build.csproj", "{9A976918-4463-42E2-BCDF-DC011F189660}"
-EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DumplingPuff.Database", "DumplingPuff.Database\DumplingPuff.Database.sqlproj", "{FB6B8547-F301-4D0A-9381-B6003290979D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DumplingPuff.DataAccess", "DumplingPuff.DataAccess\DumplingPuff.DataAccess.csproj", "{B5D30F9A-AD9D-4C37-938E-890096000E56}"
@@ -33,10 +31,6 @@ Global
 		{7F3F457D-44A2-46C7-BDCE-B09FB1CB41ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F3F457D-44A2-46C7-BDCE-B09FB1CB41ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F3F457D-44A2-46C7-BDCE-B09FB1CB41ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9A976918-4463-42E2-BCDF-DC011F189660}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A976918-4463-42E2-BCDF-DC011F189660}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A976918-4463-42E2-BCDF-DC011F189660}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A976918-4463-42E2-BCDF-DC011F189660}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FB6B8547-F301-4D0A-9381-B6003290979D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FB6B8547-F301-4D0A-9381-B6003290979D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB6B8547-F301-4D0A-9381-B6003290979D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
