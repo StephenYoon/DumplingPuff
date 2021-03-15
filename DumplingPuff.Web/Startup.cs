@@ -40,6 +40,8 @@ namespace DumplingPuff.Web
 
             services.AddTransient<IConnectionFactory, ConnectionFactory>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IChatGroupRepository, ChatGroupRepository>();
+            services.AddTransient<IChatMessageRepository, ChatMessageRepository>();
             services.AddTransient<IUserService, UserService>();
 
             /*

@@ -12,7 +12,7 @@ namespace DumplingPuff.EntityModels.DumplingPuff
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public int Id { get; set; }
         public string Provider { get; set; }
-        public string SocialProviderId { get; set; }
+        public string SocialUserId { get; set; }
         public string Email { get; set; }
         public string Name { get; set; }
         public string PhotoUrl { get; set; }

@@ -18,32 +18,50 @@ namespace DumplingPuff.Services
             _userRepository = userRepository;
         }
 
+        public SocialUser GetByEmail(string email)
+        {
+            var entity = _userRepository.GetAll().Where(u => u.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+
+            return entity == null
+                ? null
+                : new SocialUser
+                {
+                    InternalId = entity.Id,
+                    Provider = entity.Provider,
+                    Id = entity.SocialUserId,
+                    Email = entity.Email,
+                    Name = entity.Name,
+                    PhotoUrl = entity.PhotoUrl,
+                    FirstName = entity.FirstName,
+                    LastName = entity.LastName
+                };
+        }
+
         public void AddOrUpdate(SocialUser user)
         {
-            var userEntity = new UserEntity
+            var entity = _userRepository.GetAll().Where(u => u.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            if (entity == null)
             {
-                Id = 0,
-                Provider = user.Provider,
-                SocialProviderId = user.Id,
-                Email = user.Email,
-                Name = user.Name,
-                PhotoUrl = user.PhotoUrl,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                DateCreated = DateTime.Now,
-                DateUpdated = DateTime.Now,
-                DateLastLogin = DateTime.Now
-            };
-
-            var existingUserEntity = _userRepository.GetAll().Where(u => u.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-            if (existingUserEntity == null)
-            {
+                var userEntity = new UserEntity
+                {
+                    Id = 0,
+                    Provider = user.Provider,
+                    SocialUserId = user.Id,
+                    Email = user.Email,
+                    Name = user.Name,
+                    PhotoUrl = user.PhotoUrl,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    DateCreated = DateTime.Now,
+                    DateUpdated = DateTime.Now,
+                    DateLastLogin = DateTime.Now
+                };
                 _userRepository.AddOrUpdate(userEntity);
             }
             else
             {
-                existingUserEntity.DateLastLogin = DateTime.Now;
-                _userRepository.AddOrUpdate(existingUserEntity);
+                entity.DateLastLogin = DateTime.Now;
+                _userRepository.AddOrUpdate(entity);
             }
         }
     }
