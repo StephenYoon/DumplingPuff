@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using DumplingPuff.Models;
+using DumplingPuff.Services.Interfaces;
 
-namespace DumplingPuff.Web.Services
+namespace DumplingPuff.Services
 {
     public class SignedInUserService : ISignedInUserService
     {

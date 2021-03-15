@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DumplingPuff.Models;
 
-namespace DumplingPuff.Web.Services
+namespace DumplingPuff.Services.Interfaces
 {
     public interface ISignedInUserService
     {

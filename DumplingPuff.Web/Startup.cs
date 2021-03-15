@@ -7,7 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DumplingPuff.Models.Configuration;
 using DumplingPuff.Web.Hubs;
-using DumplingPuff.Web.Services;
+using DumplingPuff.DataAccess.Repository.Interfaces;
+using DumplingPuff.DataAccess.Repository;
+using DumplingPuff.DataAccess.Connection;
+using DumplingPuff.Services;
+using DumplingPuff.Services.Interfaces;
 
 namespace DumplingPuff.Web
 {
@@ -33,6 +37,10 @@ namespace DumplingPuff.Web
             // Services
             services.AddSingleton<IChatService, ChatService>();
             services.AddSingleton<ISignedInUserService, SignedInUserService>();
+
+            services.AddTransient<IConnectionFactory, ConnectionFactory>();
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IUserService, UserService>();
 
             /*
              * By not passing a parameter to AddAzureSignalR(), this code uses the default configuration key 

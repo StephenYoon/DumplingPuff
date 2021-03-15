@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DumplingPuff.DataAccess\DumplingPuff.DataAccess.csproj" />
+    <ProjectReference Include="..\DumplingPuff.EntityModel\DumplingPuff.EntityModels.csproj" />
+    <ProjectReference Include="..\DumplingPuff.Model\DumplingPuff.Models.csproj" />
+  </ItemGroup>
+
+</Project>

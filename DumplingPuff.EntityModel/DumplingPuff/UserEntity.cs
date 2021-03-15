@@ -9,6 +9,7 @@ namespace DumplingPuff.EntityModels.DumplingPuff
     public class UserEntity
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public int Id { get; set; }
         public string Provider { get; set; }
         public string SocialProviderId { get; set; }

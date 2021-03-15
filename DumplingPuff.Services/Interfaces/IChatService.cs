@@ -2,7 +2,7 @@
 using DumplingPuff.Models;
 using DumplingPuff.Models.Chat;
 
-namespace DumplingPuff.Web.Services
+namespace DumplingPuff.Services.Interfaces
 {
     public interface IChatService
     {
