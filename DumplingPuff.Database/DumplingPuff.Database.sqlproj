@@ -66,4 +66,7 @@
     <Build Include="dbo\Tables\ChatMessages.sql" />
     <Build Include="dbo\Tables\ChatGroups.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="DumplingPuff.Database.publish.xml" />
+  </ItemGroup>
 </Project>
