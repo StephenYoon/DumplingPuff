@@ -36,6 +36,20 @@ steps:
     configuration: '$(buildConfiguration)'
     restoreNugetPackages: true
 
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: 'DumplingPuff.Database/bin/release'
+    Contents: '**/DumplingPuff.Database.dacpac'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    OverWrite: true
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: 'DumplingPuff.Database'
+    Contents: 'DumplingPuff.Database.publish.xml'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    OverWrite: true
+
 - task: VSTest@2
   inputs:
     platform: '$(buildPlatform)'
