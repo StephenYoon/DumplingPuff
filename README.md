@@ -1,5 +1,14 @@
 # DumplingPuff
-Not sure what this is going to be yet, but we'll see... ¯\_(ツ)_/¯
+Starting out with a ChatApp to get a better understanding of what I will need to build out a simple turn-based game.
+
+## Fancy technologies under consideration:
+- ASP.NET Core and C# for cross-platform server-side code
+- Azure Cloud Services for building and deploying our application
+  - SignalR
+  - SQL Server
+- Angular and TypeScript for client-side code
+- Google Sign-In for user authentication
+- Bootstrap for layout and styling
 
 Dev notes:
 
