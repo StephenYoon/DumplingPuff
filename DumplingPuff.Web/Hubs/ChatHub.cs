@@ -6,7 +6,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.SignalR;
 using DumplingPuff.Models.Chat;
-using DumplingPuff.Web.Services;
+using DumplingPuff.Services;
+using DumplingPuff.Services.Interfaces;
 using DumplingPuff.Models;
 using Google.Apis.Auth.OAuth2;
 
@@ -15,10 +16,12 @@ namespace DumplingPuff.Web.Hubs
     public class ChatHub : Hub
     {
         private IChatService _chatService;
+        private IUserService _userService;
 
-        public ChatHub(IChatService chatService)
+        public ChatHub(IChatService chatService, IUserService userService)
         {
             _chatService = chatService;
+            _userService = userService;
         }
 
         public async Task SendChatMessage(string groupId, string chatMessageDto)
@@ -73,6 +76,9 @@ namespace DumplingPuff.Web.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
             await Clients.Group(groupId).SendAsync("broadcastChatGroup", broadcastContent);
             await Clients.Group(groupId).SendAsync("notification", $"ChatHub Notification: {user.Email} ({Context.ConnectionId}) joined group {groupId}.");
+
+            // Update user
+            _userService.AddOrUpdate(user);
         }
 
         public async Task UserReconnected(string groupId, string userDto)

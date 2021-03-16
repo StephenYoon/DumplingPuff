@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using DumplingPuff.Web.Attributes;
 using DumplingPuff.Web.Hubs;
 using DumplingPuff.Models.Chat;
-using DumplingPuff.Web.Services;
-using DumplingPuff.Web.Attributes;
+using DumplingPuff.Services;
+using DumplingPuff.Services.Interfaces;
 
 namespace DumplingPuff.Web.Controllers
 {

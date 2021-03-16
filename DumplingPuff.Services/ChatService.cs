@@ -1,18 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using DumplingPuff.DataAccess.Repository.Interfaces;
+using DumplingPuff.EntityModels.DumplingPuff;
 using DumplingPuff.Models;
 using DumplingPuff.Models.Chat;
+using DumplingPuff.Services.Interfaces;
 
-namespace DumplingPuff.Web.Services
+namespace DumplingPuff.Services
 {
     public class ChatService : IChatService
     {
         private List<ChatGroup> _chatGroups;
+        private readonly IChatGroupRepository _chatGroupRepository;
+        private readonly IChatMessageRepository _chatMessageRepository;
+        private readonly IUserService _userService;
 
-        public ChatService()
+        public ChatService(
+            IChatGroupRepository chatGroupRepository,
+            IChatMessageRepository chatMessageRepository,
+            IUserService userService
+        )
         {
             _chatGroups = new List<ChatGroup>();
+            _chatGroupRepository = chatGroupRepository;
+            _chatMessageRepository = chatMessageRepository;
+            _userService = userService;
 
             // Should always have the main chat room
             ValidateMainChatRoom();
@@ -94,6 +108,30 @@ namespace DumplingPuff.Web.Services
 
             chatGroup.Messages.Add(message);
             AddUser(groupId, message.User);
+
+            // Store message
+            var user = _userService.GetByEmail(message.User.Email);
+            if (user == null)
+            {
+                _userService.AddOrUpdate(message.User);
+            }
+
+            var chatGroupEntity = _chatGroupRepository.GetAll().Where(cg => cg.GroupName.Equals(groupId, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            if (chatGroupEntity == null)
+            {
+                _chatGroupRepository.AddOrUpdate(new ChatGroupEntity { GroupName = groupId });
+                chatGroupEntity = _chatGroupRepository.GetAll().Where(cg => cg.GroupName.Equals(groupId, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            }
+
+            var chatMessageEntity = new ChatMessageEntity 
+            {
+                ChatGroupId = chatGroupEntity.Id,
+                UserId = user.InternalId,
+                Message = message.Message,
+                DateSent = message.DateSent,
+                IsHidden = message.IsHidden
+            };
+            _chatMessageRepository.AddOrUpdate(chatMessageEntity);
         }
 
         public void ClearChatGroupMessages(string groupId)

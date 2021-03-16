@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using DumplingPuff.DataAccess.Connection;
+using DumplingPuff.DataAccess.Repository.Interfaces;
 using Dapper.FastCrud;
 
 namespace DumplingPuff.DataAccess.Repository

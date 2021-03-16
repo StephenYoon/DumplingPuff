@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DumplingPuff.Model\DumplingPuff.Models.csproj" />
+    <ProjectReference Include="..\DumplingPuff.Services\DumplingPuff.Services.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

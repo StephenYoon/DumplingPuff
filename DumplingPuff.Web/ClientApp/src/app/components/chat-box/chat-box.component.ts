@@ -32,7 +32,6 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
 
   appSettingsSubscription: any;
   currentUserSubsription: any;
-  chatServiceSubscription: any;
   chatGroupSubscription: any;
   @ViewChild('chatContainerScroll', { read: ElementRef }) public scroll: ElementRef<any>;
   @ViewChild('chatInputBox', { read: ElementRef }) public chatInputBox: ElementRef<any>;
@@ -173,7 +172,6 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     // Clean up
     if (this.appSettingsSubscription) this.appSettingsSubscription.unsubscribe();
     if (this.currentUserSubsription) this.currentUserSubsription.unsubscribe();
-    if (this.chatServiceSubscription) this.chatServiceSubscription.unsubscribe();
     if (this.chatGroupSubscription) this.chatGroupSubscription.unsubscribe();
   }
 }
