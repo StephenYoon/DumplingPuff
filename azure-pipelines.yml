@@ -46,7 +46,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     SourceFolder: 'DumplingPuff.Database'
-    Contents: 'DumplingPuff.Database.publish.xml'
+    Contents: '**/DumplingPuff.Database.publish.xml'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     OverWrite: true
 
