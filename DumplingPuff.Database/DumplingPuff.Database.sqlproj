@@ -67,6 +67,8 @@
     <Build Include="dbo\Tables\ChatGroups.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DumplingPuff.Database.publish.xml" />
+    <None Include="DumplingPuff.Database.publish.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
