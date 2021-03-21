@@ -160,9 +160,11 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
   }
 
   public scrollBottom() {
-    this.chatInputBox.nativeElement.focus();
-    this.scroll.nativeElement.scrollTop = this.scroll.nativeElement.scrollHeight;
-    //this.scroll.nativeElement.scrollTop = this.scroll.nativeElement.scrollHeight - this.scroll.nativeElement.clientHeight;
+    if (!!this.chatInputBox){
+      this.chatInputBox.nativeElement.focus();
+      this.scroll.nativeElement.scrollTop = this.scroll.nativeElement.scrollHeight;
+      //this.scroll.nativeElement.scrollTop = this.scroll.nativeElement.scrollHeight - this.scroll.nativeElement.clientHeight;
+    }
   }
   
   public ngOnDestroy() {

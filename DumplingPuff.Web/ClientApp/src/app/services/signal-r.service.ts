@@ -49,6 +49,7 @@ export class SignalRService {
     });
 
     this.signalrConnection.onclose(() => {
+      console.log(`SignalrConnection closed.`);
       this.reconnectInterval = setInterval(() => {
         this.reconnect();
       }, 2000);
