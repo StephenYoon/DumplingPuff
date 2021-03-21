@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   baseApiUrl: 'https://localhost:5001',
-  msAuthClientId: 'ad840eb6-f03c-44a5-b304-f7c0ca575e12',
+  msAuthClientId: '81a23715-e876-4ca8-a3f9-45d56757e6fb',
   msAuthTenantId: '948ac4ca-24df-47b5-b41f-312848ee651e'
 };
 
