@@ -2,6 +2,7 @@ import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, NG_VALIDATORS } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { WaruSkiesModule } from './modules/waru-skies/waru-skies.module';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -32,22 +33,7 @@ export function initApp(signalRService: SignalRService) {
       .catch(err => {
         console.error('InitApp encountered an error: ' + err);
       });
-
-    // return http.get('https://api.github.com/users/sagar-ganatra')
-    //   .toPromise()
-    //   .then((resp) => {
-    //     console.log('Response 1 - ', resp);
-    //   });
   };
-
-  // return () => {
-  //   return new Promise((resolve) => {
-  //     setTimeout(() => {
-  //       console.log('In initApp');
-  //       resolve();
-  //     }, 3000);
-  //   });
-  // };
 }
 
 @NgModule({
@@ -64,7 +50,8 @@ export function initApp(signalRService: SignalRService) {
     FormsModule,
     HttpClientModule,
     AppRoutingModule,
-    SocialLoginModule
+    SocialLoginModule,
+    WaruSkiesModule
   ],
   providers: [
     AuthGuard,
