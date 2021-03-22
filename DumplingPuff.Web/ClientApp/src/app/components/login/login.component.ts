@@ -9,9 +9,7 @@ import {
   VKLoginProvider,
   MicrosoftLoginProvider
 } from 'angularx-social-login';
-import { AppSettings } from '../../models/app-settings.model';
 
-import { AppSettingsService } from '../../services/app-settings.service';
 import { CustomAuthService } from '../../services/custom-auth.service';
 
 @Component({
@@ -21,26 +19,24 @@ import { CustomAuthService } from '../../services/custom-auth.service';
 })
 export class LoginComponent implements OnInit {
 
-  appSettings: AppSettings | undefined;
   user: SocialUser | undefined;
   user$: BehaviorSubject<SocialUser>;
   GoogleLoginProvider = GoogleLoginProvider;
 
   constructor(
-    private authService: CustomAuthService,
-    private appSettingsService: AppSettingsService
+    private authService: CustomAuthService
   ) { }
 
   ngOnInit() {
     this.user$ = this.authService.getCurrentUser();
-
-    this.appSettingsService.appSettings.subscribe(appSettings => {
-      this.appSettings = appSettings;
-    })
   }
 
   signInWithGoogle(): void {
     this.authService.signInWithGoogle();
+  }
+
+  signInWithMicrosoft(): void {
+    this.authService.signInWithMicrosoft();
   }
 
   signOut(): void {

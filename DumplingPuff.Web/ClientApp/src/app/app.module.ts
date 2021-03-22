@@ -12,6 +12,8 @@ import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { FetchDataComponent } from './components/fetch-data/fetch-data.component';
 
+import { environment } from '@environments';
+
 import { AuthGuard } from './authentication/auth.guard';
 import { SignalRService } from './services/signal-r.service';
 
@@ -68,7 +70,7 @@ export function initApp(signalRService: SignalRService) {
         providers: [
           {
             id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider('613412634403-g03came9lr993lgvu877h3n2lj3evave.apps.googleusercontent.com'),
+            provider: new GoogleLoginProvider(environment.googleAuthClientId),
           },
           {
             id: FacebookLoginProvider.PROVIDER_ID,
@@ -84,8 +86,10 @@ export function initApp(signalRService: SignalRService) {
           },
           {
             id: MicrosoftLoginProvider.PROVIDER_ID,
-            provider: new MicrosoftLoginProvider('client-id'),
-          }
+            provider: new MicrosoftLoginProvider(environment.msAuthClientId, {
+              redirect_uri: environment.baseApiUrl
+            })
+          },
         ],
       } as SocialAuthServiceConfig,
     }

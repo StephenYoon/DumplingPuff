@@ -1,4 +1,7 @@
 export const environment = {
   production: true,
-  baseApiUrl: '#{BaseApiUrl}#'
+  baseApiUrl: '#{BaseApiUrl}#',
+  googleAuthClientId: '#{GoogleAuthClientId}#',
+  msAuthClientId: '#{MSAuthClientId}#',
+  msAuthTenantId: '#{MSAuthTenantId}#'
 };

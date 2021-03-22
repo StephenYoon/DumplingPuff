@@ -4,7 +4,10 @@
 
 export const environment = {
   production: false,
-  baseApiUrl: 'https://localhost:5001'
+  baseApiUrl: 'https://localhost:5001',
+  googleAuthClientId: 'googleAuthClientId',
+  msAuthClientId: 'msAuthClientId',
+  msAuthTenantId: 'msAuthTenantId'
 };
 
 /*

@@ -27,7 +27,7 @@
       "@modules/*": [
         "src/app/modules/*"
       ],
-      "@env": [
+      "@environments": [
         "src/environments/environment"
       ]
     }
