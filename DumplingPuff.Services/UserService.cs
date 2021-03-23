@@ -18,9 +18,12 @@ namespace DumplingPuff.Services
             _userRepository = userRepository;
         }
 
-        public SocialUser GetByEmail(string email)
+        public SocialUser GetByEmail(string email, string provider)
         {
-            var entity = _userRepository.GetAll().Where(u => u.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            var entity = _userRepository
+                .GetAll()
+                .Where(u => u.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase) && u.Provider.Equals(provider, StringComparison.InvariantCultureIgnoreCase))
+                .FirstOrDefault();
 
             return entity == null
                 ? null
@@ -39,7 +42,11 @@ namespace DumplingPuff.Services
 
         public void AddOrUpdate(SocialUser user)
         {
-            var entity = _userRepository.GetAll().Where(u => u.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            var entity = _userRepository
+                .GetAll()
+                .Where(u => u.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase) && u.Provider.Equals(user.Provider, StringComparison.InvariantCultureIgnoreCase))
+                .FirstOrDefault();
+
             if (entity == null)
             {
                 var userEntity = new UserEntity

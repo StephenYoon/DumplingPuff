@@ -8,7 +8,7 @@ namespace DumplingPuff.Services.Interfaces
 {
     public interface IUserService
     {
-        SocialUser GetByEmail(string email);
+        SocialUser GetByEmail(string email, string provider);
         void AddOrUpdate(SocialUser user);
     }
 }
