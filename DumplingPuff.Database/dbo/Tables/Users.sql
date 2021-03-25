@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[Users] (
+CREATE TABLE [dbo].[Users] (
     [Id]            INT           IDENTITY (1, 1) NOT NULL,
     [Provider]      VARCHAR (50)  NOT NULL,
     [SocialUserId]  VARCHAR (255) NULL,
@@ -16,7 +16,9 @@
 
 
 
+
+
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [NCI_Users_Email]
-    ON [dbo].[Users]([Email] ASC);
+CREATE UNIQUE NONCLUSTERED INDEX [NCI_Users_Provider_Email]
+    ON [dbo].[Users]([Provider] ASC, [Email] ASC);
 

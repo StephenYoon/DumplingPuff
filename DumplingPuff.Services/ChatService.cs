@@ -110,7 +110,7 @@ namespace DumplingPuff.Services
             AddUser(groupId, message.User);
 
             // Store message
-            var user = _userService.GetByEmail(message.User.Email);
+            var user = _userService.GetByEmail(message.User.Email, message.User.Provider);
             if (user == null)
             {
                 _userService.AddOrUpdate(message.User);
