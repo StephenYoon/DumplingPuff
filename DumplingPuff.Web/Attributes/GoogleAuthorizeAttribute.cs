@@ -42,14 +42,14 @@ namespace DumplingPuff.Web.Attributes
                     context.Result = new ForbidResult();
                 }
 
-                if (authHeader.Equals("google", StringComparison.InvariantCultureIgnoreCase))
+                if (authProvider.Equals("google", StringComparison.InvariantCultureIgnoreCase))
                 {
                     // Grab the token and verify through google. If verification fails, and exception will be thrown.
                     var token = authHeader.Remove(0, 7);
                     var validated = GoogleJsonWebSignature.ValidateAsync(token, new GoogleJsonWebSignature.ValidationSettings()).Result;
                 }
 
-                if (authHeader.Equals("microsoft", StringComparison.InvariantCultureIgnoreCase))
+                if (authProvider.Equals("microsoft", StringComparison.InvariantCultureIgnoreCase))
                 {
                     // Grab the token and verify. If verification fails, and exception will be thrown.
                     var token = authHeader.Remove(0, 7);

@@ -12,7 +12,7 @@ using DumplingPuff.Services.Interfaces;
 
 namespace DumplingPuff.Web.Controllers
 {
-    [GoogleAuthorize]
+    [CustomAuthorize]//CustomAuthorize, GoogleAuthorize
     [Route("api/[controller]")]
     [ApiController]
     public class ChatController : ControllerBase
@@ -29,6 +29,11 @@ namespace DumplingPuff.Web.Controllers
         [HttpGet("chatgroup/{groupId}")]
         public async Task<IActionResult> GetChatGroupAsync(string groupId)
         {
+            /*
+            Logging:
+            var foo = $"{this.GetType().Name}.{System.Reflection.MethodBase.GetCurrentMethod().Name}";
+            */
+
             var broadcastContent = _chatService.GetChatGroup(groupId);
             await _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
 

@@ -81,6 +81,10 @@ export class CustomAuthService implements OnDestroy {
 
   signOut(): void {
     this.authService.signOut().then(() => {
+      console.log('Signed out: ', JSON.stringify(this.currentUser.email));
+    }).catch((err)=>{
+      console.error(err);
+    }).finally(()=>{
       localStorage.removeItem('user');
       this.currentUser$.next(null);
       this.router.navigate(['/']);

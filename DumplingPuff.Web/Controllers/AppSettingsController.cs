@@ -9,7 +9,7 @@ using DumplingPuff.Models.Configuration;
 
 namespace DumplingPuff.Web.Controllers
 {
-    [GoogleAuthorize]
+    [CustomAuthorize]//CustomAuthorize, GoogleAuthorize
     [ApiController]
     [Route("api/[controller]")]
     public class AppSettingsController : Controller
