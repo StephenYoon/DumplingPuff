@@ -34,6 +34,7 @@ namespace DumplingPuff.Web.Attributes
                     context.Result = new ForbidResult();
                 }
                 var authHeader = headers["Authorization"].ToString();
+                var authProvider = headers["AuthorizationProvider"].ToString();
 
                 // Verify authorization header starts with bearer and has a token
                 if (!authHeader.StartsWith("Bearer ") && authHeader.Length > 7)
@@ -41,18 +42,19 @@ namespace DumplingPuff.Web.Attributes
                     context.Result = new ForbidResult();
                 }
 
-                // Grab the token and verify through google. If verification fails, and exception will be thrown.
-                var token = authHeader.Remove(0, 7);
-                var validated = GoogleJsonWebSignature.ValidateAsync(token, new GoogleJsonWebSignature.ValidationSettings()).Result;
+                if (authHeader.Equals("google", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // Grab the token and verify through google. If verification fails, and exception will be thrown.
+                    var token = authHeader.Remove(0, 7);
+                    var validated = GoogleJsonWebSignature.ValidateAsync(token, new GoogleJsonWebSignature.ValidationSettings()).Result;
+                }
 
-                //var validated = GoogleJsonWebSignature.ValidateAsync(token, new GoogleJsonWebSignature.ValidationSettings()
-                //{
-                //    /*
-                //     This application is used only for our Google G Suite users, and thus the “HostedDomain” option of the ValidationSettings is set. 
-                //     This isn’t necessary, and I believe can just be removed if you allow any Google user to authenticate.
-                //     */
-                //    HostedDomain = "dumplingpuff-dev.azurewebsites.net",
-                //}).Result;
+                if (authHeader.Equals("microsoft", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // Grab the token and verify. If verification fails, and exception will be thrown.
+                    var token = authHeader.Remove(0, 7);
+                    var validated = token.Length > 0 ? true : false; // TODO: we'll come up with something better
+                }
             }
             catch (Exception ex)
             {

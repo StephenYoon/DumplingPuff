@@ -49,6 +49,7 @@ export class ApiService {
     this.user = JSON.parse(localStorage.getItem('user'));
     if (this.user != null) {
       requestHeaders = requestHeaders.append('Authorization', 'Bearer ' + this.user.idToken);
+      requestHeaders = requestHeaders.append('AuthorizationProvider', this.user.provider);
     }
 
     /*
