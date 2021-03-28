@@ -27,11 +27,17 @@ namespace DumplingPuff.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //// Adds Microsoft Identity platform (AAD v2.0) support to protect this API, install Microsoft.Identity.Web
+            //services.AddMicrosoftIdentityWebApiAuthentication(Configuration, "AzureAd");
+
             // App settings
             var settings = Configuration.Get<AppSettings>();
             settings.AuthenticationGoogleClientId = Configuration.GetValue<string>("Authentication:Google:ClientId");
             settings.BaseApiUrl = Configuration.GetValue<string>("BaseApiUrl");
             settings.DumplingPuffDatabaseConnection = Configuration.GetValue<string>("Databases:DumplingPuff");
+            settings.AzureAdAudience = Configuration.GetValue<string>("AzureAd:Audience");
+            settings.AzureAdAuthorityEndpoint = Configuration.GetValue<string>("AzureAd:AuthorityEndpoint");
+            settings.AzureAdOpenIdConfigurationEndpointSuffix = Configuration.GetValue<string>("AzureAd:OpenIdConfigurationEndpointSuffix");
             services.AddSingleton<IAppSettings>(t => settings);
 
             // Services
