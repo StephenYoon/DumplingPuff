@@ -87,7 +87,7 @@ export class CustomAuthService implements OnDestroy {
     }).finally(()=>{
       localStorage.removeItem('user');
       this.currentUser$.next(null);
-      this.router.navigate(['/']);
+      this.router.navigate(['/']); 
     });
   }
 
