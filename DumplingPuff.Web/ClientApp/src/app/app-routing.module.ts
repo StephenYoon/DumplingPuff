@@ -6,7 +6,7 @@ import { AuthGuard } from './authentication/auth.guard';
 import { HomeComponent } from './components/home/home.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { FetchDataComponent } from './components/fetch-data/fetch-data.component';
-import { WaruSkiesGameComponent } from './modules/waru-skies/waru-skies-game/waru-skies-game.component';
+import { WaruSkiesGameComponent } from './modules/waru-skies/components/waru-skies-game/waru-skies-game.component';
 
 // const routes: Routes = [
 //   { path: '', resolve: { connection: SignalRServiceResolver }, children: [
