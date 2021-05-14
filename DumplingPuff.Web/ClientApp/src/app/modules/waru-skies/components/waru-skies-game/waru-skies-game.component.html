@@ -7,7 +7,9 @@
   </div>
 
   <!-- Button to flip -->
-  <button type="button" class="btn btn-info" (click)="rollDice(playerDiceSet)">Roll em!</button>
+  <div>
+    <button type="button" class="btn btn-info" (click)="rollDice(playerDiceSet)">Roll em!</button>
+  </div>
 
   <!-- Progress bar -->
   <div class="progress">
@@ -20,6 +22,8 @@
   </div>
 
   <!-- Win indicator -->
-  
+  <div *ngIf="stepsProgress >= 10">
+    <i class="pi pi-star" style="color: green; font-size: 2rem"></i>
+  </div>  
 
 </div>

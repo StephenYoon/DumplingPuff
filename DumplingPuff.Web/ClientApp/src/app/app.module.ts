@@ -2,9 +2,11 @@ import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, NG_VALIDATORS } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { WaruSkiesModule } from './modules/waru-skies/waru-skies.module';
 
+import { WaruSkiesModule } from './modules/waru-skies/waru-skies.module';
 import { AppRoutingModule } from './app-routing.module';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
@@ -53,7 +55,8 @@ export function initApp(signalRService: SignalRService) {
     HttpClientModule,
     AppRoutingModule,
     SocialLoginModule,
-    WaruSkiesModule
+    WaruSkiesModule,
+    FontAwesomeModule
   ],
   providers: [
     AuthGuard,
