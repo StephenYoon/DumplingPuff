@@ -3,9 +3,9 @@ import { SocialUser } from 'angularx-social-login';
 
 import { CustomAuthService } from '@app/services/custom-auth.service';
 
-import { Dice } from '@modules/waru-skies/models/dice';
+import { Dice } from '@app/models/dice';
 import { DiceService } from '@app/services/dice.service';
-import { DiceSetCollection } from '@modules/waru-skies/data/diceSetCollection';
+import { DiceSetCollection } from '@app/data/diceSetCollection';
 
 @Component({
   selector: 'app-waru-skies-game',

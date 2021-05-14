@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { DiceService } from '@app/services/dice.service';
 
 import { WaruSkiesGameComponent } from './components/waru-skies-game/waru-skies-game.component';
-import { DiceComponent } from './components/dice/dice.component';
+import { DiceComponent } from '../../components/dice/dice.component';
 
 @NgModule({
   declarations: [
