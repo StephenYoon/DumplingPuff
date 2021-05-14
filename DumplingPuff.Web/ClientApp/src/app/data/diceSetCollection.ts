@@ -55,4 +55,13 @@ export class DiceSetCollection {
       { id: 8, display: "8", value: 8 }
     ]
   };
+
+  coin: DiceSet = {
+    display: "Coin",
+    description: "Coin flip for heads or tails",
+    dices: [
+      { id: 1, display: "Heads", value: 1 },
+      { id: 2, display: "Tails", value: 2 }
+    ]
+  };
 }

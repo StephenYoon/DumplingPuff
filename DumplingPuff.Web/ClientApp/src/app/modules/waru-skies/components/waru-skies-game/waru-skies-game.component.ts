@@ -16,10 +16,13 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   
   public player: SocialUser;
   public playerDiceSet: Dice[];
-  public diceSetKey: string = "regular";
+  public diceSetKey: string = "coin";
 
   private diceService: DiceService;
   private diceSetCollection: DiceSetCollection = new DiceSetCollection;
+
+  public stepsProgress: number;
+  private gameWon: boolean;
   
   constructor(
     private customAuthService: CustomAuthService
@@ -27,12 +30,13 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.playerDiceSet = [
-      this.diceSetCollection[this.diceSetKey].dices[0],      
-      this.diceSetCollection[this.diceSetKey].dices[1],
-      this.diceSetCollection[this.diceSetKey].dices[2]
+      this.diceSetCollection[this.diceSetKey].dices[0]
     ];
 
     this.player = this.customAuthService.getUser();
+
+    this.stepsProgress = 0;
+    this.gameWon = false;
   }
 
   ngOnDestroy(): void {
@@ -47,14 +51,36 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   // Get a new set of dice
   // TODO: opportunities to refactor this below, but for now it's "okay"
   rollDice(dices: Dice[]) {
+    var maxLength = this.diceSetCollection[this.diceSetKey].dices.length;
     for (let i = 0; i < this.playerDiceSet.length; i++) {
-      let randomIndex = this.randomIntFromInterval(1, 6);
-      this.playerDiceSet[i] = this.diceSetCollection[this.diceSetKey].dices[randomIndex - 1]
+      let randomIndex = this.randomIntFromInterval(1, maxLength);
+      this.playerDiceSet[i] = this.diceSetCollection[this.diceSetKey].dices[randomIndex - 1];
+
+      this.processDiceRoll(randomIndex);
+    }
+  }
+
+  processDiceRoll(diceIndex: number): void {
+    if (diceIndex == 1) {
+      this.stepsProgress++;
+    }
+
+    if (this.stepsProgress >= 10) {
+      this.gameWon = true;
     }
   }
 
   // Random number generator, min and max included.
   randomIntFromInterval(min, max): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  //function to return list of numbers from 0 to n-1
+  numSequence(n: number): Array<number> {
+    return Array(n);
+  }
+  
+  progressImageUrl(): string {
+    return '../../../assets/dice/dice_1.png';
   }
 }

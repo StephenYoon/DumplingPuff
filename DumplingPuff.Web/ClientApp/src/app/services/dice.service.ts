@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 
-import { WaruSkiesModule } from '../modules/waru-skies/waru-skies.module';
 import { Dice } from '../models/dice';
 import { DiceSetCollection } from '../data/diceSetCollection';
 

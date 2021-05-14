@@ -4,4 +4,10 @@
   </div>
 
   <button type="button" class="btn btn-info" (click)="rollDice(playerDiceSet)">Roll em!</button>
+
+  <div *ngIf="stepsProgress > 0">
+    <div *ngFor="let n of numSequence(stepsProgress); let i = index;">
+      <img [src]="progressImageUrl()" style="height: 35px; width: 35px;">
+    </div>
+  </div>
 </div>
