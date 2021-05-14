@@ -5,7 +5,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { WaruSkiesModule } from './modules/waru-skies/waru-skies.module';
 import { AppRoutingModule } from './app-routing.module';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
@@ -55,8 +54,7 @@ export function initApp(signalRService: SignalRService) {
     HttpClientModule,
     AppRoutingModule,
     SocialLoginModule,
-    WaruSkiesModule,
-    FontAwesomeModule
+    WaruSkiesModule
   ],
   providers: [
     AuthGuard,
