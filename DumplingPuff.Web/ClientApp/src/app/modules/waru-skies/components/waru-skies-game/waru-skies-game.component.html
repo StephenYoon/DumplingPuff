@@ -1,29 +1,54 @@
-<div id="arena">
+<div class="arena">
+
+  <div class="row users">
+
+    <div class="col person">
+      <div class="user">
+        <img [src]="userPhotoSrcUrl(user)">
+        <span [ngClass]="userOnline(user)?'status online':'status offline'" ></span><!--online, busy, offline, away-->
+      </div>      
+      <p class="name-time">
+        <span class="name">{{user.name}}</span>
+      </p>
+    </div>
+
+    <!-- Button to flip -->
+    <div class="col">
+      <div class="pt-3">
+        <button type="button" class="btn btn-info" (click)="rollDice(playerDiceSet)">Roll em!</button>
+      </div>
+    </div>
+
+    <!-- Dice or Coin -->
+    <div class="col">      
+      <div class="pt-3" *ngFor="let dice of getPlayerDiceSet(); let i = index">
+        <app-dice [dice]=dice></app-dice>
+      </div>
+    </div>
 
 
-  <!-- Dice or Coin -->
-  <div *ngFor="let dice of getPlayerDiceSet(); let i = index">
-    <app-dice [dice]=dice></app-dice>
-  </div>
+    <!-- Progress bar -->
+    <div class="col-6 pt-4">
+      <div class="progress">
+        <div 
+          class="progress-bar progress-bar-striped progress-bar-animated" 
+          role="progressbar"
+          [ngStyle]="{'width':stepsProgress * 10 + '%'}"
+          [ngClass]="{'bg-success' : stepsProgress >= 10}">
+        </div>
+      </div>
+    </div>
 
-  <!-- Button to flip -->
-  <div>
-    <button type="button" class="btn btn-info" (click)="rollDice(playerDiceSet)">Roll em!</button>
-  </div>
-
-  <!-- Progress bar -->
-  <div class="progress">
-    <div 
-      class="progress-bar progress-bar-striped progress-bar-animated" 
-      role="progressbar"
-      [ngStyle]="{'width':stepsProgress * 10 + '%'}"
-      [ngClass]="{'bg-success' : stepsProgress >= 10}">
+    <!-- Win indicator -->
+    <div class="col">
+      <div class="pt-4" *ngIf="stepsProgress >= 10">
+        <i class="fas fa-child" style="color: green; font-size: 2rem;"></i>
+      </div>  
     </div>
   </div>
 
-  <!-- Win indicator -->
-  <div *ngIf="stepsProgress >= 10">
-    <i class="fas fa-child"></i>
-  </div>  
+
+
+
 
 </div>

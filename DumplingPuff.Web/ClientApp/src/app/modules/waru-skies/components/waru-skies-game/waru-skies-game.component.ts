@@ -14,7 +14,7 @@ import { DiceSetCollection } from '@app/data/diceSetCollection';
 })
 export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   
-  public player: SocialUser;
+  public user: SocialUser;
   public playerDiceSet: Dice[];
   public diceSetKey: string = "coin";
 
@@ -33,7 +33,7 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
       this.diceSetCollection[this.diceSetKey].dices[0]
     ];
 
-    this.player = this.customAuthService.getUser();
+    this.user = this.customAuthService.getUser();
 
     this.stepsProgress = 0;
     this.gameWon = false;
@@ -74,13 +74,14 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   randomIntFromInterval(min, max): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
-
-  //function to return list of numbers from 0 to n-1
-  numSequence(n: number): Array<number> {
-    return Array(n);
-  }
   
-  progressImageUrl(): string {
-    return '../../../assets/dice/dice_1.png';
+  public userPhotoSrcUrl(user: SocialUser): string {
+    return user.photoUrl ?? '../../../assets/default_avatar.JPG';
+  }
+
+  public userOnline(user: SocialUser): boolean {
+    return true;
+    // var foundIndex = this.chatGroup.activeUsersByEmail.findIndex(activeUserEmail => activeUserEmail.toLowerCase() == user.email.toLowerCase());
+    // return foundIndex >= 0;
   }
 }
