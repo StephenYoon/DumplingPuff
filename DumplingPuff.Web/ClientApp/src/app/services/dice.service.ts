@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 
-import { WaruSkiesModule } from '../waru-skies.module';
-import { Dice } from '../models/dice';
-import { DiceSetCollection } from '../data/diceSetCollection';
+import { WaruSkiesModule } from '../modules/waru-skies/waru-skies.module';
+import { Dice } from '../modules/waru-skies/models/dice';
+import { DiceSetCollection } from '../modules/waru-skies/data/diceSetCollection';
 
 @Injectable({
-  providedIn: WaruSkiesModule
+  providedIn: 'root'
 })
 export class DiceService {
 

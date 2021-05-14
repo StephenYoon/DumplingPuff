@@ -1,5 +1,7 @@
-<p>Waru Skies coming soon!</p>
+<div id="arena">
+  <div *ngFor="let dice of getPlayerDiceSet(); let i = index">
+    <app-dice [dice]=dice></app-dice>
+  </div>
 
-<!--
-<button class="btn btn-block btn-social mx-1 btn-google" (click)="testApi()"><span class="fab fa-google"></span>Test API</button>
--->
+  <button type="button" class="btn btn-info" (click)="rollDice(playerDiceSet)">Roll em!</button>
+</div>
