@@ -24,20 +24,6 @@ namespace DumplingPuff.Web.Hubs
             _userService = userService;
         }
 
-        public async Task SendMessage(string groupId, string messageDto)
-        {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            var message = JsonSerializer.Deserialize<ChatMessage>(messageDto, options);
-
-            _chatService.AddChatMessageToGroup(groupId, message);
-            var broadcastContent = _chatService.GetGroup(groupId);
-            await Clients.Group(groupId).SendAsync("broadcastGroup", broadcastContent);
-            await Clients.Group(groupId).SendAsync("notification", $"ChatHub Notification: {message.User.Email} ({Context.ConnectionId}) sent message to group {groupId}.");
-        }
-
         public async Task UpdateGroup(string groupId, string messageDto)
         {
             var options = new JsonSerializerOptions

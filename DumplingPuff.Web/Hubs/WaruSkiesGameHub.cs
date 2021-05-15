@@ -21,18 +21,11 @@ namespace DumplingPuff.Web.Hubs
             _userService = userService;
         }
 
-        public async Task SendMessage(string groupId, string messageDto)
+        public async Task UpdateGame(string groupId, int gameUpdateType, string messageDto)
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            var message = JsonSerializer.Deserialize<GameState>(messageDto, options);
-
-            _gameService.UpdateGameState(groupId, message);
+            _gameService.UpdateGame(groupId, gameUpdateType);
             var broadcastContent = _gameService.GetGroup(groupId);
             await Clients.Group(groupId).SendAsync("broadcastGroup", broadcastContent);
-            await Clients.Group(groupId).SendAsync("notification", $"WaruSkiesGameHub Notification: {message.User.Email} ({Context.ConnectionId}) sent message to group {groupId}.");
         }
 
         public async Task UpdateGroup(string groupId, string messageDto)

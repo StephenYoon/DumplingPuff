@@ -7,6 +7,7 @@ import { GameGroup } from '@app/modules/waru-skies/models/game-group.model';
 import { GameState } from '@app/modules/waru-skies/models/game-state.model';
 
 import { CustomAuthService } from './custom-auth.service';
+import { GameUpdateType } from '@app/modules/waru-skies/models/game-update-type';
 
 @Injectable({
   providedIn: 'root'
@@ -91,13 +92,17 @@ export class SignalRWaruSkiesService {
     });
   }
 
-  public sendMessage(groupId: string, progress: number): void {    
+  public UpdateGame(groupId: string, updateType: GameUpdateType, message: string = ''): void {
+    this.signalrConnection.send('UpdateGame', groupId, updateType, JSON.stringify(message));
+  }
+  
+  public UpdateGroup(groupId: string, progress: number): void {    
     var message = new GameState();
     message.user = this.customAuthService.getUser();
     message.progress = progress;
     message.dateSent = new Date();
 
-    this.signalrConnection.send('SendMessage', groupId, JSON.stringify(message));
+    this.signalrConnection.send('UpdateGroup', groupId, JSON.stringify(message));
   }
 
   public async userJoinedGroup(groupId: string): Promise<void> {

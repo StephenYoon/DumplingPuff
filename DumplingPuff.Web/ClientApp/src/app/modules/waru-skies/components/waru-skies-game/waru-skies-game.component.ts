@@ -10,6 +10,7 @@ import { DiceService } from '@app/services/dice.service';
 import { DiceSetCollection } from '@app/data/diceSetCollection';
 import { GameGroup } from '../../models/game-group.model';
 import { GameState } from '../../models/game-state.model';
+import { GameUpdateType } from '../../models/game-update-type';
 
 @Component({
   selector: 'app-waru-skies-game',
@@ -42,7 +43,7 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.playerDiceSet = [
+    this.playerDiceSet = this.playerDiceSet = [
       this.diceSetCollection[this.diceSetKey].dices[0]
     ];
 
@@ -87,13 +88,18 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
     return this.playerDiceSet;
   }
   
+  resetGame(): void {
+    this.signalRService.UpdateGame(this.groupId, GameUpdateType.ResetGame);
+  }
+
   // Get a new set of dice
   // TODO: opportunities to refactor this below, but for now it's "okay"
-  rollDice(dices: Dice[]) {
-    var maxLength = dices.length;
+  rollDice() {
+    var diceSet = this.diceSetCollection[this.diceSetKey].dices;
+    var maxLength = diceSet.length;
     for (let i = 0; i < this.playerDiceSet.length; i++) {
       let randomIndex = this.randomIntFromInterval(1, maxLength);
-      this.playerDiceSet[i] = dices[randomIndex - 1];
+      this.playerDiceSet[i] = diceSet[randomIndex - 1];
 
       if (randomIndex == 1) {
         var userGameState = this.gameGroup.gameStates.filter(gameState => {
@@ -122,7 +128,7 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
     return foundIndex >= 0;
   }
   
-  public SendUpdate(progressValue: number): void {    
-    this.signalRService.sendMessage(this.groupId, progressValue);
+  public SendUpdate(progressValue: number): void {
+    this.signalRService.UpdateGroup(this.groupId, progressValue);
   }
 }

@@ -8,6 +8,7 @@ namespace DumplingPuff.Services.Interfaces
     {
         List<GameGroup> GetGroups();
         void UpdateGameState(string groupId, GameState message);
+        void UpdateGame(string groupId, int gameUpdateType);
         void AddUser(string groupId, SocialUser user);
         GameGroup GetGroup(string groupId);
         void RemoveUser(string groupId, SocialUser user);

@@ -155,7 +155,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       return;
     }
     
-    this.signalRService.sendMessage(this.groupId, this.chatMessage);
+    this.signalRService.UpdateGroup(this.groupId, this.chatMessage);
     this.chatMessage = '';
   }
 

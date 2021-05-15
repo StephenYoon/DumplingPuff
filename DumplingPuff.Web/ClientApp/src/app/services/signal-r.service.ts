@@ -91,13 +91,13 @@ export class SignalRService {
     });
   }
 
-  public sendMessage(groupId: string, chatMessage: string): void {    
+  public UpdateGroup(groupId: string, chatMessage: string): void {    
     var message = new ChatMessage();
     message.user = this.customAuthService.getUser();
     message.message = chatMessage;
     message.dateSent = new Date();
 
-    this.signalrConnection.send('SendMessage', groupId, JSON.stringify(message));
+    this.signalrConnection.send('UpdateGroup', groupId, JSON.stringify(message));
   }
 
   public async userJoinedGroup(groupId: string): Promise<void> {

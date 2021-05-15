@@ -112,6 +112,32 @@ namespace DumplingPuff.Services
             }
         }
 
+        public void UpdateGame(string groupId, int gameUpdateType)
+        {
+            var updateType = (GameUpdateType)gameUpdateType;
+
+            if (updateType == null)
+            {
+                return;
+            }
+
+            switch (updateType)
+            {
+                case GameUpdateType.ResetGame:
+                    GameUpdateReset(groupId);
+                    break;
+            }
+        }
+
+        public void GameUpdateReset(string groupId)
+        {
+            var group = GetGroup(groupId);
+            foreach(var gameState in group.GameStates)
+            {
+                gameState.Progress = 0;
+            }
+        }
+
         private void ValidateMainGameGroup()
         {
             // Should always have the main chat room

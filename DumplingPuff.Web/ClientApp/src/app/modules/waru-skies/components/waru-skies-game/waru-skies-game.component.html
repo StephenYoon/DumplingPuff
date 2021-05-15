@@ -1,8 +1,11 @@
 <div class="arena">
 
-  <!-- Main wrapper -->
+  <!-- Top level -->
+  <div>
+    <button type="button" class="btn btn-info" (click)="resetGame()">Reset 😎</button>
+  </div>
+  <!-- Main wrapper for players -->
   <div *ngIf='gameGroup && getGameStates()'>
-
     <div class="row users" *ngFor="let gameState of getGameStates()">
       <div class="col person">
         <div class="user">
@@ -17,7 +20,7 @@
       <!-- Button to flip -->
       <div class="col">
         <div class="pt-3">
-          <button type="button" class="btn btn-info" (click)="rollDice(playerDiceSet)">Roll em!</button>
+          <button type="button" class="btn btn-info" (click)="rollDice()">Roll em!</button>
         </div>
       </div>
   
