@@ -1,11 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { SocialUser } from 'angularx-social-login';
 
 import { CustomAuthService } from '@app/services/custom-auth.service';
+import { SignalRWaruSkiesService } from '@app/services/signal-r-waru-skies.service';
 
 import { Dice } from '@app/models/dice';
 import { DiceService } from '@app/services/dice.service';
 import { DiceSetCollection } from '@app/data/diceSetCollection';
+import { GameGroup } from '../../models/game-group.model';
+import { GameState } from '../../models/game-state.model';
 
 @Component({
   selector: 'app-waru-skies-game',
@@ -24,8 +28,17 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   public stepsProgress: number;
   private gameWon: boolean;
   
+  groupUsers: SocialUser[] = [];
+  defaultGroupId: string = 'waru-skies-game-room';
+  groupId: string = '';
+  gameGroup: GameGroup;
+  
+  gameGroupSubscription: any;
+
   constructor(
-    private customAuthService: CustomAuthService
+    private route: ActivatedRoute,
+    private customAuthService: CustomAuthService,
+    public signalRService: SignalRWaruSkiesService
   ) { }
 
   ngOnInit(): void {
@@ -37,13 +50,39 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
 
     this.stepsProgress = 0;
     this.gameWon = false;
+    
+    this.route.params.subscribe(params => {
+      
+      this.groupId = params.id || this.defaultGroupId;
+      this.signalRService.userJoinedGroup(this.groupId);        
+      this.gameGroupSubscription = this.signalRService.gameGroup$.subscribe((gameGroup) => {
+        if (gameGroup) {
+          this.gameGroup = gameGroup;
+          this.updateUsers();
+        }
+      });
+        
+    });
   }
 
   ngOnDestroy(): void {
     // if (this.appSettingsSubscription) this.appSettingsSubscription.unsubscribe();
-    // if (this.chatGroupSubscription) this.chatGroupSubscription.unsubscribe();
+    if (this.gameGroupSubscription) this.gameGroupSubscription.unsubscribe();
   }
   
+  public updateUsers(): void {
+    // Get list of users from chat history, start with chat users
+    if (!this.gameGroup){
+      return;
+    }
+
+    this.groupUsers = this.gameGroup.users.slice();
+  }
+
+  public getGameStates(): GameState[] {
+    return this.gameGroup.gameStates;
+  }
+
   getPlayerDiceSet(): Dice[] {
     return this.playerDiceSet;
   }
@@ -51,10 +90,10 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   // Get a new set of dice
   // TODO: opportunities to refactor this below, but for now it's "okay"
   rollDice(dices: Dice[]) {
-    var maxLength = this.diceSetCollection[this.diceSetKey].dices.length;
+    var maxLength = dices.length;
     for (let i = 0; i < this.playerDiceSet.length; i++) {
       let randomIndex = this.randomIntFromInterval(1, maxLength);
-      this.playerDiceSet[i] = this.diceSetCollection[this.diceSetKey].dices[randomIndex - 1];
+      this.playerDiceSet[i] = dices[randomIndex - 1];
 
       this.processDiceRoll(randomIndex);
     }
@@ -80,8 +119,11 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   }
 
   public userOnline(user: SocialUser): boolean {
-    return true;
-    // var foundIndex = this.chatGroup.activeUsersByEmail.findIndex(activeUserEmail => activeUserEmail.toLowerCase() == user.email.toLowerCase());
-    // return foundIndex >= 0;
+    var foundIndex = this.gameGroup.activeUsersByEmail.findIndex(activeUserEmail => activeUserEmail.toLowerCase() == user.email.toLowerCase());
+    return foundIndex >= 0;
+  }
+  
+  public SendUpdate(progressValue: number): void {    
+    this.signalRService.sendMessage(this.groupId, progressValue);
   }
 }

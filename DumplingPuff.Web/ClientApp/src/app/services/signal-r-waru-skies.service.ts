@@ -14,7 +14,7 @@ import { CustomAuthService } from './custom-auth.service';
 export class SignalRWaruSkiesService {
   baseApiUrl: string;
   reconnecting: Subject<boolean> = new Subject();
-  chatGroup$: BehaviorSubject<GameGroup>;
+  gameGroup$: BehaviorSubject<GameGroup>;
   currentUser: SocialUser;
   groupId: string;
   
@@ -25,19 +25,19 @@ export class SignalRWaruSkiesService {
     private customAuthService: CustomAuthService
   ) {
     this.setupSignalRConnection();
-    this.chatGroup$ = new BehaviorSubject<GameGroup>(null);
+    this.gameGroup$ = new BehaviorSubject<GameGroup>(null);
   }  
   
   public setupSignalRConnection = () => {
     this.baseApiUrl = environment.baseApiUrl;
     this.signalrConnection = new signalR.HubConnectionBuilder()
-                            .withUrl(this.baseApiUrl + '/WaruSkiesGame')
+                            .withUrl(this.baseApiUrl + '/waruskiesgame')
                             .build();
                             
     console.log(`BaseApiUrl set to: ${this.baseApiUrl}`);
 
     this.signalrConnection.on('broadcastGroup', (data) => {
-      this.chatGroup$.next(data);
+      this.gameGroup$.next(data);
     });
 
     this.signalrConnection.on('broadcastSignedInUsers', (data) => {

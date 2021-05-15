@@ -49,7 +49,7 @@ namespace DumplingPuff.Web.Hubs
             await Clients.Group(groupId).SendAsync("notification", $"WaruSkiesGameHub Notification: {message.User.Email} ({Context.ConnectionId}) updated group {groupId}.");
         }
 
-        public async Task UserJoinedGame(string groupId, string userDto)
+        public async Task UserJoinedGroup(string groupId, string userDto)
         {
             var options = new JsonSerializerOptions
             {

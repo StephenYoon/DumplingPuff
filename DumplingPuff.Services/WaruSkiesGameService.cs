@@ -45,6 +45,11 @@ namespace DumplingPuff.Services
             {
                 group.ActiveUsersByEmail.Add(user.Email);
             }
+
+            if (!group.GameStates.Any(s => s.User.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                group.GameStates.Add(new GameState { User = user, Progress = 0, DateSent = DateTime.Now });
+            }
         }
 
         public void RemoveUser(string groupId, SocialUser user)

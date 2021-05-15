@@ -23,11 +23,11 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
   userSearch: string = '';
   user: SocialUser;
   selectedUsers: SocialUser[] = [];
-  chatUsers: SocialUser[] = [];
+  groupUsers: SocialUser[] = [];
   baseUrl: string;
 
-  defaultChatGroupId: string = 'dumpling-puff-chat-room';
-  chatGroupId: string = '';
+  defaultGroupId: string = 'dumpling-puff-chat-room';
+  groupId: string = '';
   chatGroup: ChatGroup;
 
   appSettingsSubscription: any;
@@ -52,8 +52,8 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     // combineLatest > https://stackoverflow.com/questions/44004144/how-to-wait-for-two-observables-in-rxjs
     this.route.params.subscribe(params => {
       
-      this.chatGroupId = params.id || this.defaultChatGroupId;
-      this.signalRService.userJoinedGroup(this.chatGroupId);        
+      this.groupId = params.id || this.defaultGroupId;
+      this.signalRService.userJoinedGroup(this.groupId);        
       this.chatGroupSubscription = this.signalRService.chatGroup$.subscribe((chatGroup) => {
         if (chatGroup) {
           this.chatGroup = chatGroup;
@@ -110,7 +110,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     
     // Filter list if applicable
     if (!this.userSearch || this.userSearch.trim() == '') {
-      this.chatUsers = chatUserList;
+      this.groupUsers = chatUserList;
       return;
     }
 
@@ -120,7 +120,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
         return user.name.toLowerCase().includes(lowerCaseSearchTerm);
     });
 
-    this.chatUsers = filteredList;
+    this.groupUsers = filteredList;
   }
 
   public userPhotoSrcUrl(user: SocialUser): string {
@@ -155,7 +155,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       return;
     }
     
-    this.signalRService.sendMessage(this.chatGroupId, this.chatMessage);
+    this.signalRService.sendMessage(this.groupId, this.chatMessage);
     this.chatMessage = '';
   }
 
@@ -169,7 +169,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
   
   public ngOnDestroy() {
     // Set user as offline by removing user from signedInUser list
-    this.signalRService.userLeftGroup(this.chatGroupId);
+    this.signalRService.userLeftGroup(this.groupId);
 
     // Clean up
     if (this.appSettingsSubscription) this.appSettingsSubscription.unsubscribe();

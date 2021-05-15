@@ -17,6 +17,7 @@ import { environment } from '@environments';
 
 import { AuthGuard } from './authentication/auth.guard';
 import { SignalRService } from './services/signal-r.service';
+import { SignalRWaruSkiesService } from './services/signal-r-waru-skies.service';
 
 import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
 import {
@@ -27,15 +28,27 @@ import {
   MicrosoftLoginProvider
 } from 'angularx-social-login';
 
-export function initApp(signalRService: SignalRService) {
+export function initAppChat(signalRService: SignalRService) {
   return () => {
     return signalRService.connect()
       .then(() => {
-        console.log('InitApp completed successfully!');
+        console.log('InitApp for Chat completed successfully!');
       })
       .catch(err => {
-        console.error('InitApp encountered an error: ' + err);
+        console.error('InitApp for Chat encountered an error: ' + err);
       });
+  };
+}
+
+export function initAppWaruSkies(signalRWaruSkiesService: SignalRWaruSkiesService) {
+  return () => {
+    return signalRWaruSkiesService.connect()
+    .then(() => {
+      console.log('InitApp for WaruSkies completed successfully!');
+    })
+    .catch(err => {
+      console.error('InitApp for WaruSkies encountered an error: ' + err);
+    });
   };
 }
 
@@ -60,9 +73,15 @@ export function initApp(signalRService: SignalRService) {
     AuthGuard,
     {
       provide: APP_INITIALIZER,
-      useFactory: initApp,
+      useFactory: initAppChat,
       multi: true,
       deps: [SignalRService]
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initAppWaruSkies,
+      multi: true,
+      deps: [SignalRWaruSkiesService]
     },
     {
       provide: 'SocialAuthServiceConfig',
