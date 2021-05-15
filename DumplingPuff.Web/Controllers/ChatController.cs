@@ -34,17 +34,17 @@ namespace DumplingPuff.Web.Controllers
             var foo = $"{this.GetType().Name}.{System.Reflection.MethodBase.GetCurrentMethod().Name}";
             */
 
-            var broadcastContent = _chatService.GetChatGroup(groupId);
+            var broadcastContent = _chatService.GetGroup(groupId);
             await _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
 
-            return Ok(_chatService.GetChatGroup(groupId));
+            return Ok(_chatService.GetGroup(groupId));
         }
 
         [HttpPost("chatgroup/{groupId}")]
         public async Task<IActionResult> PostAsync(string groupId, [FromBody] ChatMessage chatMessage)
         {
             _chatService.AddChatMessageToGroup(groupId, chatMessage);
-            var broadcastContent = _chatService.GetChatGroup(groupId);
+            var broadcastContent = _chatService.GetGroup(groupId);
             await _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
 
             return Ok(new { Message = $"POST {this.GetType().Name} Request Completed at {DateTime.Now.ToLongDateString()}" });
@@ -54,7 +54,7 @@ namespace DumplingPuff.Web.Controllers
         public async Task<IActionResult> DeleteAsync(string groupId)
         {
             _chatService.ClearChatGroupMessages(groupId);
-            var broadcastContent = _chatService.GetChatGroup(groupId);
+            var broadcastContent = _chatService.GetGroup(groupId);
             await _hub.Clients.All.SendAsync("broadcastChatGroup", broadcastContent);
 
             return Ok(new { Message = $"DELETE {this.GetType().Name} Completed at {DateTime.Now.ToLongDateString()}" });

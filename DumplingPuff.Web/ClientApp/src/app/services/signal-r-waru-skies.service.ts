@@ -3,18 +3,18 @@ import * as signalR from "@microsoft/signalr";  // or from "@aspnet/signalr" if 
 import { SocialUser } from 'angularx-social-login';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { ChatGroup } from '../models/chat-group.model';
-import { ChatMessage } from '../models/chat-message.model';
+import { GameGroup } from '@app/modules/waru-skies/models/game-group.model';
+import { GameState } from '@app/modules/waru-skies/models/game-state.model';
 
 import { CustomAuthService } from './custom-auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SignalRService {
+export class SignalRWaruSkiesService {
   baseApiUrl: string;
   reconnecting: Subject<boolean> = new Subject();
-  chatGroup$: BehaviorSubject<ChatGroup>;
+  chatGroup$: BehaviorSubject<GameGroup>;
   currentUser: SocialUser;
   groupId: string;
   
@@ -25,13 +25,13 @@ export class SignalRService {
     private customAuthService: CustomAuthService
   ) {
     this.setupSignalRConnection();
-    this.chatGroup$ = new BehaviorSubject<ChatGroup>(null);
+    this.chatGroup$ = new BehaviorSubject<GameGroup>(null);
   }  
   
   public setupSignalRConnection = () => {
     this.baseApiUrl = environment.baseApiUrl;
     this.signalrConnection = new signalR.HubConnectionBuilder()
-                            .withUrl(this.baseApiUrl + '/chat')
+                            .withUrl(this.baseApiUrl + '/WaruSkiesGame')
                             .build();
                             
     console.log(`BaseApiUrl set to: ${this.baseApiUrl}`);
@@ -91,10 +91,10 @@ export class SignalRService {
     });
   }
 
-  public sendMessage(groupId: string, chatMessage: string): void {    
-    var message = new ChatMessage();
+  public sendMessage(groupId: string, progress: number): void {    
+    var message = new GameState();
     message.user = this.customAuthService.getUser();
-    message.message = chatMessage;
+    message.progress = progress;
     message.dateSent = new Date();
 
     this.signalrConnection.send('SendMessage', groupId, JSON.stringify(message));

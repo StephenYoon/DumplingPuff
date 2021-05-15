@@ -32,12 +32,12 @@ namespace DumplingPuff.Services
             ValidateMainChatRoom();
         }
 
-        public List<ChatGroup> GetChatGroups()
+        public List<ChatGroup> GetGroups()
         {
             return _chatGroups;
         }
 
-        public ChatGroup GetChatGroup(string groupId)
+        public ChatGroup GetGroup(string groupId)
         {
             var chatGroup = _chatGroups.FirstOrDefault(g => g.Id.Equals(groupId, StringComparison.InvariantCultureIgnoreCase));
 
@@ -57,7 +57,7 @@ namespace DumplingPuff.Services
                 return;
             }
 
-            var chatGroup = GetChatGroup(groupId);
+            var chatGroup = GetGroup(groupId);
 
             if (!chatGroup.Users.Any(u => u.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)))
             {
@@ -77,7 +77,7 @@ namespace DumplingPuff.Services
                 return;
             }
 
-            var chatGroup = GetChatGroup(groupId);
+            var chatGroup = GetGroup(groupId);
 
             if (chatGroup.ActiveUsersByEmail.Any(activeEmail => activeEmail.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)))
             {
@@ -98,7 +98,7 @@ namespace DumplingPuff.Services
                 };
             }
 
-            var chatGroup = GetChatGroup(groupId);
+            var chatGroup = GetGroup(groupId);
 
             if (chatGroup == null)
             {
@@ -136,7 +136,7 @@ namespace DumplingPuff.Services
 
         public void ClearChatGroupMessages(string groupId)
         {
-            var chatGroup = GetChatGroup(groupId);
+            var chatGroup = GetGroup(groupId);
             chatGroup.Messages.Clear();
         }
 

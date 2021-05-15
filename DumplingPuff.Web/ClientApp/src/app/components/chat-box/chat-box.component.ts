@@ -53,7 +53,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     this.route.params.subscribe(params => {
       
       this.chatGroupId = params.id || this.defaultChatGroupId;
-      this.signalRService.userJoinedChat(this.chatGroupId);        
+      this.signalRService.userJoinedGroup(this.chatGroupId);        
       this.chatGroupSubscription = this.signalRService.chatGroup$.subscribe((chatGroup) => {
         if (chatGroup) {
           this.chatGroup = chatGroup;
@@ -155,7 +155,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       return;
     }
     
-    this.signalRService.sendChatMessage(this.chatGroupId, this.chatMessage);
+    this.signalRService.sendMessage(this.chatGroupId, this.chatMessage);
     this.chatMessage = '';
   }
 
@@ -169,7 +169,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
   
   public ngOnDestroy() {
     // Set user as offline by removing user from signedInUser list
-    this.signalRService.userLeftChat(this.chatGroupId);
+    this.signalRService.userLeftGroup(this.chatGroupId);
 
     // Clean up
     if (this.appSettingsSubscription) this.appSettingsSubscription.unsubscribe();
