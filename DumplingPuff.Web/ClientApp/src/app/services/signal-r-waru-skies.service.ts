@@ -96,13 +96,11 @@ export class SignalRWaruSkiesService {
     this.signalrConnection.send('UpdateGame', groupId, updateType, JSON.stringify(message));
   }
   
-  public UpdateGroup(groupId: string, progress: number): void {    
-    var message = new GameState();
-    message.user = this.customAuthService.getUser();
-    message.progress = progress;
-    message.dateSent = new Date();
+  public UpdateGroup(groupId: string, gameState: GameState): void {
+    gameState.user = this.customAuthService.getUser();
+    gameState.dateSent = new Date();
 
-    this.signalrConnection.send('UpdateGroup', groupId, JSON.stringify(message));
+    this.signalrConnection.send('UpdateGroup', groupId, JSON.stringify(gameState));
   }
 
   public async userJoinedGroup(groupId: string): Promise<void> {

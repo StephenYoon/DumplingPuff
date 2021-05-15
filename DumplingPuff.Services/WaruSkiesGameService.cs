@@ -93,6 +93,7 @@ namespace DumplingPuff.Services
                 };
             }
 
+            // Update user's game state
             var group = GetGroup(groupId);
             var userGameState = group.GameStates.FirstOrDefault(gameState => gameState.User.Email.Equals(message.User.Email, StringComparison.InvariantCultureIgnoreCase));
             if (userGameState == null)
@@ -102,13 +103,31 @@ namespace DumplingPuff.Services
             else
             {
                 userGameState.Progress = message.Progress;
+                userGameState.TurnCompleted = message.TurnCompleted;
+                userGameState.DiceIndex = message.DiceIndex;
+                userGameState.DateSent = message.DateSent;
             }
 
+            // Ensure user is part of the user list
             AddUser(groupId, message.User);
             var user = _userService.GetByEmail(message.User.Email, message.User.Provider);
             if (user == null)
             {
                 _userService.AddOrUpdate(message.User);
+            }
+
+            // Update overall game (group) state
+            var everyoneTurnCompleted = group.GameStates.All(userState => userState.TurnCompleted);
+            if (everyoneTurnCompleted)
+            {
+                // Increment current rount
+                group.CurrentRound++;
+
+                // Reset each user's turn completed back to false
+                foreach(var userState in group.GameStates)
+                {
+                    userState.TurnCompleted = false;
+                }
             }
         }
 

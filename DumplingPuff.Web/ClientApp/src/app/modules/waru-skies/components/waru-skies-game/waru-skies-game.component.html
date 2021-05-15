@@ -2,11 +2,21 @@
 
   <!-- Top level -->
   <div>
-    <button type="button" class="btn btn-info" (click)="resetGame()">Reset 😎</button>
+    <button type="button" class="btn btn-info" (click)="rollDice()" [disabled]="getUserGameState().turnCompleted">Roll em!</button>
+    
+    <!-- Dice or Coin -->
+    <div *ngFor="let dice of getPlayerDiceSet(); let i = index">
+      <app-dice [dice]=dice></app-dice>
+    </div>
+
+    <button type="button" class="btn btn-info" (click)="resetGame()" [disabled]="!gameGroup.gameFinished">Reset 😎</button>
   </div>
+
   <!-- Main wrapper for players -->
   <div *ngIf='gameGroup && getGameStates()'>
     <div class="row users" *ngFor="let gameState of getGameStates()">
+      
+      <!-- Player icon -->
       <div class="col person">
         <div class="user">
           <img [src]="userPhotoSrcUrl(gameState.user)">
@@ -16,21 +26,6 @@
           <span class="name">{{gameState.user.name}}</span>
         </p>
       </div>
-  
-      <!-- Button to flip -->
-      <div class="col">
-        <div class="pt-3">
-          <button type="button" class="btn btn-info" (click)="rollDice()">Roll em!</button>
-        </div>
-      </div>
-  
-      <!-- Dice or Coin -->
-      <div class="col">      
-        <div class="pt-3" *ngFor="let dice of getPlayerDiceSet(); let i = index">
-          <app-dice [dice]=dice></app-dice>
-        </div>
-      </div>
-  
   
       <!-- Progress bar -->
       <div class="col-6 pt-4">

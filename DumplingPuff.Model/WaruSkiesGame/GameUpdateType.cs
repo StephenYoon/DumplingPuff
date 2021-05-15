@@ -6,6 +6,7 @@ namespace DumplingPuff.Models.WaruSkiesGame
 {
     public enum GameUpdateType
     {
-        ResetGame = 1
+        ResetGame = 1,
+        NextTurn = 2,
     }
 }

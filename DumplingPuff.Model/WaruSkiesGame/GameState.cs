@@ -8,6 +8,8 @@ namespace DumplingPuff.Models.WaruSkiesGame
     {
         public SocialUser User { get; set; }
         public int Progress { get; set; }
+        public int DiceIndex { get; set; }
+        public bool TurnCompleted { get; set; }
         public DateTime DateSent { get; set; }
     }
 }

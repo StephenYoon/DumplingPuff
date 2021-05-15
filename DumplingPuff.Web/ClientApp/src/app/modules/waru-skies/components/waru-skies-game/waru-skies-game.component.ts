@@ -29,7 +29,6 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   public stepsProgress: number;
   private gameWon: boolean;
   
-  groupUsers: SocialUser[] = [];
   defaultGroupId: string = 'waru-skies-game-room';
   groupId: string = '';
   gameGroup: GameGroup;
@@ -59,10 +58,8 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
       this.gameGroupSubscription = this.signalRService.gameGroup$.subscribe((gameGroup) => {
         if (gameGroup) {
           this.gameGroup = gameGroup;
-          this.updateUsers();
         }
-      });
-        
+      });        
     });
   }
 
@@ -71,17 +68,16 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
     if (this.gameGroupSubscription) this.gameGroupSubscription.unsubscribe();
   }
   
-  public updateUsers(): void {
-    // Get list of users from chat history, start with chat users
-    if (!this.gameGroup){
-      return;
-    }
-
-    this.groupUsers = this.gameGroup.users.slice();
-  }
-
   public getGameStates(): GameState[] {
     return this.gameGroup.gameStates;
+  }
+
+  public getUserGameState(): GameState {
+    var userGameState = this.gameGroup.gameStates.find(gameState => {
+      return gameState.user.email.toLowerCase() == this.user.email.toLowerCase();
+    });
+
+    return userGameState;
   }
 
   getPlayerDiceSet(): Dice[] {
@@ -98,19 +94,22 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
     var diceSet = this.diceSetCollection[this.diceSetKey].dices;
     var maxLength = diceSet.length;
     for (let i = 0; i < this.playerDiceSet.length; i++) {
-      let randomIndex = this.randomIntFromInterval(1, maxLength);
-      this.playerDiceSet[i] = diceSet[randomIndex - 1];
+      let randomDiceIndex = this.randomIntFromInterval(1, maxLength);
+      this.playerDiceSet[i] = diceSet[randomDiceIndex - 1];
 
-      if (randomIndex == 1) {
-        var userGameState = this.gameGroup.gameStates.filter(gameState => {
-          return gameState.user.email.toLowerCase() == this.user.email.toLowerCase();
-        });
+      var userGameState = this.gameGroup.gameStates.find(gameState => {
+        return gameState.user.email.toLowerCase() == this.user.email.toLowerCase();
+      });
 
-        if (userGameState && userGameState.length) {
-          var newProgress = userGameState[0].progress + 1;
-          this.SendUpdate(newProgress);
-        }
+      if (!userGameState){
+        return;
       }
+
+      userGameState.progress = randomDiceIndex == 1 ? (userGameState.progress + 1) : userGameState.progress;
+      userGameState.diceIndex = randomDiceIndex;
+      userGameState.turnCompleted = true;
+
+      this.SendUpdate(userGameState);
     }
   }
 
@@ -128,7 +127,7 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
     return foundIndex >= 0;
   }
   
-  public SendUpdate(progressValue: number): void {
-    this.signalRService.UpdateGroup(this.groupId, progressValue);
+  public SendUpdate(gameState: GameState): void {
+    this.signalRService.UpdateGroup(this.groupId, gameState);
   }
 }

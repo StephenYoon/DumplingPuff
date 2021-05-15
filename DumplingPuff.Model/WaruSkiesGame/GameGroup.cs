@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DumplingPuff.Models.WaruSkiesGame
@@ -17,6 +18,16 @@ namespace DumplingPuff.Models.WaruSkiesGame
         }
 
         public string Id { get; set; }
+
+        public int CurrentRound { get; set; }
+
+        public bool GameFinished 
+        { 
+            get
+            {
+                return GameStates.Any(state => state.Progress >= 10);
+            } 
+        }
 
         public List<GameState> GameStates { get; set; }
 
