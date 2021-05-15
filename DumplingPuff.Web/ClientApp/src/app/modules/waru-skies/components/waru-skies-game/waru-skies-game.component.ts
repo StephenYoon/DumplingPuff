@@ -95,17 +95,16 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
       let randomIndex = this.randomIntFromInterval(1, maxLength);
       this.playerDiceSet[i] = dices[randomIndex - 1];
 
-      this.processDiceRoll(randomIndex);
-    }
-  }
+      if (randomIndex == 1) {
+        var userGameState = this.gameGroup.gameStates.filter(gameState => {
+          return gameState.user.email.toLowerCase() == this.user.email.toLowerCase();
+        });
 
-  processDiceRoll(diceIndex: number): void {
-    if (diceIndex == 1) {
-      this.stepsProgress++;
-    }
-
-    if (this.stepsProgress >= 10) {
-      this.gameWon = true;
+        if (userGameState && userGameState.length) {
+          var newProgress = userGameState[0].progress + 1;
+          this.SendUpdate(newProgress);
+        }
+      }
     }
   }
 

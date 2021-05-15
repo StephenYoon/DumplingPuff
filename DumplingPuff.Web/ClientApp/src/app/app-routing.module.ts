@@ -18,8 +18,8 @@ import { WaruSkiesGameComponent } from './modules/waru-skies/components/waru-ski
 // ];
 
 const routes: Routes = [
-  { path: '', component: HomeComponent, pathMatch: 'full' },
-  { path: 'home', pathMatch: 'full', redirectTo: '' },
+  { path: 'home', component: HomeComponent, pathMatch: 'full' },
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
   { path: 'chatbox/:id', component: ChatBoxComponent, canActivate : [AuthGuard] },
   { path: 'fetch-data', component: FetchDataComponent },
   { path: 'waru-skies/:id', 

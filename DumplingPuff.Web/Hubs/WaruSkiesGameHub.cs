@@ -29,7 +29,7 @@ namespace DumplingPuff.Web.Hubs
             };
             var message = JsonSerializer.Deserialize<GameState>(messageDto, options);
 
-            _gameService.AddGameStateToGroup(groupId, message);
+            _gameService.UpdateGameState(groupId, message);
             var broadcastContent = _gameService.GetGroup(groupId);
             await Clients.Group(groupId).SendAsync("broadcastGroup", broadcastContent);
             await Clients.Group(groupId).SendAsync("notification", $"WaruSkiesGameHub Notification: {message.User.Email} ({Context.ConnectionId}) sent message to group {groupId}.");
@@ -43,7 +43,7 @@ namespace DumplingPuff.Web.Hubs
             };
             var message = JsonSerializer.Deserialize<GameState>(messageDto, options);
 
-            _gameService.AddGameStateToGroup(groupId, message);
+            _gameService.UpdateGameState(groupId, message);
             var broadcastContent = _gameService.GetGroup(groupId);
             await Clients.Group(groupId).SendAsync("broadcastGroup", broadcastContent);
             await Clients.Group(groupId).SendAsync("notification", $"WaruSkiesGameHub Notification: {message.User.Email} ({Context.ConnectionId}) updated group {groupId}.");

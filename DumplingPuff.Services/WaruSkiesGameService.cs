@@ -80,7 +80,7 @@ namespace DumplingPuff.Services
             return group;
         }
 
-        public void AddGameStateToGroup(string groupId, GameState message)
+        public void UpdateGameState(string groupId, GameState message)
         {
             if (message.User == null)
             {
@@ -94,11 +94,17 @@ namespace DumplingPuff.Services
             }
 
             var group = GetGroup(groupId);
-            group.GameStates.Add(message);
+            var userGameState = group.GameStates.FirstOrDefault(gameState => gameState.User.Email.Equals(message.User.Email, StringComparison.InvariantCultureIgnoreCase));
+            if (userGameState == null)
+            {
+                group.GameStates.Add(message);
+            }
+            else
+            {
+                userGameState.Progress = message.Progress;
+            }
 
             AddUser(groupId, message.User);
-
-            // Store message
             var user = _userService.GetByEmail(message.User.Email, message.User.Provider);
             if (user == null)
             {
