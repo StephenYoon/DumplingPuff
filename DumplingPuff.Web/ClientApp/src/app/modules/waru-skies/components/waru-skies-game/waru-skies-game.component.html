@@ -15,8 +15,8 @@
 
       <!-- Dice(s) or Coin(s) -->
       <div class="col-2">
-        <div *ngFor="let dice of getPlayerDiceSet(); let i = index">
-          <app-dice [dice]=dice [overrideDisplayValue]=getDiceDisplayOverrideValue()></app-dice>
+        <div *ngFor="let dice of playerDiceSet; let i = index">
+          <app-dice [dice]=dice></app-dice>
         </div>
       </div>
 

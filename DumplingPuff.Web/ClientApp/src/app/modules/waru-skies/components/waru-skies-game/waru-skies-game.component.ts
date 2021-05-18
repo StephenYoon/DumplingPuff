@@ -53,7 +53,6 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
       this.signalRService.userJoinedGroup(this.groupId);        
       this.gameGroupSubscription = this.signalRService.gameGroup$.subscribe((gameGroup) => {
         if (gameGroup) {
-          this.playerDiceSet = [];
           this.gameGroup = gameGroup;
         }
       });        
@@ -90,6 +89,7 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   }
 
   resetGame(): void {
+    this.playerDiceSet = [];
     this.signalRService.UpdateGame(this.groupId, GameUpdateType.ResetGame);
   }
 
@@ -101,6 +101,7 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
     }
 
     this.playerDiceSet = [];
+    this.currentNumberOfFlips = 0;
     userGameState.turnCompleted = true;
     this.signalRService.UpdateGroup(this.groupId, userGameState);
   }
@@ -116,15 +117,18 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
     
     if (this.currentNumberOfFlips <= this.maxCoinFlipsPerTurn) {
       let randomDiceIndex = this.randomIntFromInterval(1, maxLength);
-      let diceResult = diceSet[randomDiceIndex - 1];
-      this.playerDiceSet.push(diceResult);
+      let diceResult = diceSet[randomDiceIndex];
 
-      // If tails, player turn ends and loses any progress made this turn
-      if (randomDiceIndex == 2) {
-        progressMade = 0;
+      if (this.playerDiceSet.length == 0) {
+        this.playerDiceSet.push(diceResult);
+      } else {
+        this.playerDiceSet[0] = diceResult;
       }
 
-      progressMade++;
+      // If tails, player turn ends and loses any progress made this turn
+      progressMade = randomDiceIndex == 2 // 2 is Tails
+        ? 0
+        : 1;
     }
     
     var userGameState = this.getUserGameState();
@@ -132,11 +136,12 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
     if (!userGameState){
       return;
     }
-
-    //userGameState.diceIndex = randomDiceIndex;
-    //this.playerDiceSet = [];
+    
     userGameState.progress = userGameState.progress + progressMade;
-    userGameState.turnCompleted = true;
+    if (this.currentNumberOfFlips > this.maxCoinFlipsPerTurn) {
+      userGameState.turnCompleted = true;
+      this.currentNumberOfFlips = 0;
+    }
     this.signalRService.UpdateGroup(this.groupId, userGameState);
   }
 
