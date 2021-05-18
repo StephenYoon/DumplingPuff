@@ -60,6 +60,7 @@ export class DiceSetCollection {
     display: "Coin",
     description: "Coin flip for heads or tails",
     dices: [
+      { id: 0, display: "?", value: 0 },
       { id: 1, display: "Heads", value: 1 },
       { id: 2, display: "Tails", value: 2 }
     ]

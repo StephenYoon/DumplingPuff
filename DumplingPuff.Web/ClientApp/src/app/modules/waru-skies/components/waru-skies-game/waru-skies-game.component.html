@@ -2,15 +2,33 @@
 
   <!-- Top level -->
   <div>
-    <button type="button" class="btn btn-info" (click)="rollDice()" [disabled]="getUserGameState().turnCompleted">Roll em!</button>
-    
-    <!-- Dice or Coin -->
-    <div *ngFor="let dice of getPlayerDiceSet(); let i = index">
-      <app-dice [dice]=dice></app-dice>
-    </div>
+    <div class="row">
+      <div class="col-2">
+        <button type="button" class="btn btn-info" (click)="rollDice()" [disabled]="getUserGameState().turnCompleted">
+          <span *ngIf="!getUserGameState().turnCompleted">Flip coin!</span>
+          <span *ngIf="getUserGameState().turnCompleted">Waiting for other players <i class="fas fa-spinner fa-pulse"></i></span>
+        </button>
+        <button type="button" class="btn btn-info" (click)="endTurn()" [disabled]="getUserGameState().turnCompleted">
+          <span>End Turn</span>
+        </button>
+      </div>
 
-    <button type="button" class="btn btn-info" (click)="resetGame()" [disabled]="!gameGroup.gameFinished">Reset 😎</button>
-  </div>
+      <!-- Dice(s) or Coin(s) -->
+      <div class="col-2">
+        <div *ngFor="let dice of getPlayerDiceSet(); let i = index">
+          <app-dice [dice]=dice [overrideDisplayValue]=getDiceDisplayOverrideValue()></app-dice>
+        </div>
+      </div>
+
+      <div class="col-1">
+        <button type="button" class="btn btn-info" (click)="resetGame()" [disabled]="!gameGroup.gameFinished">Reset 😎</button>
+      </div>
+      
+      <div class="col">
+        <span>Current round: {{gameGroup.currentRound}}</span>
+      </div>
+    </div>
+  </div><!-- End of Top level -->
 
   <!-- Main wrapper for players -->
   <div *ngIf='gameGroup && getGameStates()'>

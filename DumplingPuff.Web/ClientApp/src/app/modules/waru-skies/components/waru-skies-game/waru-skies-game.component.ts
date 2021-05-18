@@ -23,11 +23,11 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   public playerDiceSet: Dice[];
   public diceSetKey: string = "coin";
 
-  private diceService: DiceService;
   private diceSetCollection: DiceSetCollection = new DiceSetCollection;
+  private maxCoinFlipsPerTurn: number = 2;
 
   public stepsProgress: number;
-  private gameWon: boolean;
+  public currentNumberOfFlips: number;
   
   defaultGroupId: string = 'waru-skies-game-room';
   groupId: string = '';
@@ -42,21 +42,18 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.playerDiceSet = this.playerDiceSet = [
-      this.diceSetCollection[this.diceSetKey].dices[0]
-    ];
-
-    this.user = this.customAuthService.getUser();
-
-    this.stepsProgress = 0;
-    this.gameWon = false;
     
+    this.user = this.customAuthService.getUser();
+    this.stepsProgress = 0;
+    this.currentNumberOfFlips = 0;
+    this.playerDiceSet = [];
     this.route.params.subscribe(params => {
       
       this.groupId = params.id || this.defaultGroupId;
       this.signalRService.userJoinedGroup(this.groupId);        
       this.gameGroupSubscription = this.signalRService.gameGroup$.subscribe((gameGroup) => {
         if (gameGroup) {
+          this.playerDiceSet = [];
           this.gameGroup = gameGroup;
         }
       });        
@@ -83,34 +80,64 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   getPlayerDiceSet(): Dice[] {
     return this.playerDiceSet;
   }
-  
+
+  getDiceDisplayOverrideValue(): string {
+    var userGameState = this.getUserGameState();
+
+    return userGameState.turnCompleted
+      ? ""
+      : "?";
+  }
+
   resetGame(): void {
     this.signalRService.UpdateGame(this.groupId, GameUpdateType.ResetGame);
+  }
+
+  endTurn(): void {
+    var userGameState = this.getUserGameState();
+
+    if (!userGameState){
+      return;
+    }
+
+    this.playerDiceSet = [];
+    userGameState.turnCompleted = true;
+    this.signalRService.UpdateGroup(this.groupId, userGameState);
   }
 
   // Get a new set of dice
   // TODO: opportunities to refactor this below, but for now it's "okay"
   rollDice() {
     var diceSet = this.diceSetCollection[this.diceSetKey].dices;
-    var maxLength = diceSet.length;
-    for (let i = 0; i < this.playerDiceSet.length; i++) {
+    var maxLength = 2;
+    var progressMade = 0;
+
+    this.currentNumberOfFlips++;
+    
+    if (this.currentNumberOfFlips <= this.maxCoinFlipsPerTurn) {
       let randomDiceIndex = this.randomIntFromInterval(1, maxLength);
-      this.playerDiceSet[i] = diceSet[randomDiceIndex - 1];
+      let diceResult = diceSet[randomDiceIndex - 1];
+      this.playerDiceSet.push(diceResult);
 
-      var userGameState = this.gameGroup.gameStates.find(gameState => {
-        return gameState.user.email.toLowerCase() == this.user.email.toLowerCase();
-      });
-
-      if (!userGameState){
-        return;
+      // If tails, player turn ends and loses any progress made this turn
+      if (randomDiceIndex == 2) {
+        progressMade = 0;
       }
 
-      userGameState.progress = randomDiceIndex == 1 ? (userGameState.progress + 1) : userGameState.progress;
-      userGameState.diceIndex = randomDiceIndex;
-      userGameState.turnCompleted = true;
-
-      this.SendUpdate(userGameState);
+      progressMade++;
     }
+    
+    var userGameState = this.getUserGameState();
+      
+    if (!userGameState){
+      return;
+    }
+
+    //userGameState.diceIndex = randomDiceIndex;
+    //this.playerDiceSet = [];
+    userGameState.progress = userGameState.progress + progressMade;
+    userGameState.turnCompleted = true;
+    this.signalRService.UpdateGroup(this.groupId, userGameState);
   }
 
   // Random number generator, min and max included.
@@ -125,9 +152,5 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   public userOnline(user: SocialUser): boolean {
     var foundIndex = this.gameGroup.activeUsersByEmail.findIndex(activeUserEmail => activeUserEmail.toLowerCase() == user.email.toLowerCase());
     return foundIndex >= 0;
-  }
-  
-  public SendUpdate(gameState: GameState): void {
-    this.signalRService.UpdateGroup(this.groupId, gameState);
   }
 }

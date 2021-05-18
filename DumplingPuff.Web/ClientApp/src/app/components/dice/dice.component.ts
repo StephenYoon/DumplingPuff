@@ -8,6 +8,7 @@ import { Dice } from '../../models/dice';
 })
 export class DiceComponent implements OnInit {
   @Input() dice: Dice;
+  @Input() overrideDisplayValue: string;
 
   constructor() { }
 

@@ -1,3 +1,5 @@
 <div class="dice-wrapper p-1 bg-primary text-white text-center border-info rounded-lg float-left rounded">
-  <div class="dice-body">{{dice.display}}</div>
+  <div *ngIf="!!overrideDisplayValue; then thenBlock else elseBlock"></div>
+  <ng-template #thenBlock>{{overrideDisplayValue}}</ng-template>
+  <ng-template #elseBlock>{{dice.display}}</ng-template>
 </div>
