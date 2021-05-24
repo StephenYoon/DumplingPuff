@@ -125,10 +125,13 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
         this.playerDiceSet[0] = diceResult;
       }
 
-      // If tails, player turn ends and loses any progress made this turn
-      progressMade = randomDiceIndex == 2 // 2 is Tails
-        ? 0
-        : 1;
+      if (randomDiceIndex == 1) {
+        progressMade = 1;
+      } else {
+        // If tails, player turn ends and loses any progress made this turn
+        progressMade = 0;
+        userGameState.turnCompleted = true;
+      }
     }
     
     var userGameState = this.getUserGameState();

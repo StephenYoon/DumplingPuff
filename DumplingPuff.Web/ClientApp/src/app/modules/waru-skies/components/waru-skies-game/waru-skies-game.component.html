@@ -1,70 +1,84 @@
 <div class="arena">
 
-  <!-- Top level -->
-  <div>
-    <div class="row">
-      <div class="col-2">
-        <button type="button" class="btn btn-info" (click)="rollDice()" [disabled]="getUserGameState().turnCompleted">
-          <span *ngIf="!getUserGameState().turnCompleted">Flip coin!</span>
-          <span *ngIf="getUserGameState().turnCompleted">Waiting for other players <i class="fas fa-spinner fa-pulse"></i></span>
-        </button>
-        <button type="button" class="btn btn-info" (click)="endTurn()" [disabled]="getUserGameState().turnCompleted">
-          <span>End Turn</span>
-        </button>
-      </div>
+  <!-- Main area for game -->
+  <div class="row">
 
-      <!-- Dice(s) or Coin(s) -->
-      <div class="col-2">
-        <div *ngFor="let dice of playerDiceSet; let i = index">
-          <app-dice [dice]=dice></app-dice>
-        </div>
-      </div>
+    <!-- Left pane -->
+    <div class="col-3">
+      <ul class="list-group list-group-horizontal">
 
-      <div class="col-1">
-        <button type="button" class="btn btn-info" (click)="resetGame()" [disabled]="!gameGroup.gameFinished">Reset 😎</button>
-      </div>
-      
-      <div class="col">
-        <span>Current round: {{gameGroup.currentRound}}</span>
-      </div>
+        <li class="list-group-item borderless">
+          <button type="button" class="btn btn-info" (click)="rollDice()" [disabled]="getUserGameState().turnCompleted">
+            <span *ngIf="!gameGroup.gameFinished && !getUserGameState().turnCompleted">Flip coin!</span>
+            <span *ngIf="!gameGroup.gameFinished && getUserGameState().turnCompleted">Waiting for other players <i class="fas fa-spinner fa-pulse"></i></span>
+            <span *ngIf="gameGroup.gameFinished">Game Finished <i class="far fa-smile-wink"></i></span>
+          </button>
+        </li>
+
+        <li class="list-group-item">
+          <button type="button" class="btn btn-info" (click)="endTurn()" [disabled]="getUserGameState().turnCompleted">
+            <span>End Turn</span>
+          </button>
+        </li>
+
+        <li class="list-group-item">
+          <!-- Dice(s) or Coin(s) -->
+          <div *ngFor="let dice of playerDiceSet; let i = index">
+            <app-dice [dice]=dice></app-dice>
+          </div>
+        </li>
+
+        <li class="list-group-item">
+          <button type="button" class="btn btn-info" (click)="resetGame()" [disabled]="!gameGroup.gameFinished">Reset 😎</button>
+        </li>
+
+        <li class="list-group-item">
+          <span>Current round: {{gameGroup.currentRound}}</span>
+        </li>
+      </ul>
     </div>
-  </div><!-- End of Top level -->
 
-  <!-- Main wrapper for players -->
-  <div *ngIf='gameGroup && getGameStates()'>
-    <div class="row users" *ngFor="let gameState of getGameStates()">
+    <!-- Right pane -->
+    <div class="col">
+
+      <!-- Main wrapper for players -->
+      <div *ngIf='gameGroup && getGameStates()'>
+        <div class="row users" *ngFor="let gameState of getGameStates()">
+          
+          <!-- Player icon -->
+          <div class="col person">
+            <div class="user">
+              <img [src]="userPhotoSrcUrl(gameState.user)">
+              <span [ngClass]="userOnline(gameState.user)?'status online':'status offline'" ></span><!--online, busy, offline, away-->
+            </div>      
+            <p class="name-time">
+              <span class="name">{{gameState.user.name}}</span>
+            </p>
+          </div>
       
-      <!-- Player icon -->
-      <div class="col person">
-        <div class="user">
-          <img [src]="userPhotoSrcUrl(gameState.user)">
-          <span [ngClass]="userOnline(gameState.user)?'status online':'status offline'" ></span><!--online, busy, offline, away-->
-        </div>      
-        <p class="name-time">
-          <span class="name">{{gameState.user.name}}</span>
-        </p>
-      </div>
-  
-      <!-- Progress bar -->
-      <div class="col-6 pt-4">
-        <div class="progress">
-          <div 
-            class="progress-bar progress-bar-striped progress-bar-animated" 
-            role="progressbar"
-            [ngStyle]="{'width': gameState.progress * 10 + '%'}"
-            [ngClass]="{'bg-success' : gameState.progress >= 10}">
+          <!-- Progress bar -->
+          <div class="col-6 pt-4">
+            <div class="progress">
+              <div 
+                class="progress-bar progress-bar-striped progress-bar-animated" 
+                role="progressbar"
+                [ngStyle]="{'width': gameState.progress * 10 + '%'}"
+                [ngClass]="{'bg-success' : gameState.progress >= 10}">
+              </div>
+            </div>
+          </div>
+      
+          <!-- Win indicator -->
+          <div class="col">
+            <div class="pt-4" *ngIf="gameState.progress >= 10">
+              <i class="fas fa-child" style="color: green; font-size: 2rem;"></i>
+            </div>  
           </div>
         </div>
-      </div>
-  
-      <!-- Win indicator -->
-      <div class="col">
-        <div class="pt-4" *ngIf="gameState.progress >= 10">
-          <i class="fas fa-child" style="color: green; font-size: 2rem;"></i>
-        </div>  
-      </div>
+        
+      </div><!-- End of Main wrapper -->
     </div>
-    
-  </div><!-- End of Main wrapper -->
+
+  </div><!-- End of Main area for game -->
 
 </div>
