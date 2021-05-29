@@ -112,10 +112,16 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
     var diceSet = this.diceSetCollection[this.diceSetKey].dices;
     var maxLength = 2;
     var progressMade = 0;
-
+    
     this.currentNumberOfFlips++;
     
-    if (this.currentNumberOfFlips <= this.maxCoinFlipsPerTurn) {
+    var userGameState = this.getUserGameState();      
+    if (!userGameState){
+      return;
+    }
+    
+    // Flip coin if user is within maxCoinFlipsPerTurn
+    if (!userGameState.turnCompleted && this.currentNumberOfFlips <= this.maxCoinFlipsPerTurn) {
       let randomDiceIndex = this.randomIntFromInterval(1, maxLength);
       let diceResult = diceSet[randomDiceIndex];
 
@@ -134,14 +140,10 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
       }
     }
     
-    var userGameState = this.getUserGameState();
-      
-    if (!userGameState){
-      return;
-    }
     
+    // Update user's game state
     userGameState.progress = userGameState.progress + progressMade;
-    if (this.currentNumberOfFlips > this.maxCoinFlipsPerTurn) {
+    if (this.currentNumberOfFlips >= this.maxCoinFlipsPerTurn) {
       userGameState.turnCompleted = true;
       this.currentNumberOfFlips = 0;
     }

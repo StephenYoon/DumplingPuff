@@ -4,8 +4,12 @@
   <div class="row">
 
     <!-- Left pane -->
-    <div class="col-3">
+    <div class="col-4">
       <ul class="list-group list-group-horizontal">
+
+        <li class="list-group-item">
+          <span>Current round: {{gameGroup.currentRound}}</span>
+        </li>
 
         <li class="list-group-item borderless">
           <button type="button" class="btn btn-info" (click)="rollDice()" [disabled]="getUserGameState().turnCompleted">
@@ -30,10 +34,6 @@
 
         <li class="list-group-item">
           <button type="button" class="btn btn-info" (click)="resetGame()" [disabled]="!gameGroup.gameFinished">Reset 😎</button>
-        </li>
-
-        <li class="list-group-item">
-          <span>Current round: {{gameGroup.currentRound}}</span>
         </li>
       </ul>
     </div>
