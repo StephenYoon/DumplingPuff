@@ -3,18 +3,19 @@ import * as signalR from "@microsoft/signalr";  // or from "@aspnet/signalr" if 
 import { SocialUser } from 'angularx-social-login';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { ChatGroup } from '../models/chat-group.model';
-import { ChatMessage } from '../models/chat-message.model';
+import { GameGroup } from '@app/modules/waru-skies/models/game-group.model';
+import { GameState } from '@app/modules/waru-skies/models/game-state.model';
 
 import { CustomAuthService } from './custom-auth.service';
+import { GameUpdateType } from '@app/modules/waru-skies/models/game-update-type';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SignalRService {
+export class SignalRWaruSkiesService {
   baseApiUrl: string;
   reconnecting: Subject<boolean> = new Subject();
-  chatGroup$: BehaviorSubject<ChatGroup>;
+  gameGroup$: BehaviorSubject<GameGroup>;
   currentUser: SocialUser;
   groupId: string;
   
@@ -25,19 +26,19 @@ export class SignalRService {
     private customAuthService: CustomAuthService
   ) {
     this.setupSignalRConnection();
-    this.chatGroup$ = new BehaviorSubject<ChatGroup>(null);
+    this.gameGroup$ = new BehaviorSubject<GameGroup>(null);
   }  
   
   public setupSignalRConnection = () => {
     this.baseApiUrl = environment.baseApiUrl;
     this.signalrConnection = new signalR.HubConnectionBuilder()
-                            .withUrl(this.baseApiUrl + '/chat')
+                            .withUrl(this.baseApiUrl + '/waruskiesgame')
                             .build();
                             
     console.log(`BaseApiUrl set to: ${this.baseApiUrl}`);
 
     this.signalrConnection.on('broadcastGroup', (data) => {
-      this.chatGroup$.next(data);
+      this.gameGroup$.next(data);
     });
 
     this.signalrConnection.on('broadcastSignedInUsers', (data) => {
@@ -91,13 +92,15 @@ export class SignalRService {
     });
   }
 
-  public UpdateGroup(groupId: string, chatMessage: string): void {    
-    var message = new ChatMessage();
-    message.user = this.customAuthService.getUser();
-    message.message = chatMessage;
-    message.dateSent = new Date();
+  public UpdateGame(groupId: string, updateType: GameUpdateType, message: string = ''): void {
+    this.signalrConnection.send('UpdateGame', groupId, updateType, JSON.stringify(message));
+  }
+  
+  public UpdateGroup(groupId: string, gameState: GameState): void {
+    gameState.user = this.customAuthService.getUser();
+    gameState.dateSent = new Date();
 
-    this.signalrConnection.send('UpdateGroup', groupId, JSON.stringify(message));
+    this.signalrConnection.send('UpdateGroup', groupId, JSON.stringify(gameState));
   }
 
   public async userJoinedGroup(groupId: string): Promise<void> {
@@ -112,7 +115,7 @@ export class SignalRService {
   }
 
   public async userLeftGroup(groupId: string): Promise<void> {
-    this.groupId = null;
+    //this.groupId = null;
     var user = this.customAuthService.getUser();
     await this.signalrConnection.send('UserLeftGroup', groupId, JSON.stringify(user));
   }

@@ -42,6 +42,7 @@ namespace DumplingPuff.Web
 
             // Services
             services.AddSingleton<IChatService, ChatService>();
+            services.AddSingleton<IWaruSkiesGameService, WaruSkiesGameService>();
             services.AddSingleton<ISignedInUserService, SignedInUserService>();
 
             services.AddTransient<IConnectionFactory, ConnectionFactory>();
@@ -126,6 +127,7 @@ namespace DumplingPuff.Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<ChatHub>("/chat");
+                endpoints.MapHub<WaruSkiesGameHub>("/waruskiesgame");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");

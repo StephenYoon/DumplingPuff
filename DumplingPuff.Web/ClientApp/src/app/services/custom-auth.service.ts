@@ -60,7 +60,11 @@ export class CustomAuthService implements OnDestroy {
   }
 
   signInWithGoogle(): void {
-    this.authService.signIn(GoogleLoginProvider.PROVIDER_ID);
+    this.authService.signIn(GoogleLoginProvider.PROVIDER_ID).then(user => {
+      console.log('signInWithGoogle user:', user)
+    }).catch(err => {
+      console.warn(err);
+    });
   }
 
   signInWithFB(): void {
@@ -87,7 +91,7 @@ export class CustomAuthService implements OnDestroy {
     }).finally(()=>{
       localStorage.removeItem('user');
       this.currentUser$.next(null);
-      this.router.navigate(['/']);
+      this.router.navigate(['/']); 
     });
   }
 

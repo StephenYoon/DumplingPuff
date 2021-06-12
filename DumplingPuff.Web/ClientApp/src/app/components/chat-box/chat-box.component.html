@@ -43,10 +43,10 @@
                   </div>
                 </div>
               </div>
-              <ul class="users" *ngIf='chatUsers'>
+              <ul class="users" *ngIf='groupUsers'>
                 <li 
                 class="person" 
-                *ngFor="let signedInUser of chatUsers"
+                *ngFor="let signedInUser of groupUsers"
                 >
                 <div class="user">
                   <img [src]="userPhotoSrcUrl(signedInUser)">

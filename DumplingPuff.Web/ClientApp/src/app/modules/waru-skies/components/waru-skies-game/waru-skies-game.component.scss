@@ -1,0 +1,107 @@
+.arena {
+
+
+  .center-vertically {
+    position: absolute;
+    top: 50%;
+  }
+
+  /************************************************
+	************************************************
+											Users
+	************************************************
+  ************************************************/
+
+  .users {
+    padding: 0;
+  }
+
+  .users .person {
+    position: relative;
+    width: 100%;
+    padding: 10px 1rem;
+    cursor: pointer;
+    //border-bottom: 1px solid #f0f4f8;
+  }
+
+  .users .person:hover {
+    background-color: #ffffff;
+  }
+
+  .users .person.active-user {
+    background-color: #ffffff;
+  }
+
+  .users .person:last-child {
+    border-bottom: 0;
+  }
+
+  .users .person .user {
+    display: inline-block;
+    position: relative;
+    margin-right: 10px;
+  }
+
+  .users .person .user img {
+    width: 48px;
+    height: 48px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+  }
+
+  .users .person .user .status {
+    width: 10px;
+    height: 10px;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    border-radius: 100px;
+    background: #e6ecf3;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .users .person .user .status.online {
+    background: #32CD32;
+  }
+
+  .users .person .user .status.offline {
+    background: #c4d2e2;
+  }
+
+  .users .person .user .status.away {
+    background: #f9be52;
+  }
+
+  .users .person .user .status.busy {
+    background: #fd7274;
+  }
+
+  .users .person p.name-time {
+    font-weight: 600;
+    font-size: .85rem;
+    display: inline-block;
+  }
+
+  .users .person p.name-time .time {
+    font-weight: 400;
+    font-size: .7rem;
+    text-align: right;
+    color: #8796af;
+  }
+
+  @media (max-width: 767px) {
+    .users .person .user img {
+        width: 30px;
+        height: 30px;
+    }
+    .users .person p.name-time {
+        display: none;
+    }
+    .users .person p.name-time .time {
+        display: none;
+    }
+  }
+
+}
