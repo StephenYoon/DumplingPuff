@@ -115,7 +115,7 @@ export class SignalRWaruSkiesService {
   }
 
   public async userLeftGroup(groupId: string): Promise<void> {
-    this.groupId = null;
+    //this.groupId = null;
     var user = this.customAuthService.getUser();
     await this.signalrConnection.send('UserLeftGroup', groupId, JSON.stringify(user));
   }

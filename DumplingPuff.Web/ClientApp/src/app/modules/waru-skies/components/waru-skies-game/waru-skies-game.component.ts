@@ -60,6 +60,9 @@ export class WaruSkiesGameComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Set user as offline by removing user from signedInUser list
+    this.signalRService.userLeftGroup(this.groupId);
+    
     // if (this.appSettingsSubscription) this.appSettingsSubscription.unsubscribe();
     if (this.gameGroupSubscription) this.gameGroupSubscription.unsubscribe();
   }

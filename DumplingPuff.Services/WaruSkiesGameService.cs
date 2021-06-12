@@ -151,7 +151,7 @@ namespace DumplingPuff.Services
         public void GameUpdateReset(string groupId)
         {
             var group = GetGroup(groupId);
-            group.CurrentRound = 0;
+            group.CurrentRound = 1;
             foreach(var gameState in group.GameStates)
             {
                 gameState.Progress = 0;

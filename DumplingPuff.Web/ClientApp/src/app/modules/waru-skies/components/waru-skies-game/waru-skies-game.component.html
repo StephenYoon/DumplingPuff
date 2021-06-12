@@ -14,7 +14,7 @@
         <li class="list-group-item borderless">
           <button type="button" class="btn btn-info" (click)="rollDice()" [disabled]="getUserGameState().turnCompleted">
             <span *ngIf="!gameGroup.gameFinished && !getUserGameState().turnCompleted">Flip coin!</span>
-            <span *ngIf="!gameGroup.gameFinished && getUserGameState().turnCompleted">Waiting for other players <i class="fas fa-spinner fa-pulse"></i></span>
+            <span *ngIf="!gameGroup.gameFinished && getUserGameState().turnCompleted">Waiting for others <i class="fas fa-spinner fa-pulse"></i></span>
             <span *ngIf="gameGroup.gameFinished">Game Finished <i class="far fa-smile-wink"></i></span>
           </button>
         </li>
@@ -33,7 +33,7 @@
         </li>
 
         <li class="list-group-item">
-          <button type="button" class="btn btn-info" (click)="resetGame()" [disabled]="!gameGroup.gameFinished">Reset 😎</button>
+          <button type="button" class="btn btn-info" (click)="resetGame()">Reset 😎</button>
         </li>
       </ul>
     </div>
